@@ -1,0 +1,59 @@
+<body>
+
+  <%- include('../partials/header.ejs') %>
+
+    <section class="solid_banner_area">
+      <div class="container">
+        <div class="solid_banner_inner">
+          <h3>LOGIN </h3>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#">Login</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="login_area p_100">
+      <div class="container">
+        <div class="login_inner">
+          <div class="row">
+            <div class="col-lg-4">
+            </div>
+            <div class="col-lg-4">
+              <div class="login_title">
+                <h2>log in your account</h2>
+                <p>Log in to your account to discovery all great products in this store.</p>
+              </div>
+              <form class="login_form row" action="/login" method="POST">
+                <div class="col-lg-12 form-group">
+                  <input class="form-control" type="text" placeholder="Name">
+                </div>
+                <div class="col-lg-12 form-group">
+                  <input class="form-control" type="text" placeholder="User Name">
+                </div>
+                <div class="col-lg-12 form-group">
+                  <div class="creat_account">
+                    <a href="/signup">
+                      Create Account
+                    </a>
+                  </div>
+                  <a href="">
+                    <h4> Forgot your password ?</h4>
+                  </a>
+                </div>
+                <div class="col-lg-12 form-group">
+                  <button type="submit" value="submit" class="btn update_btn form-control">Login</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <%- include('../partials/footer.ejs') %>
+
+</body>
