@@ -4,6 +4,10 @@ const app = express();
 const path = require("path");
 const logger = require("morgan");
 const expressLayouts = require("express-ejs-layouts");
+const dbConn = require("./config/dbConnections");
+require("dotenv").config();
+
+dbConn();
 
 app.set("view engine", "ejs");
 app.set("layout", "./layouts/layout");
@@ -31,4 +35,4 @@ const userRouter = require("./routes/userRouter");
 
 app.use("/", userRouter);
 
-app.listen(2000);
+app.listen(process.env.PORT);
