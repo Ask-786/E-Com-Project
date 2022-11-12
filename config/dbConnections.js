@@ -10,7 +10,7 @@ async function runConnection() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log("database connected");
+    console.log("DBConnection successful");
   } catch (e) {
     console.log(e.message);
   }

@@ -4,7 +4,8 @@ const getHome = (req, res) => {
   res.render("user-views/home");
 };
 
-const redirectHome = (req, res) => {
+const postLogin = (req, res) => {
+  console.log(req.body);
   res.redirect("/");
 };
 
@@ -16,9 +17,11 @@ const getSignUp = (req, res) => {
   res.render("user-views/signup", { err: false });
 };
 
-const redirectLogin = async (req, res) => {
+const postSignUp = async (req, res) => {
   try {
-    const newUser = await User.create(req.body);
+    // const user = new User(req.body);
+    // user.save();
+    await User.create(req.body);
     res.redirect("/login");
   } catch (err) {
     res.render("user-views/signup");
@@ -40,9 +43,9 @@ const getShop = (req, res) => {
 module.exports = {
   getHome,
   getLogin,
-  redirectHome,
+  postLogin,
   getSignUp,
-  redirectLogin,
+  postSignUp,
   getCart,
   getContact,
   getShop,
