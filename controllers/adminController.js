@@ -1,4 +1,4 @@
-const User = require("./../models/userModels");
+const User = require("../models/User");
 
 const getLogin = (req, res) => {
   res.render("admin-views/login", { layout: "./layouts/admin-layout" });

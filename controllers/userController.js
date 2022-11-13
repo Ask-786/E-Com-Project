@@ -1,12 +1,45 @@
-const User = require("./../models/userModels");
+const User = require("../models/User");
+
+// const userExists = async (req, res, next) => {
+//   let isFound = await User.findOne({
+//     $or: [{ username: req.body.username }, { email: req.body.username }],
+//   });
+// };
 
 const getHome = (req, res) => {
   res.render("user-views/home");
 };
 
-const postLogin = (req, res) => {
-  console.log(req.body);
-  res.redirect("/");
+const postLogin = async (req, res) => {
+  let found = await User.exists({
+    $or: [{ username: req.body.username }, { email: req.body.username }],
+  });
+  if (found) {
+    await User.findOne(
+      {
+        $or: [{ username: req.body.username }, { email: req.body.username }],
+      },
+      (err, user) => {
+        if (err) {
+          throw err;
+        } else {
+          user.comparePasswords(req.body.password, (err, isMatch) => {
+            if (err) {
+              res.redirect("/login");
+            } else {
+              if (isMatch) {
+                res.redirect("/");
+              } else {
+                res.redirect("/login");
+              }
+            }
+          });
+        }
+      }
+    );
+  } else {
+    res.redirect("/login");
+  }
 };
 
 const getLogin = (req, res) => {
@@ -24,7 +57,8 @@ const postSignUp = async (req, res) => {
     await User.create(req.body);
     res.redirect("/login");
   } catch (err) {
-    res.render("user-views/signup");
+    console.log(err.message);
+    res.render("user-views/signup", { message: err.message });
   }
 };
 
