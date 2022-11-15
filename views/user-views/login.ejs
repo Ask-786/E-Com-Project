@@ -1,59 +1,60 @@
 <body>
 
-  <%- include('../user-views/partials/header.ejs') %>
-
-    <section class="solid_banner_area">
-      <div class="container">
-        <div class="solid_banner_inner">
-          <h3>LOGIN </h3>
-          <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="#">Login</a></li>
-          </ul>
-        </div>
+  <section class="solid_banner_area">
+    <div class="container">
+      <div class="solid_banner_inner">
+        <h3>LOGIN </h3>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="#">Login</a></li>
+        </ul>
       </div>
-    </section>
+    </div>
+  </section>
 
-
-    <section class="login_area p_100">
-      <div class="container">
-        <div class="login_inner">
-          <div class="row">
-            <div class="col-lg-4">
+  <section class="login_area p_100">
+    <div class="container">
+      <div class="login_inner">
+        <div class="row">
+          <div class="col-lg-4">
+          </div>
+          <div class="col-lg-4">
+            <div class="login_title">
+              <h2>log in your account</h2>
+              <% if(messages.error) {%>
+                <p style="color: red;">
+                  <%= messages.error %>
+                </p>
+                <% }else{ %>
+                  <p>Log in to your account to discovery all great products in this store.</p>
+                  <% } %>
             </div>
-            <div class="col-lg-4">
-              <div class="login_title">
-                <h2>log in your account</h2>
-                <p>Log in to your account to discovery all great products in this store.</p>
+            <form class="login_form row" action="/login" method="POST">
+              <div class="col-lg-12 form-group">
+                <input class="form-control" type="text" placeholder="Username or Email" name="username" required>
               </div>
-              <form class="login_form row" action="/login" method="POST">
-                <div class="col-lg-12 form-group">
-                  <input class="form-control" type="text" placeholder="Username or Email" name="username">
-                </div>
-                <div class="col-lg-12 form-group">
-                  <input class="form-control" type="password" placeholder="Password" name="password">
-                </div>
-                <div class="col-lg-12 form-group">
-                  <div class="creat_account">
-                    <a href="/signup">
-                      Create Account
-                    </a>
-                  </div>
-                  <a href="">
-                    <h4> Forgot your password ?</h4>
+              <div class="col-lg-12 form-group">
+                <input class="form-control" type="password" placeholder="Password" name="password" required>
+              </div>
+              <div class="col-lg-12 form-group">
+                <div class="creat_account">
+                  <a href="/signup">
+                    Create Account
                   </a>
                 </div>
-                <div class="col-lg-12 form-group">
-                  <button type="submit" value="submit" class="btn update_btn form-control">Login</button>
-                </div>
-              </form>
-            </div>
+                <a href="">
+                  <h4> Forgot your password ?</h4>
+                </a>
+              </div>
+              <div class="col-lg-12 form-group">
+                <button type="submit" value="submit" class="btn update_btn form-control">Login</button>
+              </div>
+            </form>
           </div>
         </div>
-
       </div>
-    </section>
 
-    <%- include('../user-views/partials/footer.ejs') %>
+    </div>
+  </section>
 
 </body>

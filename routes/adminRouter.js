@@ -2,20 +2,27 @@ const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/adminController");
 
-const userName = "Ask@786";
-const password = "123456";
-
-const validator = (req, res, next) => {
-  console.log(req.body);
-  if (req.body.username === userName && req.body.password === password) {
-    next();
-  } else {
-    res.redirect("/admin");
-  }
-};
+const isAuthenticated = adminController.checkAuthenticated;
+const isNotAuthenticated = adminController.checkNotAuthenticated;
+const checkAdmin = adminController.checkAdmin;
 
 router.get("/", adminController.getLogin);
-router.post("/", validator, adminController.postLogin);
-router.get("/dash", adminController.getDashboard);
+router.get("/dash", isAuthenticated, checkAdmin, adminController.getDashboard);
+router.get(
+  "/add-product",
+  isAuthenticated,
+  checkAdmin,
+  adminController.getProductAdd
+);
+
+router.post("/", adminController.postLogin);
+router.post(
+  "/add-product",
+  isAuthenticated,
+  checkAdmin,
+  adminController.postProductAdd
+);
+
+router.delete("/adlogout", adminController.deleteLogout);
 
 module.exports = router;

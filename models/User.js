@@ -10,10 +10,12 @@ const userSchema = new Schema({
   username: {
     type: String,
     required: [true, "Username is required"],
+    unique: true,
   },
   email: {
     type: String,
     required: [true, "Eamil is required"],
+    unique: true,
   },
   phone: {
     type: Number,
@@ -44,20 +46,23 @@ userSchema.pre("save", function (next) {
   }
 });
 
-userSchema.methods.comparePasswords = function (password, cb) {
-  bcrypt.compare(password, this.password, (err, isMatch) => {
-    console.log(isMatch);
-    if (err) {
-      return cb(err);
-    } else {
-      if (!isMatch) {
-        return cb(null, isMatch);
-      } else {
-        return cb(null, this);
-      }
-    }
-  });
-};
+// userSchema.methods.comparePasswords = function (password, cb) {
+//   try {
+//     bcrypt.compare(password, this.password, (err, isMatch) => {
+//       if (err) {
+//         return cb(err);
+//       } else {
+//         if (!isMatch) {
+//           return cb(null, isMatch);
+//         } else {
+//           return cb(null, this);
+//         }
+//       }
+//     });
+//   } catch (err) {
+//     console.log(err.message);
+//   }
+// };
 
 const Users = mongoose.model("Users", userSchema);
 
