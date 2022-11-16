@@ -4,24 +4,21 @@ const adminController = require("../controllers/adminController");
 
 const isAuthenticated = adminController.checkAuthenticated;
 const isNotAuthenticated = adminController.checkNotAuthenticated;
-const checkAdmin = adminController.checkAdmin;
 
-router.get("/", adminController.getLogin);
-router.get("/dash", isAuthenticated, checkAdmin, adminController.getDashboard);
+router.get("/", isNotAuthenticated, adminController.getLogin);
+router.get("/dash", isAuthenticated, adminController.getDashboard);
+router.get("/edit-product", isAuthenticated, adminController.getEditProduct);
 router.get(
-  "/add-product",
+  "/delete-product",
   isAuthenticated,
-  checkAdmin,
-  adminController.getProductAdd
+  adminController.getDeleteProduct
 );
+router.get("/products", isAuthenticated, adminController.getProducts);
+router.get("/add-product", isAuthenticated, adminController.getProductAdd);
 
 router.post("/", adminController.postLogin);
-router.post(
-  "/add-product",
-  isAuthenticated,
-  checkAdmin,
-  adminController.postProductAdd
-);
+router.post("/edit-product", isAuthenticated, adminController.postEditProduct);
+router.post("/add-product", isAuthenticated, adminController.postProductAdd);
 
 router.delete("/adlogout", adminController.deleteLogout);
 

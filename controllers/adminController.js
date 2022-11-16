@@ -1,23 +1,48 @@
 const Product = require("../models/Product");
 const passport = require("passport");
-const Admin = require("../models/Admin");
-const initializePassport = require("../config/admin-passport-config");
+const User = require("../models/User");
+const initializePassport = require("../config/passport-config");
 
-initializePassport(
-  passport,
-  async (username) => {
-    return Admin.findOne({ username: username });
-  },
-  (id) => {
-    return Admin.findById(id);
-  }
-);
+initializePassport(passport);
 
 const getLogin = (req, res) => {
   res.render("admin-views/login", {
     layout: "./layouts/admin-layout",
     message: req.message,
   });
+};
+
+const getDashboard = async (req, res) => {
+  let products = await Product.find({});
+  res.render("admin-views/dashboard", {
+    layout: "./layouts/admin-layout",
+    products: products,
+  });
+};
+
+const getProductAdd = (req, res) => {
+  res.render("admin-views/add-product", { layout: "./layouts/admin-layout" });
+};
+
+const getProducts = async (req, res) => {
+  let products = await Product.find({});
+  res.render("admin-views/view-products", {
+    layout: "./layouts/admin-layout",
+    products: products,
+  });
+};
+
+const getEditProduct = async (req, res) => {
+  let product = await Product.findById(req.query.id);
+  res.render("admin-views/edit-product", {
+    layout: "./layouts/admin-layout",
+    product,
+  });
+};
+
+const getDeleteProduct = async (req, res) => {
+  await Product.deleteOne({ _id: req.query.id });
+  res.redirect("/admin/products");
 };
 
 // const postLogin = (req, res) => {
@@ -49,26 +74,6 @@ const getLogin = (req, res) => {
 //     res.redirect("/admin");
 //   }
 // };
-
-const postLogin = passport.authenticate("admin", {
-  successRedirect: "/admin/dash",
-  failureRedirect: "/admin",
-  failureFlash: true,
-});
-
-const getDashboard = async (req, res) => {
-  console.log(req.session.passport.user);
-  let products = await Product.find({});
-  res.render("admin-views/dashboard", {
-    layout: "./layouts/admin-layout",
-    products: products,
-  });
-};
-
-const getProductAdd = (req, res) => {
-  res.render("admin-views/add-product", { layout: "./layouts/admin-layout" });
-};
-
 const postProductAdd = async (req, res) => {
   try {
     // await Product.create(req.body);
@@ -81,6 +86,29 @@ const postProductAdd = async (req, res) => {
   }
 };
 
+const postEditProduct = async (req, res) => {
+  let data = req.body;
+  await Product.updateOne(
+    { _id: req.query.id },
+    {
+      $set: {
+        title: data.title,
+        price: data.price,
+        description: data.description,
+        size: data.size,
+        stock: data.stock,
+      },
+    }
+  );
+  res.redirect("/admin/products");
+};
+
+const postLogin = passport.authenticate("local", {
+  successRedirect: "/admin/dash",
+  failureRedirect: "/admin",
+  failureFlash: true,
+});
+
 const deleteLogout = (req, res) => {
   req.logOut((err) => {
     res.redirect("/admin");
@@ -88,32 +116,19 @@ const deleteLogout = (req, res) => {
 };
 
 const checkAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated() && req.user.isadmin) {
     next();
   } else {
     res.redirect("/admin");
   }
 };
 
-// const checkNotAuthenticated = (req, res, next) => {
-//   if (!req.isAuthenticated()) {
-//     next();
-//   } else {
-//     res.redirect("/admin/dash");
-//   }
-// };
-
-const checkAdmin = (req, res, next) => {
-  try {
-    Admin.findById(req.session.passport.user, (err, admin) => {
-      if (admin !== null) {
-        console.log(admin);
-        next();
-      } else {
-        res.redirect("/admin");
-      }
-    });
-  } catch {}
+const checkNotAuthenticated = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    next();
+  } else {
+    res.status(404).json({ message: "Logout From User Account" });
+  }
 };
 
 module.exports = {
@@ -123,7 +138,10 @@ module.exports = {
   getProductAdd,
   postProductAdd,
   checkAuthenticated,
-  // checkNotAuthenticated,
-  checkAdmin,
+  checkNotAuthenticated,
   deleteLogout,
+  getProducts,
+  getEditProduct,
+  getDeleteProduct,
+  postEditProduct,
 };

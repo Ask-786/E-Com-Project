@@ -29,6 +29,10 @@ const userSchema = new Schema({
     type: String,
     required: [true, "Confirm Password is required"],
   },
+  isadmin: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 userSchema.pre("save", function (next) {

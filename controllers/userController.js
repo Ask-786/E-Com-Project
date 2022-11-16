@@ -1,18 +1,9 @@
 const User = require("../models/User");
 const Product = require("../models/Product");
 const passport = require("passport");
-const initializePassport = require("../config/user-passport-config");
+const initializePassport = require("../config/passport-config");
 
-initializePassport(
-  passport,
-  async (username) => {
-    console.log("hello");
-    return User.findOne({ username: username });
-  },
-  (id) => {
-    return User.findById(id);
-  }
-);
+initializePassport(passport);
 
 const getHome = async (req, res) => {
   const product = await Product.find({});
@@ -57,7 +48,7 @@ const getLogin = (req, res) => {
 //   }
 // };
 
-const postLogin = passport.authenticate("user", {
+const postLogin = passport.authenticate("local", {
   successRedirect: "/",
   failureRedirect: "/login",
   failureFlash: true,
@@ -100,7 +91,8 @@ const deleteLogout = (req, res) => {
 };
 
 const checkAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
+  console.log(req.user);
+  if (req.isAuthenticated() && !req.user.isadmin) {
     next();
   } else {
     res.redirect("/login");

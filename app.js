@@ -64,7 +64,6 @@ app.use("/img", express.static(path.join(__dirname, "./public/admin/img")));
 
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
-const Users = require("./models/User");
 
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
