@@ -43,7 +43,7 @@ const getEditProduct = async (req, res) => {
 
 const getDeleteProduct = async (req, res) => {
   await Product.deleteOne({ _id: req.query.id });
-  res.redirect("/admin/products");
+  res.redirect("/admin/dash/products");
 };
 
 // const postLogin = (req, res) => {
@@ -90,10 +90,10 @@ const postProductAdd = async (req, res) => {
         req.files[3].filename,
       ],
     });
-    res.redirect("/admin/add-product");
+    res.redirect("/admin/dash/add-product");
   } catch (err) {
     console.log(err.message);
-    res.redirect("/admin/add-product");
+    res.redirect("/admin/dash/add-product");
   }
 };
 
@@ -108,10 +108,16 @@ const postEditProduct = async (req, res) => {
         description: data.description,
         size: data.size,
         stock: data.stock,
+        images: [
+          req.files[0].filename,
+          req.files[1].filename,
+          req.files[2].filename,
+          req.files[3].filename,
+        ],
       },
     }
   );
-  res.redirect("/admin/products");
+  res.redirect("/admin/dash/products");
 };
 
 const postLogin = passport.authenticate("local", {
@@ -138,7 +144,11 @@ const checkNotAuthenticated = (req, res, next) => {
   if (!req.isAuthenticated()) {
     next();
   } else {
-    res.status(404).json({ message: "Logout From User Account" });
+    if (req.user.isadmin) {
+      res.redirect("/admin/dash");
+    } else {
+      res.status(404).json({ message: "Logout From User Account" });
+    }
   }
 };
 

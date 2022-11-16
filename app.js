@@ -38,29 +38,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(logger("dev"));
 app.use(expressLayouts);
 
-//user statics :-
-app.use("/fonts", express.static(path.join(__dirname, "./public/users/fonts")));
-app.use(
-  "/images",
-  express.static(path.join(__dirname, "./public/users/images"))
-);
-app.use(
-  "/javascript",
-  express.static(path.join(__dirname, "./public/users/javascript"))
-);
-app.use(
-  "/stylesheet",
-  express.static(path.join(__dirname, "./public/users/stylesheet"))
-);
-app.use(
-  "/vendors",
-  express.static(path.join(__dirname, "./public/users/vendors"))
-);
-
-//admin statics
-app.use("/css", express.static(path.join(__dirname, "./public/admin/css")));
-app.use("/js", express.static(path.join(__dirname, "./public/admin/js")));
-app.use("/img", express.static(path.join(__dirname, "./public/admin/img")));
+app.use(express.static(path.join(__dirname, "./public")));
 
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");

@@ -103,7 +103,11 @@ const checkNotAuthenticated = (req, res, next) => {
   if (!req.isAuthenticated()) {
     next();
   } else {
-    res.redirect("/");
+    if (!req.user.isadmin) {
+      res.redirect("/");
+    } else {
+      res.status(404).json({ message: "Logout From Admin Account" });
+    }
   }
 };
 

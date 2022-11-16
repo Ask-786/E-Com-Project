@@ -9,19 +9,28 @@ const isNotAuthenticated = adminController.checkNotAuthenticated;
 
 router.get("/", isNotAuthenticated, adminController.getLogin);
 router.get("/dash", isAuthenticated, adminController.getDashboard);
-router.get("/edit-product", isAuthenticated, adminController.getEditProduct);
 router.get(
-  "/delete-product",
+  "/dash/products/edit-product",
+  isAuthenticated,
+  adminController.getEditProduct
+);
+router.get(
+  "/dash/products/delete-product",
   isAuthenticated,
   adminController.getDeleteProduct
 );
-router.get("/products", isAuthenticated, adminController.getProducts);
-router.get("/add-product", isAuthenticated, adminController.getProductAdd);
+router.get("/dash/products", isAuthenticated, adminController.getProducts);
+router.get("/dash/add-product", isAuthenticated, adminController.getProductAdd);
 
 router.post("/", adminController.postLogin);
-router.post("/edit-product", isAuthenticated, adminController.postEditProduct);
 router.post(
-  "/add-product",
+  "/dash/products/edit-product",
+  isAuthenticated,
+  upload,
+  adminController.postEditProduct
+);
+router.post(
+  "/dash/add-product",
   isAuthenticated,
   upload,
   adminController.postProductAdd
