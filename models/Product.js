@@ -24,6 +24,10 @@ const productSchema = new Schema(
       reqruied: true,
       min: 0,
     },
+    images: {
+      type: [String],
+      validate: (v) => Array.isArray(v) && v.length > 0 && v.length < 5,
+    },
   },
   {
     timestamps: true,

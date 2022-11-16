@@ -18,8 +18,7 @@
                                                 <th class="px-4 py-3">Title</th>
                                                 <th class="px-4 py-3">Price</th>
                                                 <th class="px-4 py-3">Stock</th>
-                                                <th class="px-4 py-3">Brand</th>
-                                                <th class="px-4 py-3">Added Date</th>
+                                                <th class="px-4 py-3">Size</th>
                                                 <th class="px-4 py-3"></th>
                                                 <th class="px-4 py-3"></th>
                                             </tr>
@@ -30,14 +29,14 @@
                                                     <td class="px-4 py-3">
                                                         <div class="flex items-center text-sm">
                                                             <!-- Avatar with inset shadow -->
-                                                            <div
+                                                            <!-- <div
                                                                 class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
                                                                 <img class="object-cover w-full h-full rounded-full"
                                                                     src="https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
                                                                     alt="" loading="lazy" />
                                                                 <div class="absolute inset-0 rounded-full shadow-inner"
                                                                     aria-hidden="true"></div>
-                                                            </div>
+                                                            </div> -->
                                                             <div>
                                                                 <p class="font-semibold">
                                                                     <%= products[i].title %>
@@ -49,29 +48,39 @@
                                                         </div>
                                                     </td>
                                                     <td class="px-4 py-3 text-sm">
-                                                        <%= products[i].price %>
+                                                        ₹ <%= products[i].price %>
                                                     </td>
                                                     <td class="px-4 py-3 text-xs">
-                                                        <span
-                                                            class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
-                                                            <%= products[i].stock %>
-                                                        </span>
+                                                        <%= products[i].stock %>
+
                                                     </td>
                                                     <td class="px-4 py-3 text-sm">
                                                         <%= products[i].size %>
                                                     </td>
                                                     <td class="px-4 py-3 text-sm">
-                                                        6/10/2020
+                                                        <button @click="openModal"
+                                                            onclick="showDetails( ['<%= products[i].title %>','<%= products[i].description %>','<%= products[i].price %>','<%= products[i].size %>','<%= products[i].stock %>','<%= products[i].createdAt %>','<%= products[i].updatedAt %>', ] )"
+                                                            class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                                            Show
+                                                        </button>
                                                     </td>
                                                     <td class="px-4 py-3 text-sm">
-                                                        <a href="/admin/edit-product?id=<%= products[i]._id %>"><i
-                                                                class="fa-solid fa-pen-to-square"></i></a>
+                                                        <span
+                                                            class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+                                                            <a href="/admin/edit-product?id=<%= products[i]._id %>"><i
+                                                                    class="fa-solid fa-pen-to-square"></i></a>
+                                                        </span>
+
                                                     </td>
                                                     <td class="px-4 py-3 text-sm">
-                                                        <button
-                                                            onclick="model(['<%= products[i]._id %>','<%= products[i].title %>'])"
-                                                            @click="openModal"><i
-                                                                class="fa-solid fa-trash"></i></button>
+                                                        <span
+                                                            class="px-2 py-1 font-semibold leading-tight text-green-700 bg-red-100 rounded-full dark:bg-red-700 dark:text-green-100">
+                                                            <button
+                                                                onclick="deleteAlert(['<%= products[i]._id %>','<%= products[i].title %>'])"
+                                                                @click="openModal"><i
+                                                                    class="fa-solid fa-trash"></i></button>
+                                                        </span>
+
 
                                                     </td>
                                                 </tr>
@@ -82,7 +91,7 @@
                                 <div
                                     class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
                                     <span class="flex items-center col-span-3">
-                                        Showing 21-30 of 100
+                                        Showing <%= products.length %> of <%= products.length %>
                                     </span>
                                     <span class="col-span-2"></span>
                                     <!-- Pagination -->
@@ -191,15 +200,30 @@
                     <div class="mt-4 mb-6">
                         <!-- Modal title -->
                         <p class="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300" id="model-header">
-                            Delete
+                            Model
                         </p>
+                        <br id="model-br">
                         <!-- Modal description -->
-                        <p class="text-sm text-gray-700 dark:text-gray-400">
-                            Are You Sure?
+                        <p class="text-md text-gray-700 dark:text-gray-400" id="model-body">
+                            Body
+                        </p>
+                        <br id="model-br">
+                        <p class="text-sm text-gray-700 dark:text-gray-400" id="model-sub-1">
+                        </p>
+                        <p class="text-sm text-gray-700 dark:text-gray-400" id="model-sub-2">
+                        </p>
+                        <br id="model-br">
+                        <p class="text-sm text-gray-700 dark:text-gray-400" id="model-sub-3">
+                        </p>
+                        <p class="text-sm text-gray-700 dark:text-gray-400" id="model-sub-4">
+                        </p>
+                        <br id="model-br">
+                        <p class="mb-2 text-md font-semibold text-gray-700 dark:text-gray-300" id="model-price">
+
                         </p>
                     </div>
-                    <footer
-                        class="flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0 sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800">
+                    <footer class=" flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0
+                            sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800">
                         <button @click="closeModal"
                             class="w-full px-5 py-3 text-sm font-medium leading-5 text-white text-gray-700 transition-colors duration-150 border border-gray-300 rounded-lg dark:text-gray-400 sm:px-4 sm:py-2 sm:w-auto active:bg-transparent hover:border-gray-500 focus:border-gray-500 active:text-gray-500 focus:outline-none focus:shadow-outline-gray">
                             Cancel
@@ -214,9 +238,24 @@
             <!-- End of modal backdrop -->
     </div>
     <script>
-        function model(array) {
+        function deleteAlert(array) {
             document.getElementById('button-delete').href = `/admin/delete-product?id=${array[0]}`
             document.getElementById('model-header').innerHTML = `Delete ${array[1]} ?`
+            document.getElementById('model-body').innerHTML = `Are You Sure?`
+            document.getElementById('model-sub-1').style.display = "none"
+            document.getElementById('model-sub-2').style.display = "none"
+            document.getElementById('model-sub-3').style.display = "none"
+            document.getElementById('model-sub-4').style.display = "none"
+            document.getElementById('model-price').style.display = "none"
+        }
+        function showDetails(ob) {
+            document.getElementById('model-header').innerHTML = ob[0]
+            document.getElementById('model-body').innerHTML = ob[1]
+            document.getElementById('model-sub-1').innerHTML = `Size : ${ob[3]}`
+            document.getElementById('model-sub-2').innerHTML = `Stock : ${ob[4]}`
+            document.getElementById('model-sub-3').innerHTML = `createdAt : ${ob[5]}`
+            document.getElementById('model-sub-4').innerHTML = `updatedAt : ${ob[6]}`
+            document.getElementById('model-price').innerHTML = `Price : ${ob[2]}`
         }
     </script>
 </body>

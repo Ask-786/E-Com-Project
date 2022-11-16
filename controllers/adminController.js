@@ -2,6 +2,7 @@ const Product = require("../models/Product");
 const passport = require("passport");
 const User = require("../models/User");
 const initializePassport = require("../config/passport-config");
+const upload = require("../config/multer");
 
 initializePassport(passport);
 
@@ -76,9 +77,19 @@ const getDeleteProduct = async (req, res) => {
 // };
 const postProductAdd = async (req, res) => {
   try {
-    // await Product.create(req.body);
-    let product = new Product(req.body);
-    product.save();
+    Product.create({
+      title: req.body.title,
+      price: req.body.price,
+      description: req.body.description,
+      size: req.body.size,
+      stock: req.body.stock,
+      images: [
+        req.files[0].filename,
+        req.files[1].filename,
+        req.files[2].filename,
+        req.files[3].filename,
+      ],
+    });
     res.redirect("/admin/add-product");
   } catch (err) {
     console.log(err.message);
@@ -144,4 +155,5 @@ module.exports = {
   getEditProduct,
   getDeleteProduct,
   postEditProduct,
+  upload,
 };
