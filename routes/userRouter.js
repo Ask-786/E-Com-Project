@@ -12,9 +12,10 @@ router.get("/cart", isAuthenticated, userController.getCart);
 router.get("/contact", userController.getContact);
 router.get("/shop", userController.getShop);
 router.get("/product", isAuthenticated, userController.getProduct);
+router.get("/otp-verify", isAuthenticated, userController.getOtpVerify);
 router.post("/login", isNotAuthenticated, userController.postLogin);
 router.post("/signup", isNotAuthenticated, userController.postSignUp);
-
+router.post("/otp-verify", isAuthenticated, userController.postOtpVerify);
 router.delete("/logout", userController.deleteLogout);
 
 module.exports = router;
