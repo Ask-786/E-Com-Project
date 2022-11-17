@@ -1,21 +1,38 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/userController");
+const {
+  getHome,
+  getLogin,
+  postLogin,
+  getSignUp,
+  postSignUp,
+  getCart,
+  getContact,
+  getShop,
+  getProduct,
+  deleteLogout,
+  getOtpVerify,
+  postOtpVerify,
+} = require("../controllers/userController");
 
-const isAuthenticated = userController.checkAuthenticated;
-const isNotAuthenticated = userController.checkNotAuthenticated;
+const {
+  checkAuthenticated,
+  checkNotAuthenticated,
+} = require("../middlwares/userMiddlewares");
 
-router.get("/", userController.getHome);
-router.get("/login", isNotAuthenticated, userController.getLogin);
-router.get("/signup", isNotAuthenticated, userController.getSignUp);
-router.get("/cart", isAuthenticated, userController.getCart);
-router.get("/contact", userController.getContact);
-router.get("/shop", userController.getShop);
-router.get("/product", isAuthenticated, userController.getProduct);
-router.get("/otp-verify", isAuthenticated, userController.getOtpVerify);
-router.post("/login", isNotAuthenticated, userController.postLogin);
-router.post("/signup", isNotAuthenticated, userController.postSignUp);
-router.post("/otp-verify", isAuthenticated, userController.postOtpVerify);
-router.delete("/logout", userController.deleteLogout);
+router.get("/", getHome);
+router.get("/login", checkNotAuthenticated, getLogin);
+router.get("/signup", checkNotAuthenticated, getSignUp);
+router.get("/cart", checkAuthenticated, getCart);
+router.get("/contact", getContact);
+router.get("/shop", getShop);
+router.get("/product", checkAuthenticated, getProduct);
+router.get("/otp-verify", checkAuthenticated, getOtpVerify);
+
+router.post("/login", checkNotAuthenticated, postLogin);
+router.post("/signup", checkNotAuthenticated, postSignUp);
+router.post("/otp-verify", checkAuthenticated, postOtpVerify);
+
+router.delete("/logout", deleteLogout);
 
 module.exports = router;

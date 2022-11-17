@@ -45,7 +45,7 @@ const postSignUp = async (req, res) => {
     await User.create(req.body);
     res.redirect("/login");
   } catch (err) {
-    console.log(err.message);
+    res.locals.message = err.message;
     res.redirect("/signup");
   }
 };
@@ -108,27 +108,6 @@ const deleteLogout = (req, res) => {
   });
 };
 
-const checkAuthenticated = (req, res, next) => {
-  console.log(req.user);
-  if (req.isAuthenticated() && !req.user.isadmin) {
-    next();
-  } else {
-    res.redirect("/login");
-  }
-};
-
-const checkNotAuthenticated = (req, res, next) => {
-  if (!req.isAuthenticated()) {
-    next();
-  } else {
-    if (!req.user.isadmin) {
-      res.redirect("/");
-    } else {
-      res.status(404).json({ message: "Logout From Admin Account" });
-    }
-  }
-};
-
 module.exports = {
   getHome,
   getLogin,
@@ -139,8 +118,6 @@ module.exports = {
   getContact,
   getShop,
   getProduct,
-  checkAuthenticated,
-  checkNotAuthenticated,
   deleteLogout,
   getOtpVerify,
   postOtpVerify,

@@ -2,7 +2,6 @@ const Product = require("../models/Product");
 const passport = require("passport");
 const User = require("../models/User");
 const initializePassport = require("../config/passport-config");
-const upload = require("../config/multer");
 const checkVerificationToken =
   require("../services/twilio").checkVerificationToken;
 
@@ -166,40 +165,17 @@ const deleteLogout = (req, res) => {
   });
 };
 
-const checkAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated() && req.user.isadmin) {
-    next();
-  } else {
-    res.redirect("/admin");
-  }
-};
-
-const checkNotAuthenticated = (req, res, next) => {
-  if (!req.isAuthenticated()) {
-    next();
-  } else {
-    if (req.user.isadmin) {
-      res.redirect("/admin/dash");
-    } else {
-      res.status(404).json({ message: "Logout From User Account" });
-    }
-  }
-};
-
 module.exports = {
   getLogin,
   getDashboard,
   postLogin,
   getProductAdd,
   postProductAdd,
-  checkAuthenticated,
-  checkNotAuthenticated,
   deleteLogout,
   getProducts,
   getEditProduct,
   getDeleteProduct,
   postEditProduct,
-  upload,
   getOtpVerify,
   postOtpVerify,
 };

@@ -1,44 +1,48 @@
 const express = require("express");
 const router = express.Router();
-const adminController = require("../controllers/adminController");
+const upload = require("../config/multer");
+const {
+  getLogin,
+  getDashboard,
+  postLogin,
+  getProductAdd,
+  postProductAdd,
+  deleteLogout,
+  getProducts,
+  getEditProduct,
+  getDeleteProduct,
+  postEditProduct,
+  getOtpVerify,
+  postOtpVerify,
+} = require("../controllers/adminController");
 
-const upload = adminController.upload;
+const {
+  checkAuthenticated,
+  checkNotAuthenticated,
+} = require("../middlwares/adminMiddlewares");
 
-const isAuthenticated = adminController.checkAuthenticated;
-const isNotAuthenticated = adminController.checkNotAuthenticated;
-
-router.get("/", isNotAuthenticated, adminController.getLogin);
-router.get("/dash", isAuthenticated, adminController.getDashboard);
-router.get(
-  "/dash/products/edit-product",
-  isAuthenticated,
-  adminController.getEditProduct
-);
+router.get("/", checkNotAuthenticated, getLogin);
+router.get("/dash", checkAuthenticated, getDashboard);
+router.get("/dash/products", checkAuthenticated, getProducts);
+router.get("/dash/add-product", checkAuthenticated, getProductAdd);
+router.get("/otp-verify", checkAuthenticated, getOtpVerify);
+router.get("/dash/products/edit-product", checkAuthenticated, getEditProduct);
 router.get(
   "/dash/products/delete-product",
-  isAuthenticated,
-  adminController.getDeleteProduct
+  checkAuthenticated,
+  getDeleteProduct
 );
-router.get("/dash/products", isAuthenticated, adminController.getProducts);
-router.get("/dash/add-product", isAuthenticated, adminController.getProductAdd);
-router.get("/otp-verify", isAuthenticated, adminController.getOtpVerify);
 
-router.post("/", adminController.postLogin);
+router.post("/", postLogin);
+router.post("/dash/add-product", checkAuthenticated, upload, postProductAdd);
+router.post("/otp-verify", checkAuthenticated, postOtpVerify);
 router.post(
   "/dash/products/edit-product",
-  isAuthenticated,
+  checkAuthenticated,
   upload,
-  adminController.postEditProduct
+  postEditProduct
 );
 
-router.post(
-  "/dash/add-product",
-  isAuthenticated,
-  upload,
-  adminController.postProductAdd
-);
-
-router.post("/otp-verify", isAuthenticated, adminController.postOtpVerify);
-router.delete("/adlogout", adminController.deleteLogout);
+router.delete("/adlogout", deleteLogout);
 
 module.exports = router;
