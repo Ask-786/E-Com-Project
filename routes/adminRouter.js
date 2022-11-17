@@ -21,6 +21,7 @@ router.get(
 );
 router.get("/dash/products", isAuthenticated, adminController.getProducts);
 router.get("/dash/add-product", isAuthenticated, adminController.getProductAdd);
+router.get("/otp-verify", isAuthenticated, adminController.getOtpVerify);
 
 router.post("/", adminController.postLogin);
 router.post(
@@ -29,6 +30,7 @@ router.post(
   upload,
   adminController.postEditProduct
 );
+
 router.post(
   "/dash/add-product",
   isAuthenticated,
@@ -36,6 +38,7 @@ router.post(
   adminController.postProductAdd
 );
 
+router.post("/otp-verify", isAuthenticated, adminController.postOtpVerify);
 router.delete("/adlogout", adminController.deleteLogout);
 
 module.exports = router;

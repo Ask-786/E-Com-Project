@@ -27,22 +27,24 @@
             </div>
             <form class="login_form row" action="/signup" method="post">
               <div class="col-lg-6 form-group">
-                <input class="form-control" type="text" placeholder="Name" name="fullname">
+                <input class="form-control" type="text" placeholder="Name" name="fullname" required>
               </div>
               <div class="col-lg-6 form-group">
-                <input class="form-control" type="email" placeholder="Email" name="email">
+                <input class="form-control" type="email" placeholder="Email" name="email" required>
               </div>
               <div class="col-lg-6 form-group">
-                <input class="form-control" type="text" placeholder="User Name" name="username">
+                <input class="form-control" type="text" placeholder="User Name" name="username" required>
               </div>
               <div class="col-lg-6 form-group">
-                <input class="form-control" type="text" placeholder="Phone" name="phone" maxlength="10">
+                <input class="form-control" type="text" placeholder="Phone" name="phone" maxlength="10" required>
               </div>
               <div class="col-lg-6 form-group">
-                <input class="form-control" type="password" placeholder="Password" name="password">
+                <input class="form-control" type="password" placeholder="Password" name="password" id="password"
+                  required>
               </div>
               <div class="col-lg-6 form-group">
-                <input class="form-control" type="password" placeholder="Re-Password" name="repassword">
+                <input class="form-control" type="password" placeholder="Confirm Password" id="confirm-password"
+                  required>
               </div>
               <div class="col-lg-6 form-group">
                 <button type="submit" value="submit" class="btn subs_btn form-control">register now</button>
@@ -68,5 +70,20 @@
       </div>
     </div>
   </div>
+
+  <script>
+    var password = document.getElementById('password')
+    var confirm_password = document.getElementById('confirm-password')
+
+    function validatePassword() {
+      if (password.value !== confirm_password.value) {
+        confirm_password.setCustomValidity("Incorrect Password")
+      } else {
+        confirm_password.setCustomValidity("")
+      }
+    }
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+  </script>
 
 </body>

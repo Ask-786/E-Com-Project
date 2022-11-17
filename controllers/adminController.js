@@ -3,6 +3,8 @@ const passport = require("passport");
 const User = require("../models/User");
 const initializePassport = require("../config/passport-config");
 const upload = require("../config/multer");
+const checkVerificationToken =
+  require("../services/twilio").checkVerificationToken;
 
 initializePassport(passport);
 
@@ -11,6 +13,10 @@ const getLogin = (req, res) => {
     layout: "./layouts/admin-layout",
     message: req.message,
   });
+};
+
+const getOtpVerify = (req, res) => {
+  res.render("admin-views/otp-verify", { layout: "./layouts/admin-layout" });
 };
 
 const getDashboard = async (req, res) => {
@@ -98,30 +104,58 @@ const postProductAdd = async (req, res) => {
 };
 
 const postEditProduct = async (req, res) => {
-  let data = req.body;
-  await Product.updateOne(
-    { _id: req.query.id },
-    {
-      $set: {
-        title: data.title,
-        price: data.price,
-        description: data.description,
-        size: data.size,
-        stock: data.stock,
-        images: [
-          req.files[0].filename,
-          req.files[1].filename,
-          req.files[2].filename,
-          req.files[3].filename,
-        ],
-      },
-    }
-  );
+  if (req.files.length > 0) {
+    let data = req.body;
+    await Product.updateOne(
+      { _id: req.query.id },
+      {
+        $set: {
+          title: data.title,
+          price: data.price,
+          description: data.description,
+          size: data.size,
+          stock: data.stock,
+          images: [
+            req.files[0].filename,
+            req.files[1].filename,
+            req.files[2].filename,
+            req.files[3].filename,
+          ],
+        },
+      }
+    );
+  } else {
+    let data = req.body;
+    await Product.updateOne(
+      { _id: req.query.id },
+      {
+        $set: {
+          title: data.title,
+          price: data.price,
+          description: data.description,
+          size: data.size,
+          stock: data.stock,
+        },
+      }
+    );
+  }
   res.redirect("/admin/dash/products");
 };
 
+const postOtpVerify = (req, res) => {
+  checkVerificationToken(req.user.phone, req.body.otp).then((status) => {
+    if (status === "approved") {
+      res.redirect("/admin/dash");
+    } else {
+      req.logOut((err) => {
+        res.redirect("/admin");
+      });
+    }
+  });
+};
+
 const postLogin = passport.authenticate("local", {
-  successRedirect: "/admin/dash",
+  successRedirect: "/admin/otp-verify",
   failureRedirect: "/admin",
   failureFlash: true,
 });
@@ -166,4 +200,6 @@ module.exports = {
   getDeleteProduct,
   postEditProduct,
   upload,
+  getOtpVerify,
+  postOtpVerify,
 };

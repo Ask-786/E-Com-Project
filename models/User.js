@@ -25,13 +25,9 @@ const userSchema = new Schema({
     type: String,
     required: [true, "Password is required"],
   },
-  repassword: {
-    type: String,
-    required: [true, "Confirm Password is required"],
-  },
   isadmin: {
     type: Boolean,
-    default: true,
+    default: false,
   },
 });
 
