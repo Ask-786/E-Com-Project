@@ -1,4 +1,7 @@
 const mongoose = require("mongoose");
+const {
+  SchemaVersionContext,
+} = require("twilio/lib/rest/events/v1/schema/version");
 const Schema = mongoose.Schema;
 
 const productSchema = new Schema(
@@ -9,6 +12,11 @@ const productSchema = new Schema(
     },
     price: {
       type: Number,
+      required: true,
+    },
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
     },
     description: {

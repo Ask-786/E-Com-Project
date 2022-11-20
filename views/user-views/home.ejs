@@ -1,17 +1,17 @@
 <body>
   <section class="home_carousel_area">
     <div class="home_carousel_slider owl-carousel">
-      <% for(var i=0;i<products.length;i++){ %>
+      <% for(var i=0;i<category.length;i++){ %>
         <div class="item">
           <div class="h_carousel_item">
-            <!-- <img src="/users/images/home-carousel/home-c-1.jpg" alt=""> -->
-            <img src="/products-images/<%= products[i].images[2] %>" alt="">
+            <img src="/category-images/<%= 
+            category[i].image %>" alt="">
             <div class="carousel_hover">
               <h3>
-                <%= products[i].title %>
+                <%= category[i].name %>
               </h3>
               <h4>
-                <!-- <%= products[i].description %> -->
+                <%= category[i].description %>
               </h4>
               <h5>Including:</h5>
               <p>Adidas, Century, Everlast, Fairtex, Fighting Sports, WaveMaster, Twins, Rival</p>
@@ -125,22 +125,23 @@
   <section class="fillter_latest_product">
     <div class="container">
       <div class="single_c_title">
-        <h2>Our Latest Product</h2>
+        <h2>Our Latest Products</h2>
       </div>
       <div class="fillter_l_p_inner">
         <ul class="fillter_l_p">
-          <li class="active" data-filter="*"><a href="#">men's</a></li>
-          <li data-filter=".woman"><a href="#">Woman</a></li>
-          <li data-filter=".acc"><a href="#">Accessories</a></li>
-          <li data-filter=".shoes"><a href="#">Shoes</a></li>
-          <li data-filter=".bags"><a href="#">Bags</a></li>
+          <li class="active" data-filter="*"><a href="#">All</a></li>
+          <% for(var i=0;i<category.length;i++){ %>
+            <li data-filter=".<%= category[i].name %>"><a href="#">
+                <%= category[i].name %>
+              </a></li>
+            <% } %>
         </ul>
         <div class="row isotope_l_p_inner">
-          <% for(var i=0;i<products.length;i++){ %>
-            <div class="col-lg-3 col-md-4 col-sm-6 woman bags">
+          <% for(var i=0;i<product.length;i++){ %>
+            <div class="col-lg-3 col-md-4 col-sm-6 <%= product[i].category.name %>">
               <div class="l_product_item">
                 <div class="l_p_img">
-                  <img class="img-fluid" src="/products-images/<%= products[i].images[2] %>" alt="">
+                  <img class="img-fluid" src="/products-images/<%= product[i].images[0] %>" alt="">
                 </div>
                 <div class="l_p_text">
                   <ul>
@@ -148,131 +149,19 @@
                     <li><a class="add_cart_btn" href="#">Add To Cart</a></li>
                     <li class="p_icon"><a href="#"><i class="icon_heart_alt"></i></a></li>
                   </ul>
-                  <h4>Womens Libero</h4>
-                  <h5><del>$<%= products[i].price+(products[i].price*15/100) %>0</del> $<%= products[i].price %>
+                  <h4>
+                    <%= product[i].title %>
+                  </h4>
+                  <h5><del>$<%= product[i].price+(product[i].price*15/100) %>0</del> $<%= product[i].price %>
                   </h5>
                 </div>
               </div>
             </div>
             <% } %>
-
-              <div class="col-lg-3 col-md-4 col-sm-6 acc shoes">
-                <div class="l_product_item">
-                  <div class="l_p_img">
-                    <img class="img-fluid" src="/users/images/product/l-product-2.jpg" alt="">
-                  </div>
-                  <div class="l_p_text">
-                    <ul>
-                      <li class="p_icon"><a href="#"><i class="icon_piechart"></i></a></li>
-                      <li><a class="add_cart_btn" href="#">Add To Cart</a></li>
-                      <li class="p_icon"><a href="#"><i class="icon_heart_alt"></i></a></li>
-                    </ul>
-                    <h4>Womens Libero</h4>
-                    <h5><del>$45.50</del> $40</h5>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-3 col-md-4 col-sm-6 woman shoes">
-                <div class="l_product_item">
-                  <div class="l_p_img">
-                    <img class="img-fluid" src="/users/images/product/l-product-3.jpg" alt="">
-                  </div>
-                  <div class="l_p_text">
-                    <ul>
-                      <li class="p_icon"><a href="#"><i class="icon_piechart"></i></a></li>
-                      <li><a class="add_cart_btn" href="#">Add To Cart</a></li>
-                      <li class="p_icon"><a href="#"><i class="icon_heart_alt"></i></a></li>
-                    </ul>
-                    <h4>Womens Libero</h4>
-                    <h5><del>$45.50</del> $40</h5>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-3 col-md-4 col-sm-6 woman shoes">
-                <div class="l_product_item">
-                  <div class="l_p_img">
-                    <img class="img-fluid" src="/users/images/product/l-product-4.jpg" alt="">
-                  </div>
-                  <div class="l_p_text">
-                    <ul>
-                      <li class="p_icon"><a href="#"><i class="icon_piechart"></i></a></li>
-                      <li><a class="add_cart_btn" href="#">Add To Cart</a></li>
-                      <li class="p_icon"><a href="#"><i class="icon_heart_alt"></i></a></li>
-                    </ul>
-                    <h4>Womens Libero</h4>
-                    <h5><del>$45.50</del> $40</h5>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-3 col-md-4 col-sm-6 woman shoes">
-                <div class="l_product_item">
-                  <div class="l_p_img">
-                    <img class="img-fluid" src="/users/images/product/l-product-5.jpg" alt="">
-                  </div>
-                  <div class="l_p_text">
-                    <ul>
-                      <li class="p_icon"><a href="#"><i class="icon_piechart"></i></a></li>
-                      <li><a class="add_cart_btn" href="#">Add To Cart</a></li>
-                      <li class="p_icon"><a href="#"><i class="icon_heart_alt"></i></a></li>
-                    </ul>
-                    <h4>Womens Libero</h4>
-                    <h5><del>$45.50</del> $40</h5>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-3 col-md-4 col-sm-6 acc shoes bags">
-                <div class="l_product_item">
-                  <div class="l_p_img">
-                    <img class="img-fluid" src="/users/images/product/l-product-6.jpg" alt="">
-                  </div>
-                  <div class="l_p_text">
-                    <ul>
-                      <li class="p_icon"><a href="#"><i class="icon_piechart"></i></a></li>
-                      <li><a class="add_cart_btn" href="#">Add To Cart</a></li>
-                      <li class="p_icon"><a href="#"><i class="icon_heart_alt"></i></a></li>
-                    </ul>
-                    <h4>Womens Libero</h4>
-                    <h5><del>$45.50</del> $40</h5>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-3 col-md-4 col-sm-6 acc bags">
-                <div class="l_product_item">
-                  <div class="l_p_img">
-                    <img class="img-fluid" src="/users/images/product/l-product-7.jpg" alt="">
-                  </div>
-                  <div class="l_p_text">
-                    <ul>
-                      <li class="p_icon"><a href="#"><i class="icon_piechart"></i></a></li>
-                      <li><a class="add_cart_btn" href="#">Add To Cart</a></li>
-                      <li class="p_icon"><a href="#"><i class="icon_heart_alt"></i></a></li>
-                    </ul>
-                    <h4>Womens Libero</h4>
-                    <h5><del>$45.50</del> $40</h5>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-3 col-md-4 col-sm-6 acc bags">
-                <div class="l_product_item">
-                  <div class="l_p_img">
-                    <img class="img-fluid" src="/users/images/product/l-product-8.jpg" alt="">
-                  </div>
-                  <div class="l_p_text">
-                    <ul>
-                      <li class="p_icon"><a href="#"><i class="icon_piechart"></i></a></li>
-                      <li><a class="add_cart_btn" href="#">Add To Cart</a></li>
-                      <li class="p_icon"><a href="#"><i class="icon_heart_alt"></i></a></li>
-                    </ul>
-                    <h4>Womens Libero</h4>
-                    <h5><del>$45.50</del> $40</h5>
-                  </div>
-                </div>
-              </div>
         </div>
       </div>
     </div>
   </section>
-
 
   <section class="product_listing_area">
     <div class="container">
@@ -348,7 +237,7 @@
   </section>
 
 
-  <section class="feature_product_area">
+  <!-- <section class="feature_product_area">
     <div class="container">
       <div class="f_p_inner">
         <div class="row">
@@ -520,7 +409,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
 
 
   <section class="from_blog_area">

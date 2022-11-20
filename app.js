@@ -42,10 +42,13 @@ app.use(express.static(path.join(__dirname, "./public")));
 
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
+const { error } = require("console");
 
 app.use("/admin", adminRouter);
 app.use("/", userRouter);
 
-// ----error
+// app.use((err, req, res, next) => {
+//   res.send("user-views/404");
+// });
 
 app.listen(process.env.PORT);

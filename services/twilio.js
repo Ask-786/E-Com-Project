@@ -4,7 +4,7 @@ const serviceId = process.env.TWILIO_SERVICE;
 const client = require("twilio")(accountSid, authToken);
 
 client.verify.v2.services
-  .create({ friendlyName: "My First Verify Service" })
+  .create({ friendlyName: "Persuit" })
   .then((service) => console.log("OTP Ready"));
 
 function sendVerifyToken(mobile) {

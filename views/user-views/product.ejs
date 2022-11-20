@@ -13,7 +13,6 @@
         </div>
     </section>
 
-
     <section class="product_details_area">
         <div class="container">
             <div class="row">
@@ -23,26 +22,24 @@
                             <ul>
                                 <li data-index="rs-303" data-transition="scaledownfromleft" data-slotamount="default"
                                     data-easein="default" data-easeout="default" data-masterspeed="1500"
-                                    data-thumb="/users/images/product/product-details/p-details-tab-1.jpg"
-                                    data-rotate="0" data-saveperformance="off" data-title="The Dreaming Girl"
+                                    data-thumb="/products-images/<%= product.images[0] %>" data-rotate="0"
+                                    data-saveperformance="off" data-title="The Dreaming Girl"
                                     data-param1="September 6, 2015" data-param2="Lol" data-description="">
 
-                                    <img src="/users/images/product/product-details/p-details-big-1.jpg" alt=""
-                                        width="1920" height="1080"
-                                        data-lazyload="/users/images/product/product-details/p-details-big-1.jpg"
+                                    <img src="/products-images/<%= product.images[0] %>" alt="" width="1920"
+                                        height="1080" data-lazyload="/products-images/<%= product.images[0] %>"
                                         data-bgposition="center center" data-bgfit="contain" data-bgrepeat="no-repeat"
                                         class="rev-slidebg" data-no-retina>
 
                                 </li>
                                 <li data-index="rs-303" data-transition="scaledownfromleft" data-slotamount="default"
                                     data-easein="default" data-easeout="default" data-masterspeed="1500"
-                                    data-thumb="/users/images/product/product-details/p-details-tab-1.jpg"
-                                    data-rotate="0" data-saveperformance="off" data-title="The Dreaming Girl"
+                                    data-thumb="/products-images/<%= product.images[1] %>" data-rotate="0"
+                                    data-saveperformance="off" data-title="The Dreaming Girl"
                                     data-param1="September 6, 2015" data-param2="Lol" data-description="">
 
-                                    <img src="/users/images/product/product-details/p-details-big-1.jpg" alt=""
-                                        width="1920" height="1080"
-                                        data-lazyload="/users/images/product/product-details/p-details-big-1.jpg"
+                                    <img src="/products-images/<%= product.images[1] %>" alt="" width="1920"
+                                        height="1080" data-lazyload="/products-images/<%= product.images[1] %>"
                                         data-bgposition="center center" data-bgfit="contain" data-bgrepeat="no-repeat"
                                         class="rev-slidebg" data-no-retina>
 
@@ -50,14 +47,12 @@
 
                                 <li data-index="rs-301" data-transition="scaledownfromleft" data-slotamount="default"
                                     data-easein="default" data-easeout="default" data-masterspeed="1500"
-                                    data-thumb="/users/images/product/product-details/p-details-tab-1.jpg"
-                                    data-rotate="0" data-saveperformance="off" data-title="Ride my Bike"
-                                    data-param1="September 4, 2015" data-param2="Why not another Image?"
-                                    data-description="">
+                                    data-thumb="/products-images/<%= product.images[2] %>" data-rotate="0"
+                                    data-saveperformance="off" data-title="Ride my Bike" data-param1="September 4, 2015"
+                                    data-param2="Why not another Image?" data-description="">
 
-                                    <img src="/users/images/product/product-details/p-details-big-1.jpg" alt=""
-                                        width="1920" height="1080"
-                                        data-lazyload="/users/images/product/product-details/p-details-big-1.jpg"
+                                    <img src="/products-images/<%= product.images[2] %>" alt="" width="1920"
+                                        height="1080" data-lazyload="/products-images/<%= product.images[2] %>"
                                         data-bgposition="center center" data-bgfit="contain" data-bgrepeat="no-repeat"
                                         class="rev-slidebg" data-no-retina>
 
@@ -65,14 +60,12 @@
 
                                 <li data-index="rs-302" data-transition="scaledownfromleft" data-slotamount="default"
                                     data-easein="default" data-easeout="default" data-masterspeed="1500"
-                                    data-thumb="/users/images/product/product-details/p-details-tab-1.jpg"
-                                    data-rotate="0" data-saveperformance="off" data-title="Ride my Bike"
-                                    data-param1="September 4, 2015" data-param2="Why not another Image?"
-                                    data-description="">
+                                    data-thumb="/products-images/<%= product.images[3] %>" data-rotate="0"
+                                    data-saveperformance="off" data-title="Ride my Bike" data-param1="September 4, 2015"
+                                    data-param2="Why not another Image?" data-description="">
 
-                                    <img src="/users/images/product/product-details/p-details-big-1.jpg" alt=""
-                                        width="1920" height="1080"
-                                        data-lazyload="/users/images/product/product-details/p-details-big-1.jpg"
+                                    <img src="/products-images/<%= product.images[3] %>" alt="" width="1920"
+                                        height="1080" data-lazyload="/products-images/<%= product.images[3] %>"
                                         data-bgposition="center center" data-bgfit="contain" data-bgrepeat="no-repeat"
                                         class="rev-slidebg" data-no-retina>
 
@@ -83,7 +76,9 @@
                 </div>
                 <div class="col-lg-7">
                     <div class="product_details_text">
-                        <h3>Nike Flex Run Tracksuit</h3>
+                        <h3>
+                            <%= product.title %>
+                        </h3>
                         <ul class="p_rating">
                             <li><a href="#"><i class="fa fa-star"></i></a></li>
                             <li><a href="#"><i class="fa fa-star"></i></a></li>
@@ -95,55 +90,62 @@
                             <a href="#">5 Reviews</a>
                             <a href="#">Add your review</a>
                         </div>
-                        <h6>Available In <span>Stock</span></h6>
-                        <h4>$45.05</h4>
-                        <p>Curabitur semper varius lectus sed consequat. Nam accumsan dapibus sem, sed lobortis nisi
-                            porta vitae. Ut
-                            quam tortor, facilisis nec laoreet consequat, malesuada a massa. Proin pretium tristique
-                            leo et imperdiet.
-                        </p>
-                        <div class="p_color">
-                            <h4 class="p_d_title">color <span>*</span></h4>
-                            <ul class="color_list">
-                                <li><a href="#"></a></li>
-                                <li><a href="#"></a></li>
-                                <li><a href="#"></a></li>
-                                <li><a href="#"></a></li>
-                                <li><a href="#"></a></li>
-                                <li><a href="#"></a></li>
-                            </ul>
-                        </div>
-                        <div class="p_color">
-                            <h4 class="p_d_title">size <span>*</span></h4>
-                            <select class="selectpicker">
-                                <option>Select your size</option>
-                                <option>Select your size M</option>
-                                <option>Select your size XL</option>
-                            </select>
-                        </div>
-                        <div class="quantity">
-                            <div class="custom">
-                                <button
-                                    onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
-                                    class="reduced items-count" type="button"><i class="icon_minus-06"></i></button>
-                                <input type="text" name="qty" id="sst" maxlength="12" value="01" title="Quantity:"
-                                    class="input-text qty">
-                                <button
-                                    onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-                                    class="increase items-count" type="button"><i class="icon_plus"></i></button>
-                            </div>
-                            <a class="add_cart_btn" href="#">add to cart</a>
-                        </div>
-                        <div class="shareing_icon">
-                            <h5>share :</h5>
-                            <ul>
-                                <li><a href="#"><i class="social_facebook"></i></a></li>
-                                <li><a href="#"><i class="social_twitter"></i></a></li>
-                                <li><a href="#"><i class="social_pinterest"></i></a></li>
-                                <li><a href="#"><i class="social_instagram"></i></a></li>
-                                <li><a href="#"><i class="social_youtube"></i></a></li>
-                            </ul>
-                        </div>
+                        <% if(product.stock<=5 && product.stock>=1){ %>
+                            <h6>Only a few In <span style="color: rgb(255, 89, 0);">Stock</span></h6>
+                            <% } else if (product.stock<1) { %>
+                                <h6>Not available In <span style="color: red;">Stock</span></h6>
+                                <% } else { %>
+                                    <h6>Available In <span>Stock</span></h6>
+                                    <% } %>
+                                        <h4>₹ <%= product.price %>
+                                        </h4>
+                                        <p>
+                                            <%= product.description %>
+                                        </p>
+                                        <div class="p_color">
+                                            <h4 class="p_d_title">color <span>*</span></h4>
+                                            <ul class="color_list">
+                                                <li><a href="#"></a></li>
+                                                <li><a href="#"></a></li>
+                                                <li><a href="#"></a></li>
+                                                <li><a href="#"></a></li>
+                                                <li><a href="#"></a></li>
+                                                <li><a href="#"></a></li>
+                                            </ul>
+                                        </div>
+                                        <div class="p_color">
+                                            <h4 class="p_d_title">size <span>*</span></h4>
+                                            <select class="selectpicker">
+                                                <option>Select your size</option>
+                                                <option>Select your size M</option>
+                                                <option>Select your size XL</option>
+                                            </select>
+                                        </div>
+                                        <div class="quantity">
+                                            <div class="custom">
+                                                <button
+                                                    onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 1 ) result.value--;return false;"
+                                                    class="reduced items-count" type="button"><i
+                                                        class="icon_minus-06"></i></button>
+                                                <input type="text" name="qty" id="sst" maxlength="12" value="01"
+                                                    title="Quantity:" class="input-text qty">
+                                                <button
+                                                    onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
+                                                    class="increase items-count" type="button"><i
+                                                        class="icon_plus"></i></button>
+                                            </div>
+                                            <a class="add_cart_btn" href="#">add to cart</a>
+                                        </div>
+                                        <div class="shareing_icon">
+                                            <h5>share :</h5>
+                                            <ul>
+                                                <li><a href="#"><i class="social_facebook"></i></a></li>
+                                                <li><a href="#"><i class="social_twitter"></i></a></li>
+                                                <li><a href="#"><i class="social_pinterest"></i></a></li>
+                                                <li><a href="#"><i class="social_instagram"></i></a></li>
+                                                <li><a href="#"><i class="social_youtube"></i></a></li>
+                                            </ul>
+                                        </div>
                     </div>
                 </div>
             </div>
@@ -169,14 +171,8 @@
             </nav>
             <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                    <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est
-                        laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-                        doloremque laudantium,
-                        totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae
-                        vitae dicta sunt
-                        explicabo. Emo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed
-                        quia consequuntur.
+                    <p>
+                        <%= product.description %>
                     </p>
                 </div>
                 <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">

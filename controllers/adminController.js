@@ -1,9 +1,13 @@
-const Product = require("../models/Product");
 const passport = require("passport");
+const Product = require("../models/Product");
 const User = require("../models/User");
+const Category = require("../models/Category");
 const initializePassport = require("../config/passport-config");
-const checkVerificationToken =
-  require("../services/twilio").checkVerificationToken;
+const Products = require("../models/Product");
+const {
+  deleteCategoryImage,
+  deleteProductImages,
+} = require("../config/delete-file");
 
 initializePassport(passport);
 
@@ -14,10 +18,6 @@ const getLogin = (req, res) => {
   });
 };
 
-const getOtpVerify = (req, res) => {
-  res.render("admin-views/otp-verify", { layout: "./layouts/admin-layout" });
-};
-
 const getDashboard = async (req, res) => {
   let products = await Product.find({});
   res.render("admin-views/dashboard", {
@@ -26,29 +26,99 @@ const getDashboard = async (req, res) => {
   });
 };
 
-const getProductAdd = (req, res) => {
-  res.render("admin-views/add-product", { layout: "./layouts/admin-layout" });
+const getProductAdd = async (req, res) => {
+  let category = await Category.find();
+  res.render("admin-views/add-product", {
+    layout: "./layouts/admin-layout",
+    category,
+  });
 };
 
 const getProducts = async (req, res) => {
-  let products = await Product.find({});
-  res.render("admin-views/view-products", {
+  let products = await Product.find({})
+    .populate("category")
+    .sort({ updatedAt: -1 });
+  res.render("admin-views/products", {
     layout: "./layouts/admin-layout",
-    products: products,
+    products,
   });
 };
 
 const getEditProduct = async (req, res) => {
   let product = await Product.findById(req.query.id);
+  let category = await Category.find();
+
+  console.log(product.category);
   res.render("admin-views/edit-product", {
     layout: "./layouts/admin-layout",
     product,
+    category,
   });
 };
 
 const getDeleteProduct = async (req, res) => {
+  let preProduct = await Product.findOne({ _id: req.query.id });
   await Product.deleteOne({ _id: req.query.id });
   res.redirect("/admin/dash/products");
+  await deleteProductImages(preProduct.images).then((val) => {
+    res.redirect("/admin/dash/products");
+  });
+};
+
+const getCategories = async (req, res) => {
+  let categories = await Category.find().sort({ updatedAt: -1 });
+  res.render("admin-views/categories", {
+    layout: "./layouts/admin-layout",
+    categories,
+  });
+};
+
+const getAddCategory = (req, res) => {
+  res.render("admin-views/add-category", {
+    layout: "./layouts/admin-layout",
+  });
+};
+
+const getDeleteCategory = async (req, res) => {
+  let check = await Products.exists({ category: req.query.id });
+  if (check === null) {
+    const preCategory = await Category.findOne({ _id: req.query.id });
+    console.log(preCategory);
+    await Category.deleteOne({ _id: req.query.id });
+    deleteCategoryImage(preCategory.image).then((val) => {
+      res.redirect("/admin/dash/categories");
+    });
+  } else {
+    res.redirect("/admin/dash/categories");
+  }
+};
+
+const getEditCategory = async (req, res) => {
+  const category = await Category.findById(req.query.id);
+  res.render("admin-views/edit-category", {
+    layout: "./layouts/admin-layout",
+    category,
+  });
+};
+
+const getUsers = async (req, res) => {
+  const users = await User.find({});
+  res.render("admin-views/users", {
+    layout: "./layouts/admin-layout",
+    users,
+  });
+};
+
+const getBlockUser = async (req, res) => {
+  console.log(req.query.id);
+  await User.updateOne({ _id: req.query.id }, { access: false });
+  res.redirect("/admin/dash/users");
+};
+
+const getUnblockUser = async (req, res) => {
+  console.log(req.query.id);
+  await User.updateOne({ _id: req.query.id }, { access: true });
+  res.redirect("/admin/dash/users");
 };
 
 // const postLogin = (req, res) => {
@@ -80,11 +150,15 @@ const getDeleteProduct = async (req, res) => {
 //     res.redirect("/admin");
 //   }
 // };
+
 const postProductAdd = async (req, res) => {
+  console.log(req.files);
+  let category = await Category.find({ name: req.body.category });
   try {
-    Product.create({
+    await Product.create({
       title: req.body.title,
       price: req.body.price,
+      category: category[0]._id,
       description: req.body.description,
       size: req.body.size,
       stock: req.body.stock,
@@ -103,7 +177,10 @@ const postProductAdd = async (req, res) => {
 };
 
 const postEditProduct = async (req, res) => {
+  const category = await Category.find({ name: req.body.category });
+  const objId = category[0]._id.toString();
   if (req.files.length > 0) {
+    let preProduct = await Product.findOne({ _id: req.query.id });
     let data = req.body;
     await Product.updateOne(
       { _id: req.query.id },
@@ -111,6 +188,7 @@ const postEditProduct = async (req, res) => {
         $set: {
           title: data.title,
           price: data.price,
+          category: objId,
           description: data.description,
           size: data.size,
           stock: data.stock,
@@ -123,41 +201,64 @@ const postEditProduct = async (req, res) => {
         },
       }
     );
+    deleteProductImages(preProduct.images).then((val) => {
+      res.redirect("/admin/dash/products");
+    });
   } else {
     let data = req.body;
+    console.log(data);
     await Product.updateOne(
       { _id: req.query.id },
       {
         $set: {
           title: data.title,
           price: data.price,
+          category: objId,
           description: data.description,
           size: data.size,
           stock: data.stock,
         },
       }
     );
+    res.redirect("/admin/dash/products");
   }
-  res.redirect("/admin/dash/products");
-};
-
-const postOtpVerify = (req, res) => {
-  checkVerificationToken(req.user.phone, req.body.otp).then((status) => {
-    if (status === "approved") {
-      res.redirect("/admin/dash");
-    } else {
-      req.logOut((err) => {
-        res.redirect("/admin");
-      });
-    }
-  });
 };
 
 const postLogin = passport.authenticate("local", {
-  successRedirect: "/admin/otp-verify",
+  successRedirect: "/admin/dash",
   failureRedirect: "/admin",
   failureFlash: true,
 });
+
+const postAddCategory = async (req, res) => {
+  await Category.create({
+    name: req.body.name,
+    description: req.body.description,
+    image: req.file.filename,
+  });
+  res.redirect("/admin/dash/add-category");
+};
+
+const postEditCategory = async (req, res) => {
+  if (req.file) {
+    const preCategory = await Category.findOne({ name: req.body.name });
+    await Category.updateOne(
+      { _id: req.query.id },
+      {
+        name: req.body.name,
+        description: req.body.description,
+        image: req.file.filename,
+      }
+    );
+    deleteCategoryImage(preCategory.image).then((val) => {
+      res.redirect("/admin/dash/categories");
+    });
+    res.redirect("/admin/dash/categories");
+  } else {
+    await Category.updateOne({ _id: req.query.id }, req.body);
+    res.redirect("/admin/dash/categories");
+  }
+};
 
 const deleteLogout = (req, res) => {
   req.logOut((err) => {
@@ -176,6 +277,13 @@ module.exports = {
   getEditProduct,
   getDeleteProduct,
   postEditProduct,
-  getOtpVerify,
-  postOtpVerify,
+  getAddCategory,
+  postAddCategory,
+  getCategories,
+  getDeleteCategory,
+  getEditCategory,
+  postEditCategory,
+  getUsers,
+  getBlockUser,
+  getUnblockUser,
 };

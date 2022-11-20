@@ -1,7 +1,6 @@
 const localStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
-const sendVerifyToken = require("../services/twilio").sendVerifyToken;
 
 function initialize(passport) {
   const authenticateUser = async (username, password, done) => {
@@ -13,9 +12,10 @@ function initialize(passport) {
     }
     try {
       if (await bcrypt.compare(password, user.password)) {
-        sendVerifyToken(user.phone).then((val) => {
-          return done(null, user);
-        });
+        if (user.access === false) {
+          return done(null, false, { message: "You were blocked by admin" });
+        }
+        return done(null, user);
       } else {
         return done(null, false, { message: "Incorrect Password " });
       }

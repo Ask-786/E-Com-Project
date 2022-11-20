@@ -1,4 +1,4 @@
-<body>
+< <body>
 
   <section class="solid_banner_area">
     <div class="container">
@@ -22,16 +22,15 @@
           <div class="col-lg-8">
             <div class="login_title">
               <h2>create account</h2>
-              <% if(locals.message) {%>
-                <p style="color: red;">
-                  <%= locals.message %>
+              <% if( errMessage) {%>
+                <p style="color: hsl(0, 100%, 44%);">
+                  <%= errMessage %>
                 </p>
                 <% }else{ %>
                   <p>Follow the steps below to create email account enjoy the great mail.com emailing experience.
                     Vivamus
                     tempus risus vel felis condimentum, non vehicula est iaculis.</p>
                   <% } %>
-
             </div>
             <form class="login_form row" action="/signup" method="post">
               <div class="col-lg-6 form-group">
@@ -53,6 +52,13 @@
               <div class="col-lg-6 form-group">
                 <input class="form-control" type="password" placeholder="Confirm Password" id="confirm-password"
                   required>
+              </div>
+              <div class="col-lg-12 form-group">
+                <div class="creat_account">
+                  <a href="/login">
+                    Already a User?
+                  </a>
+                </div>
               </div>
               <div class="col-lg-6 form-group">
                 <button type="submit" value="submit" class="btn subs_btn form-control">register now</button>
@@ -94,4 +100,4 @@
     confirm_password.onkeyup = validatePassword;
   </script>
 
-</body>
+  </body>

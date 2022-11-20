@@ -20,19 +20,31 @@ const {
   checkNotAuthenticated,
 } = require("../middlwares/userMiddlewares");
 
-router.get("/", getHome);
-router.get("/login", checkNotAuthenticated, getLogin);
-router.get("/signup", checkNotAuthenticated, getSignUp);
-router.get("/cart", checkAuthenticated, getCart);
-router.get("/contact", getContact);
-router.get("/shop", getShop);
-router.get("/product", checkAuthenticated, getProduct);
-router.get("/otp-verify", checkAuthenticated, getOtpVerify);
+router.route("/").get(getHome);
 
-router.post("/login", checkNotAuthenticated, postLogin);
-router.post("/signup", checkNotAuthenticated, postSignUp);
-router.post("/otp-verify", checkAuthenticated, postOtpVerify);
+router
+  .route("/login")
+  .get(checkNotAuthenticated, getLogin)
+  .post(checkNotAuthenticated, postLogin);
 
-router.delete("/logout", deleteLogout);
+router
+  .route("/signup")
+  .get(checkNotAuthenticated, getSignUp)
+  .post(checkNotAuthenticated, postSignUp);
+
+router.route("/cart").get(checkAuthenticated, getCart);
+
+router.route("/contact").get(getContact);
+
+router.route("/shop").get(getShop);
+
+router.route("/shop/product").get(getProduct);
+
+router
+  .route("/otp-verify")
+  .get(checkNotAuthenticated, getOtpVerify)
+  .post(checkNotAuthenticated, postOtpVerify);
+
+router.route("/logout").delete(deleteLogout);
 
 module.exports = router;

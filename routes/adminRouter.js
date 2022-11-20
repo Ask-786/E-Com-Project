@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const upload = require("../config/multer");
+const { uploadCategoryImg, uploadProductImgs } = require("../config/multer");
 const {
   getLogin,
   getDashboard,
@@ -12,8 +12,15 @@ const {
   getEditProduct,
   getDeleteProduct,
   postEditProduct,
-  getOtpVerify,
-  postOtpVerify,
+  getAddCategory,
+  postAddCategory,
+  getCategories,
+  getDeleteCategory,
+  getEditCategory,
+  postEditCategory,
+  getUsers,
+  getBlockUser,
+  getUnblockUser,
 } = require("../controllers/adminController");
 
 const {
@@ -21,28 +28,53 @@ const {
   checkNotAuthenticated,
 } = require("../middlwares/adminMiddlewares");
 
-router.get("/", checkNotAuthenticated, getLogin);
-router.get("/dash", checkAuthenticated, getDashboard);
-router.get("/dash/products", checkAuthenticated, getProducts);
-router.get("/dash/add-product", checkAuthenticated, getProductAdd);
-router.get("/otp-verify", checkAuthenticated, getOtpVerify);
-router.get("/dash/products/edit-product", checkAuthenticated, getEditProduct);
-router.get(
-  "/dash/products/delete-product",
-  checkAuthenticated,
-  getDeleteProduct
-);
+router
+  .route("/")
+  .get(checkNotAuthenticated, getLogin)
+  .post(checkNotAuthenticated, postLogin);
 
-router.post("/", postLogin);
-router.post("/dash/add-product", checkAuthenticated, upload, postProductAdd);
-router.post("/otp-verify", checkAuthenticated, postOtpVerify);
-router.post(
-  "/dash/products/edit-product",
-  checkAuthenticated,
-  upload,
-  postEditProduct
-);
+router.route("/dash").get(checkAuthenticated, getDashboard);
 
-router.delete("/adlogout", deleteLogout);
+router.route("/dash/products").get(checkAuthenticated, getProducts);
+
+router
+  .route("/dash/add-product")
+  .get(checkAuthenticated, getProductAdd)
+  .post(checkAuthenticated, uploadProductImgs, postProductAdd);
+
+router
+  .route("/dash/products/edit-product")
+  .get(checkAuthenticated, getEditProduct)
+  .post(checkAuthenticated, uploadProductImgs, postEditProduct);
+
+router
+  .route("/dash/products/delete-product")
+  .get(checkAuthenticated, getDeleteProduct);
+
+router.route("/dash/categories").get(checkAuthenticated, getCategories);
+
+router
+  .route("/dash/add-category")
+  .get(checkAuthenticated, getAddCategory)
+  .post(checkAuthenticated, uploadCategoryImg, postAddCategory);
+
+router
+  .route("/dash/categories/delete-category")
+  .get(checkAuthenticated, getDeleteCategory);
+
+router
+  .route("/dash/categories/edit-category")
+  .get(checkAuthenticated, getEditCategory)
+  .post(checkAuthenticated, uploadCategoryImg, postEditCategory);
+
+router.route("/dash/users/block-user").get(checkAuthenticated, getBlockUser);
+
+router
+  .route("/dash/users/unblock-user")
+  .get(checkAuthenticated, getUnblockUser);
+
+router.route("/dash/users").get(checkAuthenticated, getUsers);
+
+router.route("/adlogout").delete(deleteLogout);
 
 module.exports = router;

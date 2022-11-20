@@ -13,7 +13,9 @@ const checkNotAuthenticated = (req, res, next) => {
     if (req.user.isadmin) {
       res.redirect("/admin/dash");
     } else {
-      res.status(404).json({ message: "Logout From User Account" });
+      req.logOut((err) => {
+        res.status(404).json({ message: "Login Again" });
+      });
     }
   }
 };

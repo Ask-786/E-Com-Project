@@ -1,5 +1,4 @@
 const checkAuthenticated = (req, res, next) => {
-  console.log(req.user);
   if (req.isAuthenticated() && !req.user.isadmin) {
     next();
   } else {
@@ -14,12 +13,20 @@ const checkNotAuthenticated = (req, res, next) => {
     if (!req.user.isadmin) {
       res.redirect("/");
     } else {
-      res.status(404).json({ message: "Logout From Admin Account" });
+      req.logOut((err) => {
+        res.status(404).json({ message: "Login Again" });
+      });
     }
   }
+};
+
+const checkIsBlocked = (req, res, next) => {
+  console.log(req.user);
+  next();
 };
 
 module.exports = {
   checkAuthenticated,
   checkNotAuthenticated,
+  checkIsBlocked,
 };
