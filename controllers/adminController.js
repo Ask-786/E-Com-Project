@@ -152,13 +152,11 @@ const getUnblockUser = async (req, res) => {
 // };
 
 const postProductAdd = async (req, res) => {
-  console.log(req.files);
-  let category = await Category.find({ name: req.body.category });
   try {
     await Product.create({
       title: req.body.title,
       price: req.body.price,
-      category: category[0]._id,
+      category: req.body.category,
       description: req.body.description,
       size: req.body.size,
       stock: req.body.stock,
@@ -177,8 +175,6 @@ const postProductAdd = async (req, res) => {
 };
 
 const postEditProduct = async (req, res) => {
-  const category = await Category.find({ name: req.body.category });
-  const objId = category[0]._id.toString();
   if (req.files.length > 0) {
     let preProduct = await Product.findOne({ _id: req.query.id });
     let data = req.body;
@@ -188,7 +184,7 @@ const postEditProduct = async (req, res) => {
         $set: {
           title: data.title,
           price: data.price,
-          category: objId,
+          category: data.category,
           description: data.description,
           size: data.size,
           stock: data.stock,
@@ -206,14 +202,13 @@ const postEditProduct = async (req, res) => {
     });
   } else {
     let data = req.body;
-    console.log(data);
     await Product.updateOne(
       { _id: req.query.id },
       {
         $set: {
           title: data.title,
           price: data.price,
-          category: objId,
+          category: data.category,
           description: data.description,
           size: data.size,
           stock: data.stock,

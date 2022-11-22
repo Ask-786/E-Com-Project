@@ -1,9 +1,11 @@
+const passport = require("passport");
 const User = require("../models/User");
+const Cart = require("../models/Cart");
 const Product = require("../models/Product");
 const Category = require("../models/Category");
-const passport = require("passport");
 const querystring = require("querystring");
 const initializePassport = require("../config/passport-config");
+const { response } = require("express");
 const sendVerifyToken = require("../services/twilio").sendVerifyToken;
 const checkVerificationToken =
   require("../services/twilio").checkVerificationToken;
@@ -42,10 +44,6 @@ const getSignUp = (req, res) => {
   }
 };
 
-const getCart = (req, res) => {
-  res.render("user-views/cart");
-};
-
 const getContact = (req, res) => {
   res.render("user-views/contact");
 };
@@ -63,6 +61,150 @@ const getProduct = async (req, res) => {
   const product = await Product.findById(req.query.id);
   res.render("user-views/product", {
     product,
+  });
+};
+
+const getCart = async (req, res) => {
+  let cart = await Cart.findOne({ user: req.user._id }).populate({
+    path: "bucket",
+    populate: {
+      path: "products",
+    },
+  });
+  if (cart !== null) {
+    let total = 0;
+    for (let i = 0; i < cart.bucket.length; i++) {
+      total += cart.bucket[i].products.price * cart.bucket[i].quantity;
+    }
+    res.render("user-views/cart", {
+      cart,
+      total,
+    });
+  } else {
+    res.render("user-views/empty-cart");
+  }
+};
+
+const getAddToCart = async (req, res) => {
+  let cartExists = await Cart.exists({ user: req.user._id });
+  let product = await Product.findById(req.query.id);
+  console.log(product);
+  if (cartExists === null) {
+    await Cart.create({
+      user: req.user._id,
+      bucket: { products: req.query.id, subtotal: product.price },
+      grandtotal: product.price,
+    });
+  } else {
+    let itemExists = await Cart.exists({ "bucket.products": req.query.id });
+    if (itemExists === null) {
+      let product = await Product.findById(req.query.id);
+      await Cart.updateOne(
+        { user: req.user._id },
+        {
+          $push: {
+            bucket: { products: req.query.id, subtotal: product.price },
+          },
+          $inc: {
+            grandtotal: product.price,
+          },
+        }
+      );
+    } else {
+      console.log("Item already in cart");
+    }
+  }
+};
+
+const getCartItemIncrement = async (req, res) => {
+  let product = await Product.findById(req.query.id);
+
+  await Cart.updateOne(
+    {
+      user: req.user._id,
+      "bucket.products": req.query.id,
+    },
+    {
+      $inc: {
+        "bucket.$.quantity": 1,
+        "bucket.$.subtotal": product.price,
+        grandtotal: product.price,
+      },
+    }
+  );
+
+  let cart = await Cart.findOne({
+    user: req.user._id,
+    "bucket.products": req.query.id,
+  });
+
+  let cartItem = cart.bucket.find((elm) => {
+    return elm.products.toString() === req.query.id;
+  });
+
+  res.json({
+    count: cartItem.quantity,
+    subtotal: cartItem.subtotal,
+    grandtotal: cart.grandtotal,
+  });
+};
+
+const getCartItemDecrement = async (req, res) => {
+  let product = await Product.findById(req.query.id);
+
+  await Cart.updateOne(
+    {
+      user: req.user._id,
+      "bucket.products": req.query.id,
+    },
+    {
+      $inc: {
+        "bucket.$.quantity": -1,
+        "bucket.$.subtotal": -product.price,
+        grandtotal: -product.price,
+      },
+    }
+  );
+
+  let cart = await Cart.findOne({
+    user: req.user._id,
+    "bucket.products": req.query.id,
+  });
+
+  let cartItem = cart.bucket.find((elm) => {
+    return elm.products.toString() === req.query.id;
+  });
+
+  res.json({
+    count: cartItem.quantity,
+    subtotal: cartItem.subtotal,
+    grandtotal: cart.grandtotal,
+  });
+};
+
+const getCartItemDelete = async (req, res) => {
+  let cart = await Cart.findOne({ user: req.user._id });
+  let cartItem = cart.bucket.find((elm) => {
+    return elm.products.toString() === req.query.id;
+  });
+  await Cart.updateOne(
+    {
+      user: req.user._id,
+    },
+    {
+      $pull: {
+        bucket: { products: req.query.id },
+      },
+      $inc: {
+        grandtotal: -cartItem.subtotal,
+      },
+    }
+  );
+
+  let cartAfter = await Cart.findOne({ user: req.user._id });
+
+  res.json({
+    grandtotal: cartAfter.grandtotal,
   });
 };
 
@@ -175,4 +317,8 @@ module.exports = {
   deleteLogout,
   getOtpVerify,
   postOtpVerify,
+  getAddToCart,
+  getCartItemIncrement,
+  getCartItemDecrement,
+  getCartItemDelete,
 };

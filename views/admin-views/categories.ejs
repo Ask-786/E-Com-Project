@@ -44,7 +44,7 @@
                                                         </td>
                                                         <td class="px-4 py-3 text-sm">
                                                             <button @click="openModal"
-                                                                onclick="showDetails( ['<%= categories[i].name %>','<%= categories[i].description %>','<%= categories[i].createdAt %>','<%= categories[i].updatedAt %>', ] )"
+                                                                onclick="showDetails( ['<%= categories[i].name %>','<%= categories[i].description %>','<%= categories[i].createdAt %>','<%= categories[i].updatedAt %>','<%= categories[i].image %> '] )"
                                                                 class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                                                                 Show
                                                             </button>
@@ -219,6 +219,8 @@
                         </p>
                         <p class="text-sm text-gray-700 dark:text-gray-400" id="model-sub-2">
                         </p>
+                        <br id="model-br">
+                        <img src="" id="model-image" alt="" style="max-height:200px;">
                     </div>
                     <footer class=" flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0
                             sm:space-x-6 sm:flex-row bg-gray-50 dark:bg-gray-800">
@@ -246,6 +248,8 @@
             document.getElementById('model-body').innerHTML = ob[1]
             document.getElementById('model-sub-1').innerHTML = `createdAt : ${ob[2]}`
             document.getElementById('model-sub-2').innerHTML = `updatedAt : ${ob[3]}`
+            document.getElementById('model-image').src = `/category-images/${ob[4]}`
+            console.log(array[4])
         }
     </script>
 </body>

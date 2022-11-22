@@ -20,13 +20,7 @@ const checkNotAuthenticated = (req, res, next) => {
   }
 };
 
-const checkIsBlocked = (req, res, next) => {
-  console.log(req.user);
-  next();
-};
-
 module.exports = {
   checkAuthenticated,
   checkNotAuthenticated,
-  checkIsBlocked,
 };

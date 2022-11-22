@@ -13,6 +13,10 @@ const {
   deleteLogout,
   getOtpVerify,
   postOtpVerify,
+  getAddToCart,
+  getCartItemIncrement,
+  getCartItemDecrement,
+  getCartItemDelete,
 } = require("../controllers/userController");
 
 const {
@@ -45,6 +49,18 @@ router
   .get(checkNotAuthenticated, getOtpVerify)
   .post(checkNotAuthenticated, postOtpVerify);
 
-router.route("/logout").delete(deleteLogout);
+router.route("/shop/addtocart").get(checkAuthenticated, getAddToCart);
+
+router
+  .route("/cart-item-increment")
+  .get(checkAuthenticated, getCartItemIncrement);
+
+router
+  .route("/cart-item-decrement")
+  .get(checkAuthenticated, getCartItemDecrement);
+
+router.route("/cart-item-delete").get(checkAuthenticated, getCartItemDelete);
+
+router.route("/logout").delete(checkAuthenticated, deleteLogout);
 
 module.exports = router;

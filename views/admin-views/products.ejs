@@ -68,7 +68,7 @@
                                                         </td>
                                                         <td class="px-4 py-3 text-sm">
                                                             <button @click="openModal"
-                                                                onclick="showDetails( ['<%= products[i].title %>','<%= products[i].description %>','<%= products[i].price %>','<%= products[i].size %>','<%= products[i].stock %>','<%= products[i].createdAt %>','<%= products[i].updatedAt %>', ] )"
+                                                                onclick="showDetails( ['<%= products[i].title %>','<%= products[i].description %>','<%= products[i].price %>','<%= products[i].size %>','<%= products[i].stock %>','<%= products[i].createdAt %>','<%= products[i].updatedAt %>','<%= products[i].images[0] %>','<%= products[i].images[1] %>','<%= products[i].images[2] %>','<%= products[i].images[3] %>' ] )"
                                                                 class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                                                                 Show
                                                             </button>
@@ -249,8 +249,14 @@
                         <p class="text-sm text-gray-700 dark:text-gray-400" id="model-sub-4">
                         </p>
                         <br id="model-br">
+                        <div style="display: flex;">
+                            <img src="" id="model-image-1" style="max-height: 200px; margin-right: 10px;" alt="">
+                            <img src="" id="model-image-2" style="max-height: 200px; margin-right: 10px;" alt="">
+                            <img src="" id="model-image-3" style="max-height: 200px; margin-right: 10px;" alt="">
+                            <img src="" id="model-image-4" style="max-height: 200px; margin-right: 10px;" alt="">
+                        </div>
+                        <br id="model-br">
                         <p class="mb-2 text-md font-semibold text-gray-700 dark:text-gray-300" id="model-price">
-
                         </p>
                     </div>
                     <footer class=" flex flex-col items-center justify-end px-6 py-3 -mx-6 -mb-4 space-y-4 sm:space-y-0
@@ -287,6 +293,10 @@
             document.getElementById('model-sub-3').innerHTML = `createdAt : ${ob[5]}`
             document.getElementById('model-sub-4').innerHTML = `updatedAt : ${ob[6]}`
             document.getElementById('model-price').innerHTML = `Price : ${ob[2]}`
+            document.getElementById('model-image-1').src = `/products-images/${ob[7]}`
+            document.getElementById('model-image-2').src = `/products-images/${ob[8]}`
+            document.getElementById('model-image-3').src = `/products-images/${ob[9]}`
+            document.getElementById('model-image-4').src = `/products-images/${ob[10]}`
         }
     </script>
 </body>
