@@ -1,30 +1,30 @@
 async function incrementButton(index, id, price) {
-  let response = await axios.get(`/cart-item-increment?id=${id}`);
   var result = document.getElementById(`sst${index}`);
-
-  document.getElementById(
-    `sub-total-per-item${index}`
-  ).innerHTML = `$ ${response.data.subtotal}`;
-
   var sst = result.value;
   if (!isNaN(sst)) {
+    let response = await axios.get(`/cart-item-increment?id=${id}`);
+    document.getElementById(
+      `sub-total-per-item${index}`
+    ).innerHTML = `$ ${response.data.subtotal}`;
+
     result.value = response.data.count;
+    changeTotalPrice(response.data.grandtotal);
   }
-  changeTotalPrice(response.data.grandtotal);
   return false;
 }
 
 async function decrementButton(index, id, price) {
-  var response = await axios.get(`/cart-item-decrement?id=${id}`);
   var result = document.getElementById(`sst${index}`);
-  document.getElementById(
-    `sub-total-per-item${index}`
-  ).innerHTML = `$ ${response.data.subtotal}`;
   var sst = result.value;
   if (!isNaN(sst) && sst > 1) {
+    var response = await axios.get(`/cart-item-decrement?id=${id}`);
+    document.getElementById(
+      `sub-total-per-item${index}`
+    ).innerHTML = `$ ${response.data.subtotal}`;
+
     result.value = response.data.count;
+    changeTotalPrice(response.data.grandtotal);
   }
-  changeTotalPrice(response.data.grandtotal);
   return false;
 }
 
