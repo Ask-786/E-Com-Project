@@ -20,7 +20,16 @@ const checkNotAuthenticated = (req, res, next) => {
   }
 };
 
+const checkAuthenticatedAxios = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    next();
+  } else {
+    res.json({ denied: true });
+  }
+};
+
 module.exports = {
   checkAuthenticated,
   checkNotAuthenticated,
+  checkAuthenticatedAxios,
 };

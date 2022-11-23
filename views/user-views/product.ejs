@@ -122,19 +122,11 @@
                                             </select>
                                         </div>
                                         <div class="quantity">
-                                            <div class="custom">
-                                                <button
-                                                    onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 1 ) result.value--;return false;"
-                                                    class="reduced items-count" type="button"><i
-                                                        class="icon_minus-06"></i></button>
-                                                <input type="text" name="qty" id="sst" maxlength="12" value="01"
-                                                    title="Quantity:" class="input-text qty">
-                                                <button
-                                                    onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-                                                    class="increase items-count" type="button"><i
-                                                        class="icon_plus"></i></button>
-                                            </div>
-                                            <a class="add_cart_btn" href="#">add to cart</a>
+                                            <button class="add_cart_btn"
+                                                onclick="addToFavorites('<%= product._id %>')">add to favirites</button>
+                                            <button class="add_cart_btn" onclick="addToCart('<%= product._id %>')">add
+                                                to
+                                                cart</button>
                                         </div>
                                         <div class="shareing_icon">
                                             <h5>share :</h5>
@@ -314,5 +306,5 @@
             </div>
         </div>
     </section>
-
+    <script src="/users/javascript/axios-shop.js"></script>
 </body>

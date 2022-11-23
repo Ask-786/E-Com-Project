@@ -61,8 +61,13 @@
                       <div class="l_p_text">
                         <ul>
                           <li class="p_icon"><a href="#"><i class="icon_piechart"></i></a></li>
-                          <li><a class="add_cart_btn" href="/shop/addtocart?id=<%= products[i]._id %>">Add To Cart</a>
+
+                          <li><button class="add_cart_btn" onclick="addToCart('<%= products[i]._id %>')"
+                              style="cursor: pointer;">Add To Cart</button>
                           </li>
+
+
+
                           <li class="p_icon"><a href="#"><i class="icon_heart_alt"></i></a></li>
                         </ul>
                         <h4>
@@ -194,5 +199,5 @@
       </div>
     </div>
   </section>
-
+  <script src="/users/javascript/axios-shop.js"></script>
 </body>

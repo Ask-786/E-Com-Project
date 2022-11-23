@@ -3,9 +3,11 @@ const User = require("../models/User");
 const Cart = require("../models/Cart");
 const Product = require("../models/Product");
 const Category = require("../models/Category");
+const Favorites = require("../models/Favorites");
 const querystring = require("querystring");
 const initializePassport = require("../config/passport-config");
 const { response } = require("express");
+const Favorite = require("../models/Favorites");
 const sendVerifyToken = require("../services/twilio").sendVerifyToken;
 const checkVerificationToken =
   require("../services/twilio").checkVerificationToken;
@@ -71,7 +73,7 @@ const getCart = async (req, res) => {
       path: "products",
     },
   });
-  if (cart !== null) {
+  if (cart !== null && cart.bucket.length > 0) {
     let total = 0;
     for (let i = 0; i < cart.bucket.length; i++) {
       total += cart.bucket[i].products.price * cart.bucket[i].quantity;
@@ -95,6 +97,7 @@ const getAddToCart = async (req, res) => {
       bucket: { products: req.query.id, subtotal: product.price },
       grandtotal: product.price,
     });
+    res.redirect("/cart");
   } else {
     let itemExists = await Cart.exists({ "bucket.products": req.query.id });
     if (itemExists === null) {
@@ -110,8 +113,9 @@ const getAddToCart = async (req, res) => {
           },
         }
       );
+      res.json({ alert: true });
     } else {
-      console.log("Item already in cart");
+      res.json({ alert: false });
     }
   }
 };
@@ -206,6 +210,54 @@ const getCartItemDelete = async (req, res) => {
   res.json({
     grandtotal: cartAfter.grandtotal,
   });
+};
+
+const getFavorites = async (req, res) => {
+  let favorites = await Favorites.findOne({ user: req.user._id }).populate(
+    "products"
+  );
+  if (favorites !== null && favorites.products.length > 0) {
+    res.render("user-views/favorites", { products: favorites.products });
+  } else {
+    res.render("user-views/empty-favorites");
+  }
+};
+
+const getAddToFavorites = async (req, res) => {
+  let favoritesExists = await Favorites.exists({ user: req.user._id });
+
+  if (favoritesExists === null) {
+    await Favorites.create({
+      user: req.user._id,
+      products: req.query.id,
+    });
+    res.json({ status: true });
+  } else {
+    let itemExists = await Favorites.exists({ products: req.query.id });
+    if (itemExists === null) {
+      await Favorites.updateOne(
+        { user: req.user._id },
+        { $push: { products: req.query.id } }
+      );
+      res.json({ status: true });
+    } else {
+      res.json({ status: false });
+    }
+  }
+};
+
+const getFavoriteItemDelete = async (req, res) => {
+  let favorites = await Favorites.findOne({ user: req.user._id });
+  let favoriteItem = favorites.products.find((elm) => {
+    return elm.toString() === req.query.id;
+  });
+  await Favorites.updateOne(
+    { user: req.user._id },
+    {
+      $pull: { products: favoriteItem },
+    }
+  );
+  res.json({ status: true });
 };
 
 const postSignUp = async (req, res) => {
@@ -321,4 +373,7 @@ module.exports = {
   getCartItemIncrement,
   getCartItemDecrement,
   getCartItemDelete,
+  getFavorites,
+  getAddToFavorites,
+  getFavoriteItemDelete,
 };

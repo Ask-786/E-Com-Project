@@ -7,8 +7,12 @@ async function incrementButton(index, id, price) {
       `sub-total-per-item${index}`
     ).innerHTML = `$ ${response.data.subtotal}`;
 
-    result.value = response.data.count;
-    changeTotalPrice(response.data.grandtotal);
+    if (response.data.denied) {
+      location.href = "/login";
+    } else {
+      result.value = response.data.count;
+      changeTotalPrice(response.data.grandtotal);
+    }
   }
   return false;
 }
@@ -22,13 +26,17 @@ async function decrementButton(index, id, price) {
       `sub-total-per-item${index}`
     ).innerHTML = `$ ${response.data.subtotal}`;
 
-    result.value = response.data.count;
-    changeTotalPrice(response.data.grandtotal);
+    if (response.data.denied) {
+      location.href = "/login";
+    } else {
+      result.value = response.data.count;
+      changeTotalPrice(response.data.grandtotal);
+    }
   }
   return false;
 }
 
-async function deleteButton(index, id) {
+async function deleteButton(id) {
   var response = await axios.get(`/cart-item-delete?id=${id}`);
   changeTotalPrice(response.data.grandtotal);
   location.href = "/cart";
