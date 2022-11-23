@@ -89,8 +89,16 @@ h6 {
   padding: 100px 0px;
 }
 
+.pt_100 {
+  padding-top: 100px;
+}
+
 .p_80 {
   padding: 80px 0px;
+}
+
+.pb_50 {
+  padding-bottom: 50px;
 }
 
 iframe {
@@ -2558,6 +2566,29 @@ i:before {
   color: #fff;
   background: transparent;
   color: #262121;
+}
+
+.forgot_pass_btn {
+  background: #ff0000;
+  color: #fff;
+  line-height: 38px;
+  border: 1px solid #ff0000;
+  display: inline-block;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+  padding: 0px 15px;
+  -webkit-transition: all 400ms linear 0s;
+  -o-transition: all 400ms linear 0s;
+  transition: all 400ms linear 0s;
+  font-family: "Poppins", sans-serif;
+}
+
+.forgot_pass_btn:hover {
+  color: #fff;
+  background: transparent;
+  color: #ff0000;
 }
 
 .discover_btn {
@@ -5032,6 +5063,185 @@ i:before {
   font-family: "Poppins", sans-serif;
   font-weight: normal;
   padding-bottom: 35px;
+}
+
+.user_details {
+  margin-bottom: -20px;
+}
+
+.user_details .billing_inner .form-group {
+  margin-bottom: 20px;
+}
+
+.user_details .billing_inner .form-group label {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  color: #666666;
+  font-weight: normal;
+  font-size: 14px;
+}
+
+.user_details .billing_inner .form-group label span {
+  color: #ff0000;
+}
+
+.user_details .billing_inner .form-group .bootstrap-select {
+  width: 100% !important;
+  border: 1px solid #cccccc;
+  height: 56px;
+}
+
+.user_details .billing_inner .form-group .bootstrap-select .dropdown-toggle {
+  padding: 0px 22px;
+  line-height: 56px;
+  background: transparent;
+  outline: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.user_details
+  .billing_inner
+  .form-group
+  .bootstrap-select
+  .dropdown-toggle
+  span {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+}
+
+.user_details
+  .billing_inner
+  .form-group
+  .bootstrap-select
+  .dropdown-toggle:after {
+  border-top-color: #666666;
+  margin: 0px;
+  position: relative;
+  right: 6px;
+}
+
+.user_details .billing_inner .form-group .bootstrap-select .dropdown-menu {
+  margin: 0px;
+  border-radius: 0px;
+}
+
+.user_details
+  .billing_inner
+  .form-group
+  .bootstrap-select
+  .dropdown-menu
+  .dropdown-menu.inner {
+  display: block;
+}
+
+.user_details
+  .billing_inner
+  .form-group
+  .bootstrap-select
+  .dropdown-menu
+  .dropdown-menu.inner
+  li
+  a {
+  padding: 0px 22px;
+  display: block;
+  line-height: 35px;
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+  -webkit-transition: all 400ms linear 0s;
+  -o-transition: all 400ms linear 0s;
+  transition: all 400ms linear 0s;
+}
+
+.user_details
+  .billing_inner
+  .form-group
+  .bootstrap-select
+  .dropdown-menu
+  .dropdown-menu.inner
+  li:hover
+  a {
+  color: #000;
+}
+
+.user_details .billing_inner .form-group input {
+  height: 56px;
+  border: 1px solid #cccccc;
+  border-radius: 0px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  outline: none;
+  padding: 0px 22px;
+}
+
+.user_details .billing_inner .form-group input.placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+}
+
+.user_details .billing_inner .form-group input:-moz-placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+}
+
+.user_details .billing_inner .form-group input::-moz-placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+}
+
+.user_details .billing_inner .form-group input::-webkit-input-placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+}
+
+.user_details .billing_inner .form-group input + input {
+  margin-top: 20px;
+}
+
+.user_details .billing_inner .form-group textarea {
+  height: 160px;
+  border: 1px solid #cccccc;
+  border-radius: 0px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  resize: none;
+  outline: none;
+  padding: 0px 22px;
+}
+
+.user_details .billing_inner .form-group textarea.placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+}
+
+.user_details .billing_inner .form-group textarea:-moz-placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+}
+
+.user_details .billing_inner .form-group textarea::-moz-placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+}
+
+.user_details .billing_inner .form-group textarea::-webkit-input-placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+}
+
+.user_details .billing_inner .form-group .creat_account input {
+  height: auto;
+  visibility: hidden;
 }
 
 .billing_details {

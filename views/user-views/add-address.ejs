@@ -1,0 +1,80 @@
+<body>
+  <section class="solid_banner_area">
+    <div class="container">
+      <div class="solid_banner_inner">
+        <h3>checkout register</h3>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="checkout.html">Checkout Register</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="register_area p_100">
+    <div class="container">
+      <div class="register_inner">
+        <div class="row">
+          <div class="col-lg-2"></div>
+          <div class="col-lg-8">
+            <div class="user_details">
+              <h2 class="reg_title">Add Address</h2>
+              <form class="billing_inner row" action="/userprofile/add-address" method="post">
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="fullname">Full Name <span>*</span></label>
+                    <input type="text" class="form-control" id="fullname" name="fullname" aria-describedby="fullname"
+                      placeholder="" required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="phone">Phone<span>*</span></label>
+                    <input type="number" class="form-control" id="phone" name="phone" aria-describedby="phone"
+                      placeholder="" required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="state">State<span>*</span></label>
+                    <input type="text" class="form-control" id="state" name="state" aria-describedby="state"
+                      placeholder="" required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="city">City<span>*</span></label>
+                    <input type="text" class="form-control" id="city" name="city" aria-describedby="city" placeholder=""
+                      required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="buildingName">Hose number / Building name<span>*</span></label>
+                    <input type="text" class="form-control" id="buildingName" name="buildingName"
+                      aria-describedby="buildingName" placeholder="" required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="area">Area<span>*</span></label>
+                    <input type="text" class="form-control" id="area" name="area" aria-describedby="area" placeholder=""
+                      required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="PIN">PIN Code<span>*</span></label>
+                    <input type="number" class="form-control" id="PIN" name="PIN" aria-describedby="PIN" placeholder=""
+                      required>
+                  </div>
+                  <button type="submit" class="add_cart_btn">Submit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>

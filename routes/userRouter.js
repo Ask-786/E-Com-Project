@@ -20,6 +20,10 @@ const {
   getFavorites,
   getAddToFavorites,
   getFavoriteItemDelete,
+  getUserProfile,
+  getAddAddress,
+  postAddAddress,
+  getDeleteAddress,
 } = require("../controllers/userController");
 
 const {
@@ -39,6 +43,17 @@ router
   .route("/signup")
   .get(checkNotAuthenticated, getSignUp)
   .post(checkNotAuthenticated, postSignUp);
+
+router.route("/userprofile").get(checkAuthenticated, getUserProfile);
+
+router
+  .route("/userprofile/add-address")
+  .get(checkAuthenticated, getAddAddress)
+  .post(checkAuthenticated, postAddAddress);
+
+router
+  .route("/userprofile/delete-address")
+  .get(checkAuthenticatedAxios, getDeleteAddress);
 
 router.route("/cart").get(checkAuthenticated, getCart);
 

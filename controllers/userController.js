@@ -1,5 +1,6 @@
 const passport = require("passport");
 const User = require("../models/User");
+const Address = require("../models/Address");
 const Cart = require("../models/Cart");
 const Product = require("../models/Product");
 const Category = require("../models/Category");
@@ -7,7 +8,6 @@ const Favorites = require("../models/Favorites");
 const querystring = require("querystring");
 const initializePassport = require("../config/passport-config");
 const { response } = require("express");
-const Favorite = require("../models/Favorites");
 const sendVerifyToken = require("../services/twilio").sendVerifyToken;
 const checkVerificationToken =
   require("../services/twilio").checkVerificationToken;
@@ -29,6 +29,37 @@ const getHome = async (req, res) => {
 
 const getLogin = (req, res) => {
   res.render("user-views/login");
+};
+
+const getUserProfile = async (req, res) => {
+  try {
+    let Addresses = await Address.findOne({ user: req.user._id });
+    res.render("user-views/profile", { user: req.user, address: Addresses });
+  } catch {
+    res.redirect("/home");
+  }
+};
+
+const getAddAddress = (req, res) => {
+  res.render("user-views/add-address");
+};
+
+const getDeleteAddress = async (req, res) => {
+  try {
+    await Address.updateOne(
+      { user: req.user._id },
+      {
+        $pull: {
+          Addressess: {
+            _id: req.query.id,
+          },
+        },
+      }
+    );
+    res.json({ status: true });
+  } catch {
+    res.json({ status: false });
+  }
 };
 
 const getOtpVerify = (req, res) => {
@@ -260,6 +291,25 @@ const getFavoriteItemDelete = async (req, res) => {
   res.json({ status: true });
 };
 
+const postAddAddress = async (req, res) => {
+  let addressExists = await Address.exists({ user: req.user._id });
+  if (addressExists === null) {
+    await Address.create({
+      user: req.user._id,
+      Addressess: req.body,
+    });
+    res.redirect("/userprofile");
+  } else {
+    await Address.updateOne(
+      { user: req.user._id },
+      {
+        $push: { Addressess: req.body },
+      }
+    );
+    res.redirect("/userprofile");
+  }
+};
+
 const postSignUp = async (req, res) => {
   try {
     const tempUser = await User.exists({
@@ -376,4 +426,8 @@ module.exports = {
   getFavorites,
   getAddToFavorites,
   getFavoriteItemDelete,
+  getUserProfile,
+  getAddAddress,
+  postAddAddress,
+  getDeleteAddress,
 };

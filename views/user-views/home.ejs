@@ -105,7 +105,7 @@
             <div class="hover_text">
               <h4>Special Offer</h4>
               <h5>Young Couple</h5>
-              <a class="shop_now_btn" href="#">Shop Now</a>
+              <a class="shop_now_btn" href="/shop">Shop Now</a>
             </div>
           </div>
         </div>
@@ -114,7 +114,7 @@
             <img class="img-fluid" src="/users/images/feature-add/special-offer-2.jpg" alt="">
             <div class="hover_text">
               <h5>girls bag</h5>
-              <a class="shop_now_btn" href="#">Shop Now</a>
+              <a class="shop_now_btn" href="/shop">Shop Now</a>
             </div>
           </div>
         </div>
@@ -147,11 +147,13 @@
                 </div>
                 <div class="l_p_text">
                   <ul>
-                    <li class="p_icon"><a href="#"><i class="icon_piechart"></i></a></li>
-                    <li><button class="add_cart_btn" onclick="addToCart('<%= product[i]._id %>')">Add To Cart</button>
+                    <li class="p_icon"><a style="cursor: pointer;"><i class="icon_piechart"
+                          style="cursor: pointer;"></i></a></li>
+                    <li><button class="add_cart_btn" onclick="addToCart('<%= product[i]._id %>')"
+                        style="cursor: pointer;">Add To Cart</button>
                     </li>
-                    <li class="p_icon"><a onclick="addToFavorites('<%= product[i]._id %>')"><i
-                          class="icon_heart_alt"></i></a></li>
+                    <li class="p_icon"><a onclick="addToFavorites('<%= product[i]._id %>')"><i class="icon_heart_alt"
+                          style="cursor: pointer;"></i></a></li>
                   </ul>
                   <h4>
                     <%= product[i].title %>
