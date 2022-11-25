@@ -2,7 +2,6 @@ const multer = require("multer");
 
 const productImageStorage = multer.diskStorage({
   destination: (req, file, callback) => {
-    console.log("hellopro");
     callback(null, "./public/products-images");
   },
   filename: (req, file, callback) => {

@@ -5,8 +5,6 @@ async function sayHello(id) {
   } else {
     if (response.data.status) {
       location.href = "/userprofile";
-    } else {
-      location.href = "/home";
     }
   }
 }

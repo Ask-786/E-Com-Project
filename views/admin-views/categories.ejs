@@ -237,19 +237,43 @@
             </div>
             <!-- End of modal backdrop -->
     </div>
-    <script>
-        function deleteAlert(array) {
-            document.getElementById('button-delete').href = `/admin/dash/categories/delete-category?id=${array[0]}`
-            document.getElementById('model-header').innerHTML = `Delete ${array[1]} ?`
-            document.getElementById('model-body').innerHTML = `Are You Sure?`
-        }
-        function showDetails(ob) {
-            document.getElementById('model-header').innerHTML = ob[0]
-            document.getElementById('model-body').innerHTML = ob[1]
-            document.getElementById('model-sub-1').innerHTML = `createdAt : ${ob[2]}`
-            document.getElementById('model-sub-2').innerHTML = `updatedAt : ${ob[3]}`
-            document.getElementById('model-image').src = `/category-images/${ob[4]}`
-            console.log(array[4])
-        }
-    </script>
+    <% if(message.length>0){ %>
+        <script>
+            display('<%= message %>')
+            function display(message) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener("mouseenter", Swal.stopTimer);
+                        toast.addEventListener("mouseleave", Swal.resumeTimer);
+                    },
+                });
+
+                Toast.fire({
+                    icon: "warning",
+                    title: message,
+                });
+            }
+        </script>
+        <% } %>
+            <script>
+                function deleteAlert(array) {
+                    document.getElementById('button-delete').href = `/admin/dash/categories/delete-category?id=${array[0]}`
+                    document.getElementById('model-header').innerHTML = `Delete ${array[1]} ?`
+                    document.getElementById('model-body').innerHTML = `Are You Sure?`
+                }
+                function showDetails(ob) {
+                    document.getElementById('model-header').innerHTML = ob[0]
+                    document.getElementById('model-body').innerHTML = ob[1]
+                    document.getElementById('model-sub-1').innerHTML = `createdAt : ${ob[2]}`
+                    document.getElementById('model-sub-2').innerHTML = `updatedAt : ${ob[3]}`
+                    document.getElementById('model-image').src = `/category-images/${ob[4]}`
+                    console.log(array[4])
+                }
+
+            </script>
 </body>

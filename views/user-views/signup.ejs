@@ -22,9 +22,9 @@
           <div class="col-lg-8">
             <div class="login_title">
               <h2>create account</h2>
-              <% if( errMessage) {%>
+              <% if( message.length>0) {%>
                 <p style="color: hsl(0, 100%, 44%);">
-                  <%= errMessage %>
+                  <%= message %>
                 </p>
                 <% }else{ %>
                   <p>Follow the steps below to create email account enjoy the great mail.com emailing experience.

@@ -47,8 +47,11 @@ const { error } = require("console");
 app.use("/admin", adminRouter);
 app.use("/", userRouter);
 
-// app.use((err, req, res, next) => {
-//   res.send("user-views/404");
-// });
+app.use((err, req, res, next) => {
+  res.render("user-views/404", {
+    layout: "./layouts/no-hea-foo-user-layout",
+    err,
+  });
+});
 
 app.listen(process.env.PORT);

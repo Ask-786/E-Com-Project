@@ -10,7 +10,6 @@
                                 All Users
                             </h2>
                             <% if(users.length>0){ %>
-
                                 <div class="w-full overflow-hidden rounded-lg shadow-xs">
                                     <div class="w-full overflow-x-auto">
                                         <table class="w-full whitespace-no-wrap">
@@ -111,7 +110,8 @@
                                                                 viewBox="0 0 20 20">
                                                                 <path
                                                                     d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                                                    clip-rule="evenodd" fill-rule="evenodd"></path>
+                                                                    clip-rule="evenodd" fill-rule="evenodd">
+                                                                </path>
                                                             </svg>
                                                         </button>
                                                     </li>
@@ -162,7 +162,8 @@
                                                                 viewBox="0 0 20 20">
                                                                 <path
                                                                     d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                                    clip-rule="evenodd" fill-rule="evenodd"></path>
+                                                                    clip-rule="evenodd" fill-rule="evenodd">
+                                                                </path>
                                                             </svg>
                                                         </button>
                                                     </li>
@@ -258,39 +259,66 @@
                 </div>
             </div>
             <!-- End of modal backdrop -->
-    </div>
-    <script>
-        function blockAlert(array) {
-            document.getElementById('button-delete').href = `/admin/dash/users/block-user?id=${array[0]} `
-            document.getElementById('model-header').innerHTML = `Block ${array[1]} ?`
-            document.getElementById('model-body').innerHTML = `Are You Sure?`
-            document.getElementById('model-br').style.display = 'none'
-        }
-        function unblockAlert(array) {
-            document.getElementById('button-delete').href = `/admin/dash/users/unblock-user?id=${array[0]} `
-            document.getElementById('model-header').innerHTML = `Unblock ${array[1]} ?`
-            document.getElementById('model-body').innerHTML = `Are You Sure?`
-        }
-        function showDetails(user) {
-            if (user[4] === "true") {
-                var access = "Unblocked"
-            } else {
-                var access = "Blocked"
-            }
-            if (user[5] === "true") {
-                var role = "Admin"
-            } else {
-                var role = "User"
-            }
 
-            document.getElementById('model-header').innerHTML = user[0]
-            document.getElementById('model-body').innerHTML = `Username:  ${user[1]}`
-            document.getElementById('model-sub-1').innerHTML = `Email : ${user[2]}`
-            document.getElementById('model-sub-2').innerHTML = `Phone : ${user[3]}`
-            document.getElementById('model-sub-4').innerHTML = `createdAt : ${user[6]}`
-            document.getElementById('model-sub-5').innerHTML = `updatedAt : ${user[7]}`
-            document.getElementById('model-sub-3').innerHTML = `Blocked or Unblocked : ${access}`
-            document.getElementById('model-price').innerHTML = `Role : ${role}`
-        }
-    </script>
+    </div>
+
+    <% if(message.length>0){ %>
+        <script>
+            display('<%= message %>')
+            function display(message) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener("mouseenter", Swal.stopTimer);
+                        toast.addEventListener("mouseleave", Swal.resumeTimer);
+                    },
+                });
+
+                Toast.fire({
+                    icon: "success",
+                    title: message,
+                });
+            }
+        </script>
+        <% } %>
+            <script>
+                function blockAlert(array) {
+                    document.getElementById('button-delete').href = `/admin/dash/users/block-user?id=${array[0]} `
+                    document.getElementById('model-header').innerHTML = `Block ${array[1]} ?`
+                    document.getElementById('model-body').innerHTML = `Are You Sure?`
+                    document.getElementById('model-br').style.display = 'none'
+                }
+                function unblockAlert(array) {
+                    document.getElementById('button-delete').href = `/admin/dash/users/unblock-user?id=${array[0]} `
+                    document.getElementById('model-header').innerHTML = `Unblock ${array[1]} ?`
+                    document.getElementById('model-body').innerHTML = `Are You Sure?`
+                }
+                function showDetails(user) {
+                    if (user[4] === "true") {
+                        var access = "Unblocked"
+                    } else {
+                        var access = "Blocked"
+                    }
+                    if (user[5] === "true") {
+                        var role = "Admin"
+                    } else {
+                        var role = "User"
+                    }
+
+                    document.getElementById('model-header').innerHTML = user[0]
+                    document.getElementById('model-body').innerHTML = `Username:  ${user[1]}`
+                    document.getElementById('model-sub-1').innerHTML = `Email : ${user[2]}`
+                    document.getElementById('model-sub-2').innerHTML = `Phone : ${user[3]}`
+                    document.getElementById('model-sub-4').innerHTML = `createdAt : ${user[6]}`
+                    document.getElementById('model-sub-5').innerHTML = `updatedAt : ${user[7]}`
+                    document.getElementById('model-sub-3').innerHTML = `Blocked or Unblocked : ${access}`
+                    document.getElementById('model-price').innerHTML = `Role : ${role}`
+                }
+
+
+            </script>
 </body>

@@ -70,12 +70,14 @@ const getCategories = async (req, res) => {
   res.render("admin-views/categories", {
     layout: "./layouts/admin-layout",
     categories,
+    message: req.flash("message"),
   });
 };
 
 const getAddCategory = (req, res) => {
   res.render("admin-views/add-category", {
     layout: "./layouts/admin-layout",
+    message: req.flash("message"),
   });
 };
 
@@ -83,22 +85,30 @@ const getDeleteCategory = async (req, res) => {
   let check = await Products.exists({ category: req.query.id });
   if (check === null) {
     const preCategory = await Category.findOne({ _id: req.query.id });
-    console.log(preCategory);
     await Category.deleteOne({ _id: req.query.id });
     deleteCategoryImage(preCategory.image).then((val) => {
+      req.flash("message", "Category Deleted Successfully");
       res.redirect("/admin/dash/categories");
     });
   } else {
+    req.flash(
+      "message",
+      "Category Can't be Deleted Because it's already in use!"
+    );
     res.redirect("/admin/dash/categories");
   }
 };
 
-const getEditCategory = async (req, res) => {
-  const category = await Category.findById(req.query.id);
-  res.render("admin-views/edit-category", {
-    layout: "./layouts/admin-layout",
-    category,
-  });
+const getEditCategory = async (req, res, next) => {
+  try {
+    const category = await Category.findById(req.query.id);
+    res.render("admin-views/edit-category", {
+      layout: "./layouts/admin-layout",
+      category,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const getUsers = async (req, res) => {
@@ -106,18 +116,21 @@ const getUsers = async (req, res) => {
   res.render("admin-views/users", {
     layout: "./layouts/admin-layout",
     users,
+    message: req.flash("message"),
   });
 };
 
 const getBlockUser = async (req, res) => {
   console.log(req.query.id);
   await User.updateOne({ _id: req.query.id }, { access: false });
+  req.flash("message", "User Blocked successfully");
   res.redirect("/admin/dash/users");
 };
 
 const getUnblockUser = async (req, res) => {
   console.log(req.query.id);
   await User.updateOne({ _id: req.query.id }, { access: true });
+  req.flash("message", "User Unblocked successfully");
   res.redirect("/admin/dash/users");
 };
 
@@ -225,13 +238,29 @@ const postLogin = passport.authenticate("local", {
   failureFlash: true,
 });
 
-const postAddCategory = async (req, res) => {
-  await Category.create({
-    name: req.body.name,
-    description: req.body.description,
-    image: req.file.filename,
-  });
-  res.redirect("/admin/dash/add-category");
+const postAddCategory = async (req, res, next) => {
+  try {
+    let name = req.body.name;
+    let description = req.body.description;
+
+    let capitalize = (elm) => elm[0].toUpperCase() + elm.slice(1).toLowerCase();
+
+    let nameWords = name.split(" ").map(capitalize);
+    let descriptionWords = description.split(" ").map(capitalize);
+
+    let validatedName = nameWords.join(" ");
+    let validatedDescription = descriptionWords.join(" ");
+
+    await Category.create({
+      name: validatedName,
+      description: validatedDescription,
+      image: req.file.filename,
+    });
+    req.flash("message", "Category Added Successfully");
+    res.redirect("/admin/dash/add-category");
+  } catch (err) {
+    next(err);
+  }
 };
 
 const postEditCategory = async (req, res) => {
@@ -246,11 +275,12 @@ const postEditCategory = async (req, res) => {
       }
     );
     deleteCategoryImage(preCategory.image).then((val) => {
+      req.flash("message", "Category Updated Successfully");
       res.redirect("/admin/dash/categories");
     });
-    res.redirect("/admin/dash/categories");
   } else {
     await Category.updateOne({ _id: req.query.id }, req.body);
+    req.flash("message", "Category Updated Successfully");
     res.redirect("/admin/dash/categories");
   }
 };

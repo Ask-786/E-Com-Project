@@ -8,6 +8,7 @@ const Favorites = require("../models/Favorites");
 const querystring = require("querystring");
 const initializePassport = require("../config/passport-config");
 const { response } = require("express");
+const { error } = require("console");
 const sendVerifyToken = require("../services/twilio").sendVerifyToken;
 const checkVerificationToken =
   require("../services/twilio").checkVerificationToken;
@@ -57,8 +58,8 @@ const getDeleteAddress = async (req, res) => {
       }
     );
     res.json({ status: true });
-  } catch {
-    res.json({ status: false });
+  } catch (err) {
+    console.log(err.message);
   }
 };
 
@@ -67,14 +68,7 @@ const getOtpVerify = (req, res) => {
 };
 
 const getSignUp = (req, res) => {
-  console.log(req.query.errMessage);
-  if (req.query) {
-    res.render("user-views/signup", {
-      errMessage: req.query.errMessage,
-    });
-  } else {
-    res.render("user-views/signup");
-  }
+  res.render("user-views/signup", { message: req.flash("message") });
 };
 
 const getContact = (req, res) => {
@@ -82,231 +76,275 @@ const getContact = (req, res) => {
 };
 
 const getShop = async (req, res) => {
-  const category = await Category.find({});
-  const products = await Product.find({}).populate("category").limit(20);
-  res.render("user-views/shop", {
-    products,
-    category,
-  });
+  try {
+    const category = await Category.find({});
+    const products = await Product.find({}).populate("category").limit(20);
+    res.render("user-views/shop", {
+      products,
+      category,
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
 };
 
-const getProduct = async (req, res) => {
-  const product = await Product.findById(req.query.id);
-  res.render("user-views/product", {
-    product,
-  });
+const getProduct = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.query.id);
+    res.render("user-views/product", {
+      product,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const getCart = async (req, res) => {
-  let cart = await Cart.findOne({ user: req.user._id }).populate({
-    path: "bucket",
-    populate: {
-      path: "products",
-    },
-  });
-  if (cart !== null && cart.bucket.length > 0) {
-    let total = 0;
-    for (let i = 0; i < cart.bucket.length; i++) {
-      total += cart.bucket[i].products.price * cart.bucket[i].quantity;
-    }
-    res.render("user-views/cart", {
-      cart,
-      total,
+  try {
+    let cart = await Cart.findOne({ user: req.user._id }).populate({
+      path: "bucket",
+      populate: {
+        path: "products",
+      },
     });
-  } else {
-    res.render("user-views/empty-cart");
+    if (cart !== null && cart.bucket.length > 0) {
+      let total = 0;
+      for (let i = 0; i < cart.bucket.length; i++) {
+        total += cart.bucket[i].products.price * cart.bucket[i].quantity;
+      }
+      res.render("user-views/cart", {
+        cart,
+        total,
+      });
+    } else {
+      res.render("user-views/empty-cart");
+    }
+  } catch (err) {
+    console.log(err.message);
   }
 };
 
 const getAddToCart = async (req, res) => {
-  let cartExists = await Cart.exists({ user: req.user._id });
-  let product = await Product.findById(req.query.id);
-  console.log(product);
-  if (cartExists === null) {
-    await Cart.create({
-      user: req.user._id,
-      bucket: { products: req.query.id, subtotal: product.price },
-      grandtotal: product.price,
-    });
-    res.redirect("/cart");
-  } else {
-    let itemExists = await Cart.exists({ "bucket.products": req.query.id });
-    if (itemExists === null) {
-      let product = await Product.findById(req.query.id);
-      await Cart.updateOne(
-        { user: req.user._id },
-        {
-          $push: {
-            bucket: { products: req.query.id, subtotal: product.price },
-          },
-          $inc: {
-            grandtotal: product.price,
-          },
-        }
-      );
+  try {
+    let cartExists = await Cart.exists({ user: req.user._id });
+    let product = await Product.findById(req.query.id);
+    if (cartExists === null) {
+      await Cart.create({
+        user: req.user._id,
+        bucket: { products: req.query.id, subtotal: product.price },
+        grandtotal: product.price,
+      });
       res.json({ alert: true });
     } else {
-      res.json({ alert: false });
+      let itemExists = await Cart.exists({
+        user: req.user._id,
+        "bucket.products": req.query.id,
+      });
+      if (itemExists === null) {
+        let product = await Product.findById(req.query.id);
+        await Cart.updateOne(
+          { user: req.user._id },
+          {
+            $push: {
+              bucket: { products: req.query.id, subtotal: product.price },
+            },
+            $inc: {
+              grandtotal: product.price,
+            },
+          }
+        );
+        res.json({ alert: true });
+      } else {
+        res.json({ alert: false });
+      }
     }
+  } catch (err) {
+    console.log(err.message);
   }
 };
 
 const getCartItemIncrement = async (req, res) => {
-  let product = await Product.findById(req.query.id);
+  try {
+    let product = await Product.findById(req.query.id);
+    await Cart.updateOne(
+      {
+        user: req.user._id,
+        "bucket.products": req.query.id,
+      },
+      {
+        $inc: {
+          "bucket.$.quantity": 1,
+          "bucket.$.subtotal": product.price,
+          grandtotal: product.price,
+        },
+      }
+    );
 
-  await Cart.updateOne(
-    {
+    let cart = await Cart.findOne({
       user: req.user._id,
       "bucket.products": req.query.id,
-    },
-    {
-      $inc: {
-        "bucket.$.quantity": 1,
-        "bucket.$.subtotal": product.price,
-        grandtotal: product.price,
-      },
-    }
-  );
+    });
 
-  let cart = await Cart.findOne({
-    user: req.user._id,
-    "bucket.products": req.query.id,
-  });
+    let cartItem = cart.bucket.find((elm) => {
+      return elm.products.toString() === req.query.id;
+    });
 
-  let cartItem = cart.bucket.find((elm) => {
-    return elm.products.toString() === req.query.id;
-  });
-
-  res.json({
-    count: cartItem.quantity,
-    subtotal: cartItem.subtotal,
-    grandtotal: cart.grandtotal,
-  });
+    res.json({
+      count: cartItem.quantity,
+      subtotal: cartItem.subtotal,
+      grandtotal: cart.grandtotal,
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
 };
 
 const getCartItemDecrement = async (req, res) => {
-  let product = await Product.findById(req.query.id);
+  try {
+    let product = await Product.findById(req.query.id);
+    await Cart.updateOne(
+      {
+        user: req.user._id,
+        "bucket.products": req.query.id,
+      },
+      {
+        $inc: {
+          "bucket.$.quantity": -1,
+          "bucket.$.subtotal": -product.price,
+          grandtotal: -product.price,
+        },
+      }
+    );
 
-  await Cart.updateOne(
-    {
+    let cart = await Cart.findOne({
       user: req.user._id,
       "bucket.products": req.query.id,
-    },
-    {
-      $inc: {
-        "bucket.$.quantity": -1,
-        "bucket.$.subtotal": -product.price,
-        grandtotal: -product.price,
-      },
-    }
-  );
+    });
 
-  let cart = await Cart.findOne({
-    user: req.user._id,
-    "bucket.products": req.query.id,
-  });
+    let cartItem = cart.bucket.find((elm) => {
+      return elm.products.toString() === req.query.id;
+    });
 
-  let cartItem = cart.bucket.find((elm) => {
-    return elm.products.toString() === req.query.id;
-  });
-
-  res.json({
-    count: cartItem.quantity,
-    subtotal: cartItem.subtotal,
-    grandtotal: cart.grandtotal,
-  });
+    res.json({
+      count: cartItem.quantity,
+      subtotal: cartItem.subtotal,
+      grandtotal: cart.grandtotal,
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
 };
 
 const getCartItemDelete = async (req, res) => {
-  let cart = await Cart.findOne({ user: req.user._id });
-  let cartItem = cart.bucket.find((elm) => {
-    return elm.products.toString() === req.query.id;
-  });
-  await Cart.updateOne(
-    {
-      user: req.user._id,
-    },
-    {
-      $pull: {
-        bucket: { products: req.query.id },
+  try {
+    let cart = await Cart.findOne({ user: req.user._id });
+    let cartItem = cart.bucket.find((elm) => {
+      return elm.products.toString() === req.query.id;
+    });
+    await Cart.updateOne(
+      {
+        user: req.user._id,
       },
-      $inc: {
-        grandtotal: -cartItem.subtotal,
-      },
-    }
-  );
+      {
+        $pull: {
+          bucket: { products: req.query.id },
+        },
+        $inc: {
+          grandtotal: -cartItem.subtotal,
+        },
+      }
+    );
 
-  let cartAfter = await Cart.findOne({ user: req.user._id });
+    let cartAfter = await Cart.findOne({ user: req.user._id });
 
-  res.json({
-    grandtotal: cartAfter.grandtotal,
-  });
+    res.json({
+      grandtotal: cartAfter.grandtotal,
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
 };
 
 const getFavorites = async (req, res) => {
-  let favorites = await Favorites.findOne({ user: req.user._id }).populate(
-    "products"
-  );
-  if (favorites !== null && favorites.products.length > 0) {
-    res.render("user-views/favorites", { products: favorites.products });
-  } else {
-    res.render("user-views/empty-favorites");
+  try {
+    let favorites = await Favorites.findOne({ user: req.user._id }).populate(
+      "products"
+    );
+    if (favorites !== null && favorites.products.length > 0) {
+      res.render("user-views/favorites", { products: favorites.products });
+    } else {
+      res.render("user-views/empty-favorites");
+    }
+  } catch (err) {
+    console.log(err.message);
   }
 };
 
 const getAddToFavorites = async (req, res) => {
-  let favoritesExists = await Favorites.exists({ user: req.user._id });
+  try {
+    let favoritesExists = await Favorites.exists({ user: req.user._id });
 
-  if (favoritesExists === null) {
-    await Favorites.create({
-      user: req.user._id,
-      products: req.query.id,
-    });
-    res.json({ status: true });
-  } else {
-    let itemExists = await Favorites.exists({ products: req.query.id });
-    if (itemExists === null) {
-      await Favorites.updateOne(
-        { user: req.user._id },
-        { $push: { products: req.query.id } }
-      );
+    if (favoritesExists === null) {
+      await Favorites.create({
+        user: req.user._id,
+        products: req.query.id,
+      });
       res.json({ status: true });
     } else {
-      res.json({ status: false });
+      let itemExists = await Favorites.exists({ products: req.query.id });
+      if (itemExists === null) {
+        await Favorites.updateOne(
+          { user: req.user._id },
+          { $push: { products: req.query.id } }
+        );
+        res.json({ status: true });
+      } else {
+        res.json({ status: false });
+      }
     }
+  } catch (err) {
+    console.log(err.message);
   }
 };
 
 const getFavoriteItemDelete = async (req, res) => {
-  let favorites = await Favorites.findOne({ user: req.user._id });
-  let favoriteItem = favorites.products.find((elm) => {
-    return elm.toString() === req.query.id;
-  });
-  await Favorites.updateOne(
-    { user: req.user._id },
-    {
-      $pull: { products: favoriteItem },
-    }
-  );
-  res.json({ status: true });
+  try {
+    let favorites = await Favorites.findOne({ user: req.user._id });
+    let favoriteItem = favorites.products.find((elm) => {
+      return elm.toString() === req.query.id;
+    });
+    await Favorites.updateOne(
+      { user: req.user._id },
+      {
+        $pull: { products: favoriteItem },
+      }
+    );
+    res.json({ status: true });
+  } catch (err) {
+    console.log(err.message);
+  }
 };
 
 const postAddAddress = async (req, res) => {
-  let addressExists = await Address.exists({ user: req.user._id });
-  if (addressExists === null) {
-    await Address.create({
-      user: req.user._id,
-      Addressess: req.body,
-    });
-    res.redirect("/userprofile");
-  } else {
-    await Address.updateOne(
-      { user: req.user._id },
-      {
-        $push: { Addressess: req.body },
-      }
-    );
-    res.redirect("/userprofile");
+  try {
+    let addressExists = await Address.exists({ user: req.user._id });
+    if (addressExists === null) {
+      await Address.create({
+        user: req.user._id,
+        Addressess: req.body,
+      });
+      res.redirect("/userprofile");
+    } else {
+      await Address.updateOne(
+        { user: req.user._id },
+        {
+          $push: { Addressess: req.body },
+        }
+      );
+      res.redirect("/userprofile");
+    }
+  } catch (err) {
+    console.log(err.message);
   }
 };
 
@@ -325,17 +363,15 @@ const postSignUp = async (req, res) => {
         res.redirect("/otp-verify");
       });
     } else {
-      const query = querystring.stringify({
-        errMessage:
-          "User Already Exists (Username, Email or Phone is Already Registered)",
-      });
-      res.redirect("/signup?" + query);
+      req.flash(
+        "message",
+        "User Already Exists (Username, Email or Phone is Already Registered)"
+      );
+      res.redirect("/signup");
     }
   } catch (err) {
-    const query = querystring.stringify({
-      errMessage: err.message,
-    });
-    res.redirect("/signup?" + query);
+    req.flash("message", "Something went wrong");
+    res.redirect("/signup");
   }
 };
 
@@ -346,24 +382,28 @@ const postLogin = passport.authenticate("local", {
 });
 
 const postOtpVerify = (req, res) => {
-  checkVerificationToken(req.session.temp.phone, req.body.otp).then(
-    (status) => {
-      if (status === "approved") {
-        User.create(req.session.temp).then(() => {
+  try {
+    checkVerificationToken(req.session.temp.phone, req.body.otp).then(
+      (status) => {
+        if (status === "approved") {
+          User.create(req.session.temp).then(() => {
+            req.logOut((err) => {
+              res.redirect("/login");
+            });
+          });
+        } else {
           req.logOut((err) => {
-            res.redirect("/login");
+            const query = querystring.stringify({
+              errMessage: "Wrong OTP",
+            });
+            res.redirect("/signup");
           });
-        });
-      } else {
-        req.logOut((err) => {
-          const query = querystring.stringify({
-            errMessage: "Wrong OTP",
-          });
-          res.redirect("/signup");
-        });
+        }
       }
-    }
-  );
+    );
+  } catch (err) {
+    console.log(err.message);
+  }
 };
 
 // const postLogin = (req, res) => {
