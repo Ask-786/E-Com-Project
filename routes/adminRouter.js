@@ -1,5 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const User = require("../models/User");
+const Product = require("../models/Product");
+const {
+  productsPaginatedResults,
+  usersPaginatedResults,
+} = require("../utils/pagination");
 const { uploadCategoryImg, uploadProductImgs } = require("../config/multer");
 const {
   getLogin,
@@ -35,7 +41,9 @@ router
 
 router.route("/dash").get(checkAuthenticated, getDashboard);
 
-router.route("/dash/products").get(checkAuthenticated, getProducts);
+router
+  .route("/dash/products")
+  .get(checkAuthenticated, productsPaginatedResults(Product), getProducts);
 
 router
   .route("/dash/add-product")
@@ -73,7 +81,9 @@ router
   .route("/dash/users/unblock-user")
   .get(checkAuthenticated, getUnblockUser);
 
-router.route("/dash/users").get(checkAuthenticated, getUsers);
+router
+  .route("/dash/users")
+  .get(checkAuthenticated, usersPaginatedResults(User), getUsers);
 
 router.route("/adlogout").delete(deleteLogout);
 

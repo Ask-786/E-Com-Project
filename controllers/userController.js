@@ -101,7 +101,10 @@ const getProduct = async (req, res, next) => {
 
 const getCart = async (req, res) => {
   try {
-    let cart = await Cart.findOne({ user: req.user._id }).populate({
+    let cart = await Cart.findOne({
+      user: req.user._id,
+      isexpired: false,
+    }).populate({
       path: "bucket",
       populate: {
         path: "products",
@@ -126,7 +129,10 @@ const getCart = async (req, res) => {
 
 const getAddToCart = async (req, res) => {
   try {
-    let cartExists = await Cart.exists({ user: req.user._id });
+    let cartExists = await Cart.findOne({
+      user: req.user._id,
+      isexpired: false,
+    });
     let product = await Product.findById(req.query.id);
     if (cartExists === null) {
       await Cart.create({
@@ -235,7 +241,7 @@ const getCartItemDecrement = async (req, res) => {
   }
 };
 
-const getCartItemDelete = async (req, res) => {
+const getCartItemDelete = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({ user: req.user._id });
     let cartItem = cart.bucket.find((elm) => {
@@ -259,9 +265,12 @@ const getCartItemDelete = async (req, res) => {
 
     res.json({
       grandtotal: cartAfter.grandtotal,
+      status: true,
     });
   } catch (err) {
-    console.log(err.message);
+    res.json({
+      status: false,
+    });
   }
 };
 

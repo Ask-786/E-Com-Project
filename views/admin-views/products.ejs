@@ -9,7 +9,7 @@
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
                                 All Products
                             </h2>
-                            <% if(products.length>0){ %>
+                            <% if(products.results.length>0){ %>
 
                                 <div class="w-full overflow-hidden rounded-lg shadow-xs">
                                     <div class="w-full overflow-x-auto">
@@ -28,7 +28,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                                                <% for(var i=0;i<products.length;i++){ %>
+                                                <% for(var i=0;i<products.results.length;i++){ %>
                                                     <tr class="text-gray-700 dark:text-gray-400">
                                                         <td class="px-4 py-3">
                                                             <div class="flex items-center text-sm">
@@ -45,7 +45,7 @@
                                                                     <p class="font-semibold" style="overflow: hidden;
                                                                 white-space: nowrap;
                                                                 text-overflow: ellipsis; max-width:20em;">
-                                                                        <%= products[i].title %>
+                                                                        <%= products.results[i].title %>
                                                                     </p>
                                                                     <p class="text-xs text-gray-600 dark:text-gray-400">
                                                                         10x Developer
@@ -54,21 +54,21 @@
                                                             </div>
                                                         </td>
                                                         <td class="px-4 py-3 text-sm">
-                                                            ₹ <%= products[i].price %>
+                                                            ₹ <%= products.results[i].price %>
                                                         </td>
                                                         <td class="px-4 py-3 text-sm">
-                                                            <%= products[i].category.name %>
+                                                            <%= products.results[i].category.name %>
                                                         </td>
                                                         <td class="px-4 py-3 text-xs">
-                                                            <%= products[i].stock %>
+                                                            <%= products.results[i].stock %>
 
                                                         </td>
                                                         <td class="px-4 py-3 text-sm">
-                                                            <%= products[i].size %>
+                                                            <%= products.results[i].size %>
                                                         </td>
                                                         <td class="px-4 py-3 text-sm">
                                                             <button @click="openModal"
-                                                                onclick="showDetails( ['<%= products[i].title %>','<%= products[i].description %>','<%= products[i].price %>','<%= products[i].size %>','<%= products[i].stock %>','<%= products[i].createdAt %>','<%= products[i].updatedAt %>','<%= products[i].images[0] %>','<%= products[i].images[1] %>','<%= products[i].images[2] %>','<%= products[i].images[3] %>' ] )"
+                                                                onclick="showDetails( ['<%= products.results[i].title %>','<%= products.results[i].description %>','<%= products.results[i].price %>','<%= products.results[i].size %>','<%= products.results[i].stock %>','<%= products.results[i].createdAt %>','<%= products.results[i].updatedAt %>','<%= products.results[i].images[0] %>','<%= products.results[i].images[1] %>','<%= products.results[i].images[2] %>','<%= products.results[i].images[3] %>' ] )"
                                                                 class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                                                                 Show
                                                             </button>
@@ -77,7 +77,7 @@
                                                             <span
                                                                 class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
                                                                 <a
-                                                                    href="/admin/dash/products/edit-product?id=<%= products[i]._id %>"><i
+                                                                    href="/admin/dash/products/edit-product?id=<%= products.results[i]._id %>&page=<%= products.current.page %>&limit=<%= products.current.limit %>"><i
                                                                         class="fa-solid fa-pen-to-square"></i></a>
                                                             </span>
 
@@ -86,12 +86,10 @@
                                                             <span
                                                                 class="px-2 py-1 font-semibold leading-tight text-green-700 bg-red-100 rounded-full dark:bg-red-700 dark:text-green-100">
                                                                 <button
-                                                                    onclick="deleteAlert(['<%= products[i]._id %>','<%= products[i].title %>'])"
+                                                                    onclick="deleteAlert(['<%= products.results[i]._id %>','<%= products.results[i].title %>'])"
                                                                     @click="openModal"><i
                                                                         class="fa-solid fa-trash"></i></button>
                                                             </span>
-
-
                                                         </td>
                                                     </tr>
                                                     <% } %>
@@ -101,76 +99,47 @@
                                     <div
                                         class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
                                         <span class="flex items-center col-span-3">
-                                            Showing <%= products.length %> of <%= products.length %>
+                                            Showing <%= products.results.length %> of <%= products.totalLength %>
                                         </span>
                                         <span class="col-span-2"></span>
                                         <!-- Pagination -->
                                         <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
                                             <nav aria-label="Table navigation">
                                                 <ul class="inline-flex items-center">
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple"
-                                                            aria-label="Previous">
-                                                            <svg aria-hidden="true" class="w-4 h-4 fill-current"
-                                                                viewBox="0 0 20 20">
-                                                                <path
-                                                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                                                    clip-rule="evenodd" fill-rule="evenodd"></path>
-                                                            </svg>
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            1
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            2
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            3
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            4
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <span class="px-3 py-1">...</span>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            8
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            9
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple"
-                                                            aria-label="Next">
-                                                            <svg class="w-4 h-4 fill-current" aria-hidden="true"
-                                                                viewBox="0 0 20 20">
-                                                                <path
-                                                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                                    clip-rule="evenodd" fill-rule="evenodd"></path>
-                                                            </svg>
-                                                        </button>
-                                                    </li>
+                                                    <% if (products.previous) { %>
+                                                        <li>
+                                                            <a href="/admin/dash/products?page=<%= products.previous.page %> &limit=<%= products.previous.limit %> "
+                                                                aria-label="Previous">
+                                                                <svg aria-hidden="true" class="w-4 h-4 fill-current"
+                                                                    viewBox="0 0 20 20">
+                                                                    <path
+                                                                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                                                        clip-rule="evenodd" fill-rule="evenodd">
+                                                                    </path>
+                                                                </svg>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+                                                            <li>
+                                                                <button
+                                                                    class="px-3 py-1 text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600 rounded-md focus:outline-none focus:shadow-outline-purple">
+                                                                    <%= products.current.page %>
+                                                                </button>
+                                                            </li>
+                                                            <% if (products.next) { %>
+                                                                <li>
+                                                                    <a href="/admin/dash/products?page=<%= products.next.page %> &limit=<%= products.next.limit %> "
+                                                                        aria-label="Next">
+                                                                        <svg class="w-4 h-4 fill-current"
+                                                                            aria-hidden="true" viewBox="0 0 20 20">
+                                                                            <path
+                                                                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                                                                clip-rule="evenodd" fill-rule="evenodd">
+                                                                            </path>
+                                                                        </svg>
+                                                                    </a>
+                                                                </li>
+                                                                <% } %>
                                                 </ul>
                                             </nav>
                                         </span>
@@ -187,7 +156,7 @@
                                             </svg>
                                             <br>
                                             <p class="text-gray-700 dark:text-gray-300">
-                                                No Products found. Add a category
+                                                No Products found. Add a Product
                                                 <a class="text-purple-600 hover:underline dark:text-purple-300"
                                                     href="/admin/dash/add-product">
                                                     here
@@ -272,31 +241,27 @@
                     </footer>
                 </div>
             </div>
-            <!-- End of modal backdrop -->
+            <% if (message.length>0) { %>
+                <script>
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener("mouseenter", Swal.stopTimer);
+                            toast.addEventListener("mouseleave", Swal.resumeTimer);
+                        },
+                    });
+
+                    Toast.fire({
+                        icon: "success",
+                        title: message,
+                    });
+                </script>
+                <% } %>
+                    <!-- End of modal backdrop -->
     </div>
-    <script>
-        function deleteAlert(array) {
-            document.getElementById('button-delete').href = `/admin/dash/products/delete-product?id=${array[0]}`
-            document.getElementById('model-header').innerHTML = `Delete ${array[1]} ?`
-            document.getElementById('model-body').innerHTML = `Are You Sure?`
-            document.getElementById('model-sub-1').style.display = "none"
-            document.getElementById('model-sub-2').style.display = "none"
-            document.getElementById('model-sub-3').style.display = "none"
-            document.getElementById('model-sub-4').style.display = "none"
-            document.getElementById('model-price').style.display = "none"
-        }
-        function showDetails(ob) {
-            document.getElementById('model-header').innerHTML = ob[0]
-            document.getElementById('model-body').innerHTML = ob[1]
-            document.getElementById('model-sub-1').innerHTML = `Size : ${ob[3]}`
-            document.getElementById('model-sub-2').innerHTML = `Stock : ${ob[4]}`
-            document.getElementById('model-sub-3').innerHTML = `createdAt : ${ob[5]}`
-            document.getElementById('model-sub-4').innerHTML = `updatedAt : ${ob[6]}`
-            document.getElementById('model-price').innerHTML = `Price : ${ob[2]}`
-            document.getElementById('model-image-1').src = `/products-images/${ob[7]}`
-            document.getElementById('model-image-2').src = `/products-images/${ob[8]}`
-            document.getElementById('model-image-3').src = `/products-images/${ob[9]}`
-            document.getElementById('model-image-4').src = `/products-images/${ob[10]}`
-        }
-    </script>
+    <script src="/admin/js/user-scripts/products.js"></script>
 </body>

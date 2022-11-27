@@ -9,7 +9,7 @@
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
                                 All Users
                             </h2>
-                            <% if(users.length>0){ %>
+                            <% if(users.results.length>0){ %>
                                 <div class="w-full overflow-hidden rounded-lg shadow-xs">
                                     <div class="w-full overflow-x-auto">
                                         <table class="w-full whitespace-no-wrap">
@@ -25,7 +25,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                                                <% for(var i=0;i<users.length;i++){ %>
+                                                <% for(var i=0;i<users.results.length;i++){ %>
                                                     <tr class="text-gray-700 dark:text-gray-400">
                                                         <td class="px-4 py-3">
                                                             <div class="flex items-center text-sm">
@@ -42,7 +42,7 @@
                                                                     <p class="font-semibold" style="overflow: hidden;
                                                                 white-space: nowrap;
                                                                 text-overflow: ellipsis; max-width:20em;">
-                                                                        <%= users[i].fullname %>
+                                                                        <%= users.results[i].fullname %>
                                                                     </p>
                                                                     <p class="text-xs text-gray-600 dark:text-gray-400">
                                                                         10x Developer
@@ -51,30 +51,30 @@
                                                             </div>
                                                         </td>
                                                         <td class="px-4 py-3 text-sm">
-                                                            <%= users[i].username %>
+                                                            <%= users.results[i].username %>
                                                         </td>
                                                         <td class="px-4 py-3 text-sm">
-                                                            <%= users[i].email %>
+                                                            <%= users.results[i].email %>
                                                         </td>
                                                         <td class="px-4 py-3 text-xs">
-                                                            <%= users[i].phone %>
+                                                            <%= users.results[i].phone %>
                                                         </td>
                                                         <td class="px-4 py-3 text-sm">
-                                                            <% if (users[i].isadmin===true) { %>
+                                                            <% if (users.results[i].isadmin===true) { %>
                                                                 <a
                                                                     class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-green-600 border border-transparent rounded-md active:bg-green-600 hover:bg-green-700 focus:outline-none focus:shadow-outline-green">
                                                                     Admin
                                                                 </a>
-                                                                <% } else if (users[i].access==true) { %>
+                                                                <% } else if (users.results[i].access==true) { %>
 
                                                                     <button @click="openModal"
-                                                                        onclick="blockAlert(['<%= users[i]._id %>','<%= users[i].fullname %>'])"
+                                                                        onclick="blockAlert(['<%= users.results[i]._id %>','<%= users.results[i].fullname %>'])"
                                                                         class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-red-600 border border-transparent rounded-md active:bg-red-600 hover:bg-red-700 focus:outline-none focus:shadow-outline-red">
                                                                         Block
                                                                     </button>
                                                                     <% } else { %>
                                                                         <button @click="openModal"
-                                                                            onclick="unblockAlert(['<%= users[i]._id %>','<%= users[i].fullname %>'])"
+                                                                            onclick="unblockAlert(['<%= users.results[i]._id %>','<%= users.results[i].fullname %>'])"
                                                                             class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                                                                             Unblock
                                                                         </button>
@@ -82,7 +82,7 @@
                                                         </td>
                                                         <td class="px-4 py-3 text-sm">
                                                             <button @click="openModal"
-                                                                onclick="showDetails( ['<%= users[i].fullname %>','<%= users[i].username %>','<%= users[i].email %>','<%= users[i].phone %>','<%= users[i].access %>','<%= users[i].isadmin %>','<%= users[i].createdAt %>','<%= users[i].updatedAt %>', ] )"
+                                                                onclick="showDetails( ['<%= users.results[i].fullname %>','<%= users.results[i].username %>','<%= users.results[i].email %>','<%= users.results[i].phone %>','<%= users.results[i].access %>','<%= users.results[i].isadmin %>','<%= users.results[i].createdAt %>','<%= users.results[i].updatedAt %>', ] )"
                                                                 class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                                                                 Show
                                                             </button>
@@ -95,7 +95,7 @@
                                     <div
                                         class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
                                         <span class="flex items-center col-span-3">
-                                            Showing <%= users.length %> of <%= users.length %>
+                                            Showing <%= users.results.length %> of <%= users.results.length %>
                                         </span>
                                         <span class="col-span-2"></span>
                                         <!-- Pagination -->
@@ -103,9 +103,7 @@
                                             <nav aria-label="Table navigation">
                                                 <ul class="inline-flex items-center">
                                                     <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple"
-                                                            aria-label="Previous">
+                                                        <a aria-label="Previous">
                                                             <svg aria-hidden="true" class="w-4 h-4 fill-current"
                                                                 viewBox="0 0 20 20">
                                                                 <path
@@ -113,20 +111,9 @@
                                                                     clip-rule="evenodd" fill-rule="evenodd">
                                                                 </path>
                                                             </svg>
-                                                        </button>
+                                                        </a>
                                                     </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            1
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            2
-                                                        </button>
-                                                    </li>
+
                                                     <li>
                                                         <button
                                                             class="px-3 py-1 text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600 rounded-md focus:outline-none focus:shadow-outline-purple">
@@ -134,30 +121,7 @@
                                                         </button>
                                                     </li>
                                                     <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            4
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <span class="px-3 py-1">...</span>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            8
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                                                            9
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button
-                                                            class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple"
-                                                            aria-label="Next">
+                                                        <a aria-label="Next">
                                                             <svg class="w-4 h-4 fill-current" aria-hidden="true"
                                                                 viewBox="0 0 20 20">
                                                                 <path
@@ -165,7 +129,7 @@
                                                                     clip-rule="evenodd" fill-rule="evenodd">
                                                                 </path>
                                                             </svg>
-                                                        </button>
+                                                        </a>
                                                     </li>
                                                 </ul>
                                             </nav>

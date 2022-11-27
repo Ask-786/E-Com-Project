@@ -35,24 +35,24 @@ const getProductAdd = async (req, res) => {
 };
 
 const getProducts = async (req, res) => {
-  let products = await Product.find({})
-    .populate("category")
-    .sort({ updatedAt: -1 });
+  let products = res.paginatedResults;
+  console.log(products);
   res.render("admin-views/products", {
     layout: "./layouts/admin-layout",
     products,
+    message: req.flash("message"),
   });
 };
 
 const getEditProduct = async (req, res) => {
   let product = await Product.findById(req.query.id);
   let category = await Category.find();
-
-  console.log(product.category);
   res.render("admin-views/edit-product", {
     layout: "./layouts/admin-layout",
     product,
     category,
+    page: req.query.page,
+    limit: req.query.limit,
   });
 };
 
@@ -112,7 +112,8 @@ const getEditCategory = async (req, res, next) => {
 };
 
 const getUsers = async (req, res) => {
-  const users = await User.find({});
+  const users = res.paginatedResults;
+  console.log(users);
   res.render("admin-views/users", {
     layout: "./layouts/admin-layout",
     users,
@@ -180,14 +181,17 @@ const postProductAdd = async (req, res) => {
         req.files[3].filename,
       ],
     });
+    req.flash("message", "Product Added Successfully");
     res.redirect("/admin/dash/add-product");
   } catch (err) {
-    console.log(err.message);
+    req.flash("message", err.message);
     res.redirect("/admin/dash/add-product");
   }
 };
 
 const postEditProduct = async (req, res) => {
+  const page = req.query.page;
+  const limit = req.query.limit;
   if (req.files.length > 0) {
     let preProduct = await Product.findOne({ _id: req.query.id });
     let data = req.body;
@@ -211,7 +215,8 @@ const postEditProduct = async (req, res) => {
       }
     );
     deleteProductImages(preProduct.images).then((val) => {
-      res.redirect("/admin/dash/products");
+      req.flash("message", "Product Updated Successfully");
+      res.redirect(`/admin/dash/products?page=${page}&limit=${limit}`);
     });
   } else {
     let data = req.body;
@@ -228,7 +233,8 @@ const postEditProduct = async (req, res) => {
         },
       }
     );
-    res.redirect("/admin/dash/products");
+    req.flash("message", "Product Updated Successfully");
+    res.redirect(`/admin/dash/products?page=${page}&limit=${limit}`);
   }
 };
 
@@ -259,7 +265,8 @@ const postAddCategory = async (req, res, next) => {
     req.flash("message", "Category Added Successfully");
     res.redirect("/admin/dash/add-category");
   } catch (err) {
-    next(err);
+    req.falsh("message", err.message);
+    req.redirect("/dash/add-category");
   }
 };
 

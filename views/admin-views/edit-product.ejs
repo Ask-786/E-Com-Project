@@ -10,7 +10,8 @@
                                 Edit Products
                             </h2>
                             <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
-                                <form method="post" action="/admin/dash/products/edit-product?id=<%= product._id %>"
+                                <form method="post"
+                                    action="/admin/dash/products/edit-product?id=<%= product._id %>&page=<%= page %>&limit=<%= limit %>"
                                     enctype="multipart/form-data">
                                     <!-- Helper text -->
                                     <label class="block mt-4 text-sm">
