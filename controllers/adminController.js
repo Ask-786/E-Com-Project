@@ -1,13 +1,18 @@
 const passport = require("passport");
 const Product = require("../models/Product");
+const Orders = require("../models/Orders");
 const User = require("../models/User");
+const Cart = require("../models/Cart");
+const mongoose = require("mongoose");
 const Category = require("../models/Category");
 const initializePassport = require("../config/passport-config");
+const moment = require("moment");
 const Products = require("../models/Product");
 const {
   deleteCategoryImage,
   deleteProductImages,
 } = require("../config/delete-file");
+const Order = require("../models/Orders");
 
 initializePassport(passport);
 
@@ -36,7 +41,6 @@ const getProductAdd = async (req, res) => {
 
 const getProducts = async (req, res) => {
   let products = res.paginatedResults;
-  console.log(products);
   res.render("admin-views/products", {
     layout: "./layouts/admin-layout",
     products,
@@ -56,13 +60,16 @@ const getEditProduct = async (req, res) => {
   });
 };
 
-const getDeleteProduct = async (req, res) => {
-  let preProduct = await Product.findOne({ _id: req.query.id });
-  await Product.deleteOne({ _id: req.query.id });
-  res.redirect("/admin/dash/products");
-  await deleteProductImages(preProduct.images).then((val) => {
-    res.redirect("/admin/dash/products");
-  });
+const getDeleteProduct = async (req, res, next) => {
+  try {
+    let preProduct = await Product.findOne({ _id: req.query.id });
+    await Product.deleteOne({ _id: req.query.id });
+    await deleteProductImages(preProduct.images).then((val) => {
+      res.redirect("/admin/dash/products");
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const getCategories = async (req, res) => {
@@ -113,7 +120,6 @@ const getEditCategory = async (req, res, next) => {
 
 const getUsers = async (req, res) => {
   const users = res.paginatedResults;
-  console.log(users);
   res.render("admin-views/users", {
     layout: "./layouts/admin-layout",
     users,
@@ -121,18 +127,99 @@ const getUsers = async (req, res) => {
   });
 };
 
-const getBlockUser = async (req, res) => {
-  console.log(req.query.id);
-  await User.updateOne({ _id: req.query.id }, { access: false });
-  req.flash("message", "User Blocked successfully");
-  res.redirect("/admin/dash/users");
+const getUserDetails = async (req, res, next) => {
+  try {
+    const preUser = await User.aggregate([
+      { $match: { _id: mongoose.Types.ObjectId(req.query.id) } },
+      {
+        $lookup: {
+          from: "orders",
+          let: {
+            userId: "$_id",
+          },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$user", "$$userId"] } } },
+            { $sort: { updatedAt: -1 } },
+          ],
+          as: "orders",
+        },
+      },
+    ]);
+    const PreUser1 = await Cart.populate(preUser, { path: "orders.cart" });
+    const user = await Product.populate(PreUser1, {
+      path: "orders.cart.bucket.products",
+    });
+    const newUser = { ...user[0] };
+    newUser.orders = newUser.orders.map((el) => {
+      el.createdAt = moment(el.createdAt).format("LL");
+      return el;
+    });
+    res.render("admin-views/user-details", {
+      layout: "./layouts/admin-layout",
+      user: newUser,
+      message: req.flash("message"),
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
-const getUnblockUser = async (req, res) => {
-  console.log(req.query.id);
-  await User.updateOne({ _id: req.query.id }, { access: true });
-  req.flash("message", "User Unblocked successfully");
-  res.redirect("/admin/dash/users");
+const getBlockUser = async (req, res, next) => {
+  try {
+    let page = req.query.page;
+    let limit = req.query.limit;
+    await User.updateOne({ _id: req.query.id }, { access: false });
+    req.flash("message", "User Blocked successfully");
+    res.redirect(`/admin/dash/users?page=${page}&limit=${limit}`);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getUnblockUser = async (req, res, next) => {
+  try {
+    let page = req.query.page;
+    let limit = req.query.limit;
+    await User.updateOne({ _id: req.query.id }, { access: true });
+    req.flash("message", "User Unblocked successfully");
+    res.redirect(`/admin/dash/users?page=${page}&limit=${limit}`);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getOrders = async (req, res, next) => {
+  const preOrders = await Orders.find()
+    .populate("user")
+    .sort({ updatedAt: -1 });
+
+  const orders = preOrders.map((el) => {
+    let newEl = { ...el._doc };
+    newEl.createdAt = moment(newEl.createdAt).format("LL");
+    return newEl;
+  });
+
+  res.render("admin-views/orders", {
+    layout: "./layouts/admin-layout",
+    orders,
+  });
+};
+
+const getOrderDetails = async (req, res, next) => {
+  const preOrder = await Orders.findById(req.query.id)
+    .populate("user")
+    .populate("cart")
+    .sort({ updatedAt: -1 });
+  const order = await Product.populate(preOrder, {
+    path: "cart.bucket.products",
+  });
+  const formatedOrder = { ...order._doc };
+  formatedOrder.createdAt = moment(formatedOrder.createdAt).format("LL");
+  res.render("admin-views/order-details", {
+    message: req.flash("message"),
+    layout: "./layouts/admin-layout",
+    order: formatedOrder,
+  });
 };
 
 // const postLogin = (req, res) => {
@@ -292,6 +379,24 @@ const postEditCategory = async (req, res) => {
   }
 };
 
+const patchOrderDetails = async (req, res, next) => {
+  if (req.query.id) {
+    await Orders.updateOne(
+      { user: req.query.id, _id: req.query.orderId },
+      { $set: { orderStatus: req.body.orderStatus } }
+    );
+    req.flash("message", "Order status updated");
+    res.redirect(`/admin/dash/users/user-details?id=${req.query.id}`);
+  } else {
+    await Orders.updateOne(
+      { _id: req.query.orderId },
+      { $set: { orderStatus: req.body.orderStatus } }
+    );
+    req.flash("message", "Order status updated");
+    res.redirect(`/admin/dash/orders/order-details?id=${req.query.orderId}`);
+  }
+};
+
 const deleteLogout = (req, res) => {
   req.logOut((err) => {
     res.redirect("/admin");
@@ -318,4 +423,8 @@ module.exports = {
   getUsers,
   getBlockUser,
   getUnblockUser,
+  getOrders,
+  getUserDetails,
+  patchOrderDetails,
+  getOrderDetails,
 };

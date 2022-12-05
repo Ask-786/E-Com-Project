@@ -30,8 +30,10 @@ const checkAuthenticatedAxios = (req, res, next) => {
 
 const checkIsBlocked = (req, res, next) => {
   if (!req.user.access) {
-    res.render("user-views/blocked-message", {
-      layout: "./layouts/no-hea-foo-user-layout",
+    req.logOut((err) => {
+      res.render("user-views/blocked-message", {
+        layout: "./layouts/no-hea-foo-user-layout",
+      });
     });
   } else {
     next();

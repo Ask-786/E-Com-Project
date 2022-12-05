@@ -27,6 +27,10 @@ const {
   getUsers,
   getBlockUser,
   getUnblockUser,
+  getOrders,
+  getUserDetails,
+  patchOrderDetails,
+  getOrderDetails,
 } = require("../controllers/adminController");
 
 const {
@@ -84,6 +88,21 @@ router
 router
   .route("/dash/users")
   .get(checkAuthenticated, usersPaginatedResults(User), getUsers);
+
+router
+  .route("/dash/users/user-details")
+  .get(checkAuthenticated, getUserDetails);
+
+router
+  .route("/dash/users/user-details/update-order")
+  .patch(checkAuthenticated, patchOrderDetails);
+
+router
+  .route("/dash/orders/order-details")
+  .get(checkAuthenticated, getOrderDetails)
+  .patch(checkAuthenticated, patchOrderDetails);
+
+router.route("/dash/orders").get(checkAuthenticated, getOrders);
 
 router.route("/adlogout").delete(deleteLogout);
 

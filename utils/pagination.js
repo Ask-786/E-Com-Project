@@ -28,6 +28,7 @@ const productsPaginatedResults = (model) => {
         .find({})
         .populate("category")
         .limit(limit)
+        .sort({ updatedAt: -1 })
         .skip(startIndex)
         .exec();
       res.paginatedResults = results;
@@ -68,6 +69,7 @@ const usersPaginatedResults = (model) => {
         .find({})
         .limit(limit)
         .skip(startIndex)
+        .sort({ updatedAt: -1 })
         .exec();
       res.paginatedResults = results;
       next();

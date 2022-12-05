@@ -37,6 +37,7 @@ app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 app.use(logger("dev"));
 app.use(expressLayouts);
+app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "./public")));
 

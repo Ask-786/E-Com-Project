@@ -24,6 +24,12 @@ const {
   getAddAddress,
   postAddAddress,
   getDeleteAddress,
+  getCheckout,
+  postCheckout,
+  getOrderConfirmation,
+  getOrders,
+  postVerifyPayment,
+  patchCancelOrder,
 } = require("../controllers/userController");
 
 const {
@@ -93,6 +99,40 @@ router.route("/contact").get(getContact);
 router.route("/shop").get(getShop);
 
 router.route("/shop/product").get(getProduct);
+
+router.route("/orders").get(checkAuthenticated, checkIsBlocked, getOrders);
+
+router
+  .route("/cart/checkout")
+  .get(checkAuthenticated, checkIsBlocked, getCheckout)
+  .post(
+    checkAuthenticatedAxios,
+    checkAuthenticated,
+    checkIsBlocked,
+    postCheckout
+  );
+
+router
+  .route("/cart/checkout/verify-payment")
+  .post(
+    checkAuthenticatedAxios,
+    checkAuthenticated,
+    checkIsBlocked,
+    postVerifyPayment
+  );
+
+router
+  .route("/cart/checkout/order-confirmation")
+  .get(checkAuthenticated, getOrderConfirmation);
+
+router
+  .route("/orders/cancel-order")
+  .patch(
+    checkAuthenticatedAxios,
+    checkAuthenticated,
+    checkIsBlocked,
+    patchCancelOrder
+  );
 
 router
   .route("/otp-verify")

@@ -93,12 +93,36 @@ h6 {
   padding-top: 100px;
 }
 
+.pb_100 {
+  padding-bottom: 100px;
+}
+
 .p_80 {
   padding: 80px 0px;
 }
 
 .pb_50 {
   padding-bottom: 50px;
+}
+
+.mb_50 {
+  margin-bottom: 50px;
+}
+
+.mb_30 {
+  margin-bottom: 30px;
+}
+
+.mt_30 {
+  margin-top: 30px;
+}
+
+.mt_auto {
+  margin-top: auto;
+}
+
+.h_100 {
+  height: 100%;
 }
 
 iframe {
@@ -4911,6 +4935,179 @@ i:before {
 ============================================================================================ */
 .order_box_price .subs_btn {
   margin-top: 15px;
+}
+
+.address_card {
+  border: 1px solid #bdbdbd;
+  background: #f5f5f5;
+  padding: 20px 30px 5px 30px;
+}
+
+.address_card .price_single_cost {
+  padding: 0px 30px;
+  padding-top: 20px;
+}
+
+.address_card .price_single_cost h5 {
+  display: block;
+  font-size: 14px;
+  color: #666666;
+  font-family: "Poppins", sans-serif;
+  font-weight: normal;
+  padding-bottom: 20px;
+}
+
+.address_card .price_single_cost h5 span {
+  float: right;
+}
+
+.address_card .price_single_cost h4 {
+  font-size: 18px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
+  color: #333333;
+  padding-bottom: 20px;
+  margin-left: -30px;
+  margin-right: -30px;
+  padding-right: 30px;
+}
+
+.address_card .price_single_cost h4 span {
+  float: right;
+}
+
+.address_card .price_single_cost h3 {
+  font-size: 14px;
+  color: #666666;
+  font-family: "Poppins", sans-serif;
+  font-weight: normal;
+  overflow: hidden;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.address_card .price_single_cost h3 .normal_text {
+  float: none;
+  font-size: 14px;
+  color: #666666;
+  font-family: "Poppins", sans-serif;
+  font-weight: normal;
+  position: relative;
+  top: 5px;
+}
+
+.address_card .price_single_cost h3 span {
+  float: right;
+  font-weight: bold;
+  color: #d42421;
+  font-family: "Montserrat", sans-serif;
+  font-size: 24px;
+}
+
+.address_details {
+  border-top: 1px solid #bdbdbd;
+  padding-top: 20px;
+}
+
+.address_details .card {
+  border: none;
+  border-radius: 0px;
+  background: transparent;
+  padding-right: 2px;
+  margin-bottom: 23px;
+}
+
+.address_details .card:last-child {
+  margin-bottom: 0px;
+}
+
+.address_details .card .card-header {
+  padding: 0px;
+  border-radius: 0px;
+  border: none;
+  background: transparent;
+}
+
+.address_details .card .card-header h5 a {
+  background: transparent;
+  text-transform: uppercase;
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333333;
+  position: relative;
+}
+
+.address_details .card .card-header h5 a:before {
+  content: "";
+  height: 18px;
+  width: 18px;
+  border: 1px solid #000;
+  border-radius: 50%;
+  position: absolute;
+  left: -65px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.address_details .card .card-header h5 a:after {
+  content: "";
+  height: 10px;
+  width: 10px;
+  background: #000;
+  border-radius: 50%;
+  position: absolute;
+  left: -61px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.address_details .card .card-header h5 a.collapsed:after {
+  opacity: 0;
+}
+
+.address_details .card .card-body {
+  padding: 10px 0px 0px 0px;
+  font-size: 14px;
+  line-height: 24px;
+  color: #959595;
+  font-family: "Poppins", sans-serif;
+}
+
+.address_title {
+  font-size: 24px;
+  color: #000;
+  font-family: "Poppins", sans-serif;
+  font-weight: normal;
+  padding-bottom: 35px;
+  text-align: center;
+}
+
+.order_cards {
+  background: #f5f5f5;
+  padding: 60px 30px 35px 30px;
+  margin-top: 20px !important;
+}
+
+.order_cards .order_status {
+  text-align: left;
+  color: rgb(228, 65, 0);
+}
+
+.order_cards a {
+  text-align: left;
+  color: rgb(228, 65, 0);
+  cursor: pointer;
+}
+
+.order_cards .cancelled_btn a {
+  text-align: left;
+  color: rgb(73, 70, 69);
+  cursor: not-allowed;
 }
 
 .payment_list {

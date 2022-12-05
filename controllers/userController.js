@@ -1,12 +1,18 @@
 const passport = require("passport");
 const User = require("../models/User");
+const mongoose = require("mongoose");
 const Address = require("../models/Address");
 const Cart = require("../models/Cart");
+const Orders = require("../models/Orders");
 const Product = require("../models/Product");
 const Category = require("../models/Category");
 const Favorites = require("../models/Favorites");
 const querystring = require("querystring");
+const moment = require("moment");
+const { placeOrder } = require("../utils/place-order");
+const { createOrderRz, verifyPayment } = require("../services/razorpay");
 const initializePassport = require("../config/passport-config");
+const { validateSignup } = require("../utils/joi-validation");
 const { response } = require("express");
 const { error } = require("console");
 const sendVerifyToken = require("../services/twilio").sendVerifyToken;
@@ -111,10 +117,7 @@ const getCart = async (req, res) => {
       },
     });
     if (cart !== null && cart.bucket.length > 0) {
-      let total = 0;
-      for (let i = 0; i < cart.bucket.length; i++) {
-        total += cart.bucket[i].products.price * cart.bucket[i].quantity;
-      }
+      let total = cart.grandtotal;
       res.render("user-views/cart", {
         cart,
         total,
@@ -144,12 +147,13 @@ const getAddToCart = async (req, res) => {
     } else {
       let itemExists = await Cart.exists({
         user: req.user._id,
+        isexpired: false,
         "bucket.products": req.query.id,
       });
       if (itemExists === null) {
         let product = await Product.findById(req.query.id);
         await Cart.updateOne(
-          { user: req.user._id },
+          { user: req.user._id, isexpired: false },
           {
             $push: {
               bucket: { products: req.query.id, subtotal: product.price },
@@ -169,39 +173,68 @@ const getAddToCart = async (req, res) => {
   }
 };
 
-const getCartItemIncrement = async (req, res) => {
+const getCartItemIncrement = async (req, res, next) => {
   try {
-    let product = await Product.findById(req.query.id);
-    await Cart.updateOne(
+    let id = mongoose.Types.ObjectId(req.query.id);
+    let product = await Product.aggregate([
+      { $match: { _id: id } },
       {
-        user: req.user._id,
-        "bucket.products": req.query.id,
-      },
-      {
-        $inc: {
-          "bucket.$.quantity": 1,
-          "bucket.$.subtotal": product.price,
-          grandtotal: product.price,
+        $lookup: {
+          from: "carts",
+          let: { product: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                user: req.user._id,
+                isexpired: false,
+              },
+            },
+          ],
+          as: "userCart",
         },
-      }
-    );
+      },
+    ]);
 
-    let cart = await Cart.findOne({
-      user: req.user._id,
-      "bucket.products": req.query.id,
-    });
-
-    let cartItem = cart.bucket.find((elm) => {
+    let userCartItem = product[0].userCart[0].bucket.find((elm) => {
       return elm.products.toString() === req.query.id;
     });
 
-    res.json({
-      count: cartItem.quantity,
-      subtotal: cartItem.subtotal,
-      grandtotal: cart.grandtotal,
-    });
+    if (product[0].stock > userCartItem.quantity) {
+      const so = await Cart.updateOne(
+        {
+          user: req.user._id,
+          isexpired: false,
+          "bucket.products": req.query.id,
+        },
+        {
+          $inc: {
+            "bucket.$.quantity": 1,
+            "bucket.$.subtotal": product[0].price,
+            grandtotal: product[0].price,
+          },
+        }
+      );
+
+      console.log(so);
+
+      let cart = await Cart.findOne({
+        user: req.user._id,
+        isexpired: false,
+        "bucket.products": req.query.id,
+      });
+      let cartItem = cart.bucket.find((elm) => {
+        return elm.products.toString() === req.query.id;
+      });
+      res.json({
+        count: cartItem.quantity,
+        subtotal: cartItem.subtotal,
+        grandtotal: cart.grandtotal,
+      });
+    } else {
+      res.json({ noStock: true });
+    }
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 
@@ -211,6 +244,7 @@ const getCartItemDecrement = async (req, res) => {
     await Cart.updateOne(
       {
         user: req.user._id,
+        isexpired: false,
         "bucket.products": req.query.id,
       },
       {
@@ -224,6 +258,7 @@ const getCartItemDecrement = async (req, res) => {
 
     let cart = await Cart.findOne({
       user: req.user._id,
+      isexpired: false,
       "bucket.products": req.query.id,
     });
 
@@ -243,13 +278,14 @@ const getCartItemDecrement = async (req, res) => {
 
 const getCartItemDelete = async (req, res, next) => {
   try {
-    let cart = await Cart.findOne({ user: req.user._id });
+    let cart = await Cart.findOne({ user: req.user._id, isexpired: false });
     let cartItem = cart.bucket.find((elm) => {
       return elm.products.toString() === req.query.id;
     });
     await Cart.updateOne(
       {
         user: req.user._id,
+        isexpired: false,
       },
       {
         $pull: {
@@ -261,7 +297,10 @@ const getCartItemDelete = async (req, res, next) => {
       }
     );
 
-    let cartAfter = await Cart.findOne({ user: req.user._id });
+    let cartAfter = await Cart.findOne({
+      user: req.user._id,
+      isexpired: false,
+    });
 
     res.json({
       grandtotal: cartAfter.grandtotal,
@@ -300,7 +339,10 @@ const getAddToFavorites = async (req, res) => {
       });
       res.json({ status: true });
     } else {
-      let itemExists = await Favorites.exists({ products: req.query.id });
+      let itemExists = await Favorites.exists({
+        user: req.user._id,
+        products: req.query.id,
+      });
       if (itemExists === null) {
         await Favorites.updateOne(
           { user: req.user._id },
@@ -334,6 +376,91 @@ const getFavoriteItemDelete = async (req, res) => {
   }
 };
 
+const getCheckout = async (req, res, next) => {
+  let userCart = await Cart.findOne({
+    user: req.user._id,
+    isexpired: false,
+  }).populate("bucket.products");
+  if (userCart !== null) {
+    let userAddress = await Address.findOne({ user: req.user._id });
+    res.render("user-views/checkout", { cart: userCart, address: userAddress });
+  } else {
+    res.redirect("/cart");
+  }
+};
+
+const getOrderConfirmation = async (req, res, next) => {
+  const preOrder = await Orders.findById(req.query.id).populate("cart");
+  const order = await Product.populate(preOrder, {
+    path: "cart.bucket.products",
+  });
+  res.render("user-views/order-confirm", { order, user: req.user });
+};
+
+const getOrders = async (req, res, next) => {
+  const preOrders = await Orders.find({ user: req.user._id })
+    .populate("cart")
+    .sort({ updatedAt: -1 });
+  const orders = await Product.populate(preOrders, {
+    path: "cart.bucket.products",
+  });
+  const formatedOrders = orders.map((el) => {
+    let newEl = { ...el._doc };
+    newEl.createdAt = moment(newEl.createdAt).format("LL");
+    return newEl;
+  });
+  if (formatedOrders.length > 0) {
+    res.render("user-views/orders", {
+      orders: formatedOrders,
+      message: req.flash("message"),
+    });
+  } else {
+    res.render("user-views/empty-orders");
+  }
+};
+
+const postCheckout = async (req, res, next) => {
+  try {
+    if (req.body.payType === "Cash on Delivery") {
+      const Addressess = await Address.findOne({ user: req.user._id });
+      const address = Addressess.Addressess.find((elm) => {
+        return elm._id.toString() === req.body.address;
+      });
+      placeOrder(
+        req.user._id,
+        req.body.cartId,
+        address,
+        req.body.payType,
+        "pending",
+        ""
+      ).then((order) => {
+        res.json({ order, codStatus: true });
+      });
+    } else if (req.body.payType === "Razor Pay") {
+      const cart = await Cart.findById(req.body.cartId);
+      createOrderRz(cart.grandtotal, req.body.cartId)
+        .then((val) => {
+          res.json({
+            rzSuccess: true,
+            order: val,
+            keyId: process.env.RAZORPAY_KEY_ID,
+            user: req.user,
+            address: req.body.address,
+            payType: req.body.payType,
+          });
+        })
+        .catch((err) => {
+          res.json({
+            rzError: true,
+            message: err.error,
+          });
+        });
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
 const postAddAddress = async (req, res) => {
   try {
     let addressExists = await Address.exists({ user: req.user._id });
@@ -358,29 +485,35 @@ const postAddAddress = async (req, res) => {
 };
 
 const postSignUp = async (req, res) => {
-  try {
-    const tempUser = await User.exists({
-      $or: [
-        { username: req.body.name },
-        { email: req.body.email },
-        { phone: req.body.phone },
-      ],
-    });
-    if (tempUser === null) {
-      req.session.temp = req.body;
-      sendVerifyToken(req.body.phone).then(() => {
-        res.redirect("/otp-verify");
+  const { error, value } = validateSignup(req.body);
+  if (error) {
+    req.flash("message", error.message);
+    res.redirect("/signup");
+  } else {
+    try {
+      const tempUser = await User.exists({
+        $or: [
+          { username: req.body.name },
+          { email: req.body.email },
+          { phone: req.body.phone },
+        ],
       });
-    } else {
-      req.flash(
-        "message",
-        "User Already Exists (Username, Email or Phone is Already Registered)"
-      );
+      if (tempUser === null) {
+        req.session.temp = req.body;
+        sendVerifyToken(req.body.phone).then(() => {
+          res.redirect("/otp-verify");
+        });
+      } else {
+        req.flash(
+          "message",
+          "User Already Exists (Username, Email or Phone is Already Registered)"
+        );
+        res.redirect("/signup");
+      }
+    } catch (err) {
+      req.flash("message", "Something went wrong");
       res.redirect("/signup");
     }
-  } catch (err) {
-    req.flash("message", "Something went wrong");
-    res.redirect("/signup");
   }
 };
 
@@ -413,6 +546,30 @@ const postOtpVerify = (req, res) => {
   } catch (err) {
     console.log(err.message);
   }
+};
+
+const postVerifyPayment = async (req, res, next) => {
+  verifyPayment(req.body.response).then(async (response) => {
+    if (response) {
+      const cartId = req.body.order.receipt;
+      const Addressess = await Address.findOne({ user: req.user._id });
+      const address = Addressess.Addressess.find((elm) => {
+        return elm._id.toString() === req.body.addressId;
+      });
+      placeOrder(
+        req.user._id,
+        cartId,
+        address,
+        req.body.payType,
+        "success",
+        req.body.response.razorpay_payment_id
+      ).then((order) => {
+        res.json({ order, rzStatus: true });
+      });
+    } else {
+      res.json({ rzStatus: false });
+    }
+  });
 };
 
 // const postLogin = (req, res) => {
@@ -449,8 +606,18 @@ const postOtpVerify = (req, res) => {
 //   }
 // };
 
+const patchCancelOrder = async (req, res, next) => {
+  await Orders.updateOne(
+    { _id: req.body.orderId },
+    { orderStatus: "cancelled" }
+  );
+  req.flash("message", "Order Cancelled Successfully");
+  res.json({ status: true });
+};
+
 const deleteLogout = (req, res) => {
   req.logOut((err) => {
+    console.log("logged out");
     res.redirect("/");
   });
 };
@@ -479,4 +646,10 @@ module.exports = {
   getAddAddress,
   postAddAddress,
   getDeleteAddress,
+  getCheckout,
+  postCheckout,
+  getOrderConfirmation,
+  getOrders,
+  postVerifyPayment,
+  patchCancelOrder,
 };

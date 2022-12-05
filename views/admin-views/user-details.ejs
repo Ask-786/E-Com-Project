@@ -1,0 +1,269 @@
+<body>
+    <div class="flex h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen}">
+        <%- include('../admin-views/partials/side-bar.ejs') %>
+            <div class="flex flex-col flex-1 w-full">
+                <%- include('../admin-views/partials/header.ejs') %>
+                    <main class="h-full pb-16 overflow-y-auto">
+                        <div class="container grid px-6 mx-auto">
+                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                                <%= user.fullname %>
+                            </h2>
+                            <div class="max-w-8xl px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                                <p class="mb-4 mt-4 text-gray-600 dark:text-gray-400">
+                                    ID:<strong>
+                                        <%= user._id %>
+                                    </strong>
+                                </p>
+                                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                    Username:<strong>
+                                        <%= user.username %>
+                                    </strong>
+                                </p>
+                                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                    Email:<strong>
+                                        <%= user.email %>
+                                    </strong>
+                                </p>
+                                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                    Phone:<strong>
+                                        <%= user.phone %>
+                                    </strong>
+                                </p>
+                                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                    <% if ( user.isadmin===true ) { %>
+                                        Admin/User: <strong>Admin</strong>
+                                        <% } else { %>
+                                            Admin/User: <strong>User</strong>
+                                            <% } %>
+                                </p>
+                                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                    <% if ( user.access===true ) { %>
+                                        Blocked / Unblocked: <strong>Unblocked</strong>
+                                        <% } else { %>
+                                            Blocked / Unblocked: <strong>Blocked</strong>
+                                            <% } %>
+                                </p>
+                                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                    createdAt:<strong>
+                                        <%= user.createdAt %>
+                                    </strong>
+                                </p>
+                                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                    updatedAt:<strong>
+                                        <%= user.updatedAt %>
+                                    </strong>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="container grid px-6 mx-auto">
+                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                                Orders
+                            </h2>
+                            <div class="max-w-8xl px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                                <% if (user.orders.length>0 ) { %>
+                                    <div class="grid gap-6 mb-8 md:grid-cols-2">
+                                        <% for( let i=0; i < user.orders.length; i++ ) { %>
+                                            <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-900">
+                                                <h4 class="mb-4 font-semibold text-gray-600 dark:text-gray-300">
+                                                    ID: <%= user.orders[i]._id %>
+                                                </h4>
+                                                <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                                    Order Items
+                                                </h4>
+                                                <div class="w-full mb-8 overflow-hidden rounded-lg shadow-xs">
+                                                    <div class="w-full overflow-x-auto">
+                                                        <table class="w-full whitespace-no-wrap">
+                                                            <thead>
+                                                                <tr
+                                                                    class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-900">
+                                                                    <th class="px-4 py-3">Item</th>
+                                                                    <th class="px-4 py-3">Price</th>
+                                                                    <th class="px-4 py-3">Quantity</th>
+                                                                    <th class="px-4 py-3">Total</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody
+                                                                class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-900">
+                                                                <% for( let j=0; j < user.orders[i].cart.bucket.length ;
+                                                                    j++ ) { %>
+                                                                    <tr class="text-gray-700 dark:text-gray-400">
+                                                                        <td class="px-4 py-3">
+                                                                            <div class="flex items-center text-sm">
+                                                                                <div>
+                                                                                    <p class="font-semibold">
+                                                                                        <%= user.orders[i].cart.bucket[j].products.title
+                                                                                            %>
+                                                                                    </p>
+                                                                                    <p
+                                                                                        class="text-xs text-gray-600 dark:text-gray-400">
+                                                                                        <%= user.orders[i].cart.bucket[j].products.description
+                                                                                            %>
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="px-4 py-3 text-sm">
+                                                                            <%= user.orders[i].cart.bucket[j].products.price
+                                                                                %>
+                                                                        </td>
+                                                                        <td class="px-4 py-3 text-xs">
+                                                                            <%= user.orders[i].cart.bucket[j].quantity
+                                                                                %>
+                                                                        </td>
+                                                                        <td class="px-4 py-3 text-sm">
+                                                                            <%= user.orders[i].cart.bucket[j].subtotal
+                                                                                %>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <% } %>
+                                                                        <tr class="text-gray-700 dark:text-gray-400">
+                                                                            <td></td>
+                                                                            <td></td>
+                                                                            <td></td>
+                                                                            <td class="px-4 py-3">
+                                                                                <div class="flex items-center text-sm">
+                                                                                    <p class="font-semibold">
+                                                                                        <%= user.orders[i].cart.grandtotal
+                                                                                            %>
+
+                                                                                    </p>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                                    Order Address
+                                                </h4>
+                                                <div class="w-full mb-8 overflow-hidden rounded-lg shadow-xs">
+                                                    <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                        Name: <%= user.orders[i].address.fullname %>
+                                                    </p>
+                                                    <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                        Phone: <%= user.orders[i].address.phone %>
+                                                    </p>
+                                                    <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                        Address: <%= user.orders[i].address.state %>, <%=
+                                                                user.orders[i].address.city %>, <%=
+                                                                    user.orders[i].address.buildingName %>, <%=
+                                                                        user.orders[i].address.area %>
+                                                    </p>
+                                                    <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                        PIN: <%= user.orders[i].address.PIN %>
+                                                    </p>
+                                                </div>
+                                                <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                                    Payment Details:
+                                                </h4>
+                                                <div class="w-full mb-8 overflow-hidden rounded-lg shadow-xs">
+                                                    <% if(user.orders[i].paymentDetails.paymentType==='Razor Pay' ){ %>
+                                                        <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                            Payment Type: <%= user.orders[i].paymentDetails.paymentType
+                                                                %>
+                                                        </p>
+                                                        <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                            Razor Pay Payment Id: <%=
+                                                                user.orders[i].paymentDetails.rzPayId %>
+                                                        </p>
+                                                        <% }else{ %>
+                                                            <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                                Payment Type: <%=
+                                                                    user.orders[i].paymentDetails.paymentType %>
+                                                            </p>
+                                                            <% } %>
+                                                                <% if(user.orders[i].paymentDetails.paymentStatus==="success"
+                                                                    ){ %>
+                                                                    <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                                        Payment Status:
+                                                                        <span
+                                                                            class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+                                                                            <%= user.orders[i].paymentDetails.paymentStatus
+                                                                                %>
+                                                                        </span>
+                                                                    </p>
+                                                                    <% } else
+                                                                        if(user.orders[i].paymentDetails.paymentStatus==="pending"
+                                                                        ){ %>
+                                                                        <p
+                                                                            class="mb-4 text-gray-600 dark:text-gray-400">
+                                                                            Payment Status:
+                                                                            <span
+                                                                                class="px-2 py-1 font-semibold leading-tight text-green-700 bg-red-100 rounded-full dark:bg-red-700 dark:text-green-100">
+                                                                                <%= user.orders[i].paymentDetails.paymentStatus
+                                                                                    %>
+                                                                            </span>
+                                                                        </p>
+                                                                        <% } %>
+                                                </div>
+                                                <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                                    Ordered Date: <%= user.orders[i].createdAt %>
+                                                </h4>
+                                                <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                                    Total Purchase Amount: <%= user.orders[i].cart.grandtotal %>
+                                                </h4>
+                                                <form
+                                                    action="/admin/dash/users/user-details/update-order?id=<%= user._id %>&orderId=<%= user.orders[i]._id %>&_method=PATCH"
+                                                    method="post">
+                                                    <h4
+                                                        class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                                        Order Status:
+                                                        <select name="orderStatus" id="orderStatus"
+                                                            class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+                                                            <option selected disabled
+                                                                value="<%= user.orders[i].orderStatus %>">
+                                                                <%= user.orders[i].orderStatus %>
+                                                            </option>
+                                                            <option value="shipped">
+                                                                shipped
+                                                            </option>
+                                                            <option value="out_for_delivery">
+                                                                out_for_delivery
+                                                            </option>
+                                                            <option value="delivered">
+                                                                delivered
+                                                            </option>
+                                                            <option value="cancelled">
+                                                                cancelled
+                                                            </option>
+                                                        </select>
+                                                    </h4>
+                                                    <button type="submit"
+                                                        class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                                        Update
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            <% } %>
+                                    </div>
+                                    <% } else { %>
+                                        <p class="text-gray-600 dark:text-gray-400">
+                                            This user hasn't any orders
+                                        </p>
+                                        <% } %>
+                            </div>
+                        </div>
+                    </main>
+            </div>
+    </div>
+    <% if( message.length> 0 ){ %>
+        const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+        toast.addEventListener("mouseenter", Swal.stopTimer);
+        toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+        });
+
+        Toast.fire({
+        icon: "alert",
+        title: message,
+        });
+        <% } %>
+</body>

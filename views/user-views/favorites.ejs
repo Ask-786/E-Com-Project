@@ -13,12 +13,19 @@
 <section class="shopping_cart_area p_100">
   <div class="container">
     <div class="row">
-      <div class="col-lg-12">
+      <div class="col-lg-2"></div>
+      <div class="col-lg-8">
         <div class="cart_items">
-          <h3>Your Favorite Items</h3>
+          <h3 style="text-align: center;">Your Favorite Items</h3>
           <div class="table-responsive-md">
             <table class="table">
               <tbody>
+                <tr>
+                  <th></th>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th></th>
+                </tr>
                 <% for( let i=0; i < products.length; i++ ) { %>
                   <tr>
                     <th scope="row">
@@ -39,10 +46,14 @@
                       </div>
                     </td>
                     <td>
-                    </td>
-                    <td>
                       <p class="red">₹ <%= products[i].price %>
                       </p>
+                    </td>
+                    <td>
+                      <div class="media-body">
+                        <button class="add_cart_btn" onclick="addToCart('<%= products[i]._id %>')"
+                          style="cursor: pointer;">Add To Cart</button>
+                      </div>
                     </td>
                   </tr>
                   <% } %>
@@ -51,7 +62,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
   <script src="/users/javascript/axios-favorites.js"></script>

@@ -1,1 +1,0 @@
-GET http://localhost:2000/cart-item-delete?id=63796929f55d1d51ea0841a6

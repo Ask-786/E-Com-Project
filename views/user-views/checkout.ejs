@@ -1,0 +1,120 @@
+<body>
+  <section class="solid_banner_area">
+    <div class="container">
+      <div class="solid_banner_inner">
+        <h3>checkout register</h3>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="checkout.html">Checkout Register</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="register_area p_100">
+    <div class="container">
+      <div class="register_inner">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="order_box_price">
+              <h2 class="reg_title">Your Order</h2>
+              <div class="payment_list">
+                <div class="price_single_cost">
+                  <% for( let i=0; i < cart.bucket.length; i++ ) { %>
+                    <h5>
+                      <%= cart.bucket[i].products.title %> (<%= cart.bucket[i].quantity %>) <span>
+                            <%= cart.bucket[i].products.price %>
+                          </span>
+                    </h5>
+                    <% } %>
+                      <h4>Cart Subtotal <span id="total-amount" data-amount="<%= cart.grandtotal %>">$<%=
+                            cart.grandtotal %>.00</span></h4>
+                      <h3><span class="normal_text">Order Totals</span> <span>$<%= cart.grandtotal %>.00</span></h3>
+                </div>
+                <div id="accordion" role="tablist" class="price_method">
+                  <div class="card">
+                    <div class="card-header" role="tab" id="headingOne">
+                      <h5 class="mb-0">
+                        <a id="payment" class="collapsed" data-toggle="collapse" data-payment="Razor Pay"
+                          href="#collapseOne" role="button" aria-expanded="false" aria-controls="collapseOne">
+                          Razor Pay
+                        </a>
+                      </h5>
+                    </div>
+                    <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne"
+                      data-parent="#accordion">
+                      <div class="card-body">
+                        Lorem Ipsum is simply dummy text of the print-ing and typesetting industry. Lorem Ipsum has
+                        been
+                        the industry's.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card">
+                    <div class="card-header" role="tab" id="headingTwo">
+                      <h5 class="mb-0">
+                        <a id="payment" class="collapsed" data-toggle="collapse" data-payment="Cash on Delivery"
+                          href="#collapseTwo" role="button" aria-expanded="false" aria-controls="collapseTwo">
+                          Cash on Delivery
+                        </a>
+                      </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo"
+                      data-parent="#accordion">
+                      <div class="card-body">
+                        Lorem Ipsum is simply dummy text of the print-ing and typesetting industry. Lorem Ipsum has
+                        been
+                        the industry's.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button onclick="submitCheckout('<%= cart._id %>')" class="btn subs_btn form-control">place
+                order</button>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="order_box_price">
+              <h2 class="reg_title">Choose Addres</h2>
+              <div class="payment_list">
+                <div class="price_single_cost">
+                  <h4>Choose Address</h4>
+                </div>
+                <% if (address.Addressess.length>0) { %>
+                  <div id="accordion2" role="tablist" class="price_method">
+                    <% for( let i=0; i < address.Addressess.length; i++ ) { %>
+                      <div class="card">
+                        <div class="card-header" role="tab" id="heading<%= i %>">
+                          <h5 class="mb-0">
+                            <a id="address" class="collapsed" data-toggle="collapse"
+                              data-id="<%= address.Addressess[i]._id %>" href="#collapse<%= i %>" role="button"
+                              aria-expanded="false" aria-controls="collapse<%= i %>">
+                              <%= address.Addressess[i].fullname %>
+                            </a>
+                          </h5>
+                        </div>
+                        <div id="collapse<%= i %>" class="collapse" role="tabpanel" aria-labelledby="heading<%= i %>"
+                          data-parent="#accordion2">
+                          <div class="card-body">
+                            phone: <%= address.Addressess[i].phone %>,
+                              <%= address.Addressess[i].state %>, <%= address.Addressess[i].city %>, <%=
+                                    address.Addressess[i].buildingName %>(H), <%= address.Addressess[i].area %>, <%=
+                                        address.Addressess[i].PIN %>
+                          </div>
+                        </div>
+                      </div>
+                      <% } %>
+                  </div>
+                  <% } %>
+              </div>
+              <button onclick="addAddress()" class="btn subs_btn form-control">Add Address</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="/users/javascript/user-scripts/checkout.js"></script>
+</body>

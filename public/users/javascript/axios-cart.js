@@ -1,16 +1,36 @@
-async function incrementButton(index, id, price) {
+async function incrementButton(index, id) {
   var result = document.getElementById(`sst${index}`);
   var sst = result.value;
   if (!isNaN(sst)) {
     let response = await axios.get(`/cart-item-increment?id=${id}`);
+    console.log(response.data);
     if (response.data.denied) {
       location.href = "/login";
     } else {
-      result.value = response.data.count;
-      document.getElementById(
-        `sub-total-per-item${index}`
-      ).innerHTML = `$ ${response.data.subtotal}`;
-      changeTotalPrice(response.data.grandtotal);
+      if (response.data.noStock) {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
+
+        Toast.fire({
+          icon: "error",
+          title: "No stock more than the limit",
+        });
+      } else {
+        result.value = response.data.count;
+        document.getElementById(
+          `sub-total-per-item${index}`
+        ).innerHTML = `$ ${response.data.subtotal}`;
+        changeTotalPrice(response.data.grandtotal);
+      }
     }
   }
   return false;

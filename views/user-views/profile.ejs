@@ -51,44 +51,6 @@
                 <div class="col-lg-12 pb_50">
                   <a href="" class="add_cart_btn">Edit Details</a>
                 </div>
-                <% if(address && address.Addressess.length>0 ){ %>
-                  <div class="col-lg-12">
-                    <label for="order">Saved Address</label>
-                    <div class="form-group">
-                      <% for( let i=0; i < address.Addressess.length; i++ ) { %>
-                        <textarea class="form-control g-3" style="background-color: white;" id="order" rows="4"
-                          disabled>
-  Name: <%= address.Addressess[i].fullname   %> 
-  Phone: <%= address.Addressess[i].phone   %> 
-  State: <%= address.Addressess[i].state   %> 
-  City: <%= address.Addressess[i].city   %> 
-  Building Name: <%= address.Addressess[i].buildingName   %> 
-  Area: <%= address.Addressess[i].area   %> 
-  PIN: <%= address.Addressess[i].PIN   %> 
-                        </textarea>
-                        <div class="creat_account">
-                          <a style="color: red; cursor: pointer;"
-                            onclick="sayHello('<%= address.Addressess[i]._id %>')">
-                            Delete this Address?
-                          </a>
-                        </div>
-                        <% } %>
-                    </div>
-                    <a href=" /userprofile/add-address" class="add_cart_btn pb_80">Add Address</a>
-                  </div>
-                  <% } else { %>
-                    <div class="col-lg-12">
-                      <label for="name">You Don't have any saved address. Please Add an address </label>
-                      <div class="form-group">
-                        <textarea class="form-control" style="background-color: rgb(248, 186, 164);" id="order"
-                          rows="4"></textarea>
-                      </div>
-                      <a href=" /userprofile/add-address" class="add_cart_btn">Add Address</a>
-                    </div>
-                    <% } %>
-              </form>
-              <form action="/logout?_method=DELETE" method="post" style="float: right; margin-top: 50px;">
-                <button class="forgot_pass_btn" type="submit">Logout</button>
               </form>
 
             </div>
@@ -96,5 +58,84 @@
         </div>
       </div>
   </section>
-  <script src="/users/javascript/axios-profile.js"></script>
+
+
+
+  <% if(address && address.Addressess.length>0 ){ %>
+    <section class="register_area">
+      <div class="container">
+        <div class="register_inner">
+          <div class="row">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+              <h4>
+                Saved Address
+              </h4>
+              <div class="row mb_50">
+                <% for( let i=0; i < address.Addressess.length; i++ ) { %>
+                  <div class="col-lg-6">
+                    <div class="order_cards">
+                      <h6>
+                        <%= address.Addressess[i].fullname %>
+                      </h6>
+                      <br>
+                      <p>
+                        Phone : <%= address.Addressess[i].phone %>
+                      </p>
+                      <p>
+                        <%= address.Addressess[i].state %>,
+                          <%= address.Addressess[i].city %>,
+                            <%= address.Addressess[i].buildingName %>,
+                              <%= address.Addressess[i].area %>,
+                                <%= address.Addressess[i].PIN %>
+                      </p>
+                      <p>
+                        PIN : <%= address.Addressess[i].PIN %>
+                      </p>
+                      <br>
+                      <a style="color: red; cursor: pointer;"
+                        onclick="deleteAddress('<%= address.Addressess[i]._id %>')">
+                        Delete this Address?
+                      </a>
+                    </div>
+                  </div>
+                  <% } %>
+              </div>
+              <div class="pb_50" style="padding-top: 20px;">
+                <a href=" /userprofile/add-address" class="add_cart_btn">Add Address</a>
+                <form action="/logout?_method=DELETE" method="post" style="float: right; margin-top: 50px;">
+                  <button class="forgot_pass_btn mb_50" type="submit">Logout</button>
+                </form>
+              </div>
+            </div>
+            <div class="col-lg-2"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <% } else { %>
+      <section class="emty_cart_area pb_100">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
+              <div class="emty_cart_inner">
+                <h3>You don't have any Address Saved</h3>
+                <h4>Add an <a href="/userprofile/add-address">Address</a></h4>
+              </div>
+              <div class="pb_50" style="padding-top: 20px;">
+                <form action="/logout?_method=DELETE" method="post" style="float: right; margin-top: 50px;">
+                  <button class="forgot_pass_btn mb_50" type="submit">Logout</button>
+                </form>
+              </div>
+            </div>
+            <div class="col-lg-2"></div>
+          </div>
+
+        </div>
+      </section>
+      <% } %>
+
+
+        <script src="/users/javascript/axios-profile.js"></script>
 </body>

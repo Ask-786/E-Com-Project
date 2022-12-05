@@ -1,0 +1,87 @@
+<body>
+  <section class="solid_banner_area">
+    <div class="container">
+      <div class="solid_banner_inner">
+        <h3>Order Placed!!!</h3>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="emty_cart_area p_80">
+    <div class="container">
+      <div class="emty_cart_inner">
+        <div class="payment_list">
+          <h4 class="mb_30">Ordered Items</h4>
+          <table class=" table">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for( let i=0; i < order.cart.bucket.length; i++ ) { %>
+                <tr>
+                  <td>
+                    <%= order.cart.bucket[i].products.title %>
+                  </td>
+                  <td>
+                    <%= order.cart.bucket[i].products.price %>
+                  </td>
+                  <td>
+                    <%= order.cart.bucket[i].quantity %>
+                  </td>
+                  <td>
+                    <%= order.cart.bucket[i].subtotal %>
+                  </td>
+                </tr>
+                <% } %>
+                  <tr>
+                    <th>
+                      Grand Total
+                    </th>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <th>
+                      <%= order.cart.grandtotal %>
+                    </th>
+                  </tr>
+            </tbody>
+          </table>
+          <div class="row">
+            <div class="col-6">
+              <h4 class="mb_30 mt_30">Ordered Address</h4>
+              <p>
+                <%= order.address.fullname %>
+              </p>
+              <p>
+                <%= order.address.phone %>
+              </p>
+              <p>
+                <%= order.address.state %>,
+                  <%= order.address.city %>,
+                    <%= order.address.buildingName %>,
+                      <%= order.address.area %>,
+                        <%= order.address.PIN %>
+              </p>
+            </div>
+            <div class="col-6">
+              <h4 class="mb_30 mt_30">Payment Details</h4>
+              <p>
+                Payment Type: <%= order.paymentDetails.paymentType %>
+              </p>
+              <p>
+                Payment Status: <%= order.paymentDetails.paymentStatus %>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>

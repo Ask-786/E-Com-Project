@@ -53,15 +53,13 @@
                               class="reduced items-count" type="button"><i class="icon_minus-06"></i></button>
                             <input type="text" name="qty" id="sst<%= i %>" maxlength="12"
                               value="<%= cart.bucket[i].quantity %>" title="Quantity:" class="input-text qty" disabled>
-                            <button
-                              onclick="incrementButton('<%= i %>','<%= cart.bucket[i].products._id %>','<%= cart.bucket[i].products.price %>')"
+                            <button onclick="incrementButton('<%= i %>','<%= cart.bucket[i].products._id %>')"
                               class="increase items-count" type="button"><i class="icon_plus"></i></button>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <p id="sub-total-per-item<%= i %>">$ <%= cart.bucket[i].products.price*cart.bucket[i].quantity
-                            %>
+                        <p id="sub-total-per-item<%= i %>">$ <%= cart.bucket[i].subtotal %>
                         </p>
                       </td>
                     </tr>
@@ -134,7 +132,7 @@
               </div>
             </div>
           </div>
-          <button type="submit" value="submit" class="btn subs_btn form-control">Proceed to checkout</button>
+          <a href="/cart/checkout" value="submit" class="btn subs_btn form-control">Proceed to checkout</a>
         </div>
       </div>
     </div>

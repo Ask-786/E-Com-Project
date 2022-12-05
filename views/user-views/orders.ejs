@@ -1,0 +1,162 @@
+<body>
+  <section class="solid_banner_area">
+    <div class="container">
+      <div class="solid_banner_inner">
+        <h3>Your orders</h3>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="emty_cart_area p_80">
+    <div class="container">
+      <div class="emty_cart_inner">
+        <div class="row">
+          <% for( let j=0; j < orders.length; j++ ) { %>
+            <div class="col-lg-6">
+              <div class="order_cards">
+                <h4 class="mb_30">Ordered Items</h4>
+                <table class=" table">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">Item</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for( let i=0; i < orders[j].cart.bucket.length; i++ ) { %>
+                      <tr>
+                        <td>
+                          <a href="/shop/product?id=<%= orders[j].cart.bucket[i].products._id %>" style="color: black;">
+                            <%= orders[j].cart.bucket[i].products.title %>
+                          </a>
+                        </td>
+                        <td>
+                          <%= orders[j].cart.bucket[i].products.price %>
+                        </td>
+                        <td>
+                          <%= orders[j].cart.bucket[i].quantity %>
+                        </td>
+                        <td>
+                          <%= orders[j].cart.bucket[i].subtotal %>
+                        </td>
+                      </tr>
+                      <% } %>
+                        <tr>
+                          <th>
+                            Grand Total
+                          </th>
+                          <td>
+                          </td>
+                          <td>
+                          </td>
+                          <th>
+                            <%= orders[j].cart.grandtotal %>
+                          </th>
+                        </tr>
+                  </tbody>
+                </table>
+                <div class="row">
+                  <div class="col-6">
+                    <h4 class="mb_30 mt_30">ordered Address</h4>
+                    <p>
+                      <%= orders[j].address.fullname %>
+                    </p>
+                    <p>
+                      <%= orders[j].address.phone %>
+                    </p>
+                    <p>
+                      <%= orders[j].address.state %>,
+                        <%= orders[j].address.city %>,
+                          <%= orders[j].address.buildingName %>,
+                            <%= orders[j].address.area %>,
+                              <%= orders[j].address.PIN %>
+                    </p>
+                  </div>
+                  <div class="col-6">
+                    <h4 class="mb_30 mt_30">Payment Details</h4>
+                    <p>
+                      Payment Type: <%= orders[j].paymentDetails.paymentType %>
+                    </p>
+                    <p>
+                      Payment Status: <%= orders[j].paymentDetails.paymentStatus %>
+                    </p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-6 order_status">
+                    <h4 class=" mt_30" id="date">Order Date : <%= orders[j].createdAt %>
+                    </h4>
+                  </div>
+                  <div class="col-6 order_status mt_auto">
+                    <h4 class="mt_30">Order Status : <%= orders[j].orderStatus %>
+                    </h4>
+                  </div>
+                </div>
+                <div class="row mt_30">
+                  <% if (orders[j].orderStatus==='cancelled' ) { %>
+                    <div class="col-6 order_status cancelled_btn">
+                      <a>Cancel Order?</a>
+                    </div>
+                    <% } else { %>
+                      <div class="col-6 order_status">
+                        <a onclick="cancelOrder('<%= orders[j]._id %>')">Cancel Order?</a>
+                      </div>
+                      <% } %>
+                </div>
+              </div>
+            </div>
+            <% } %>
+        </div>
+      </div>
+    </div>
+  </section>
+  <% if (message.length>0) { %>
+    <script>
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener("mouseenter", Swal.stopTimer);
+          toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+      });
+
+      Toast.fire({
+        icon: "error",
+        title: message,
+      });
+    </script>
+    <% } %>
+      <script>
+        function cancelOrder(orderId) {
+          Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Cancel it!",
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              let response = await axios.patch(`/orders/cancel-order`, {
+                orderId
+              });
+              if (response.data.denied) {
+                location.href = "/login";
+              } else {
+                if (response.data.status) {
+                  location.href = "/orders";
+                }
+              }
+            }
+          });
+        }
+      </script>
+</body>
