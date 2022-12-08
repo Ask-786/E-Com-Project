@@ -125,40 +125,91 @@
 
 
                                 </div>
-                                <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
-                                    Ordered Date: <%= order.createdAt %>
-                                </h4>
-                                <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
-                                    Total Purchase Amount: <%= order.cart.grandtotal %>
-                                </h4>
-                                <form action="/admin/dash/orders/order-details?orderId=<%= order._id %>&_method=PATCH"
-                                    method="post">
+                                <% if(order.cart.coupon===true){ %>
                                     <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
-                                        Order Status:
-                                        <select name="orderStatus" id="orderStatus"
-                                            class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
-                                            <option selected disabled value="<%= order.orderStatus %>">
-                                                <%= order.orderStatus %>
-                                            </option>
-                                            <option value="shipped">
-                                                shipped
-                                            </option>
-                                            <option value="out_for_delivery">
-                                                out_for_delivery
-                                            </option>
-                                            <option value="delivered">
-                                                delivered
-                                            </option>
-                                            <option value="cancelled">
-                                                cancelled
-                                            </option>
-                                        </select>
+                                        Coupon Details:
                                     </h4>
-                                    <button type="submit"
-                                        class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                                        Update
-                                    </button>
-                                </form>
+                                    <div class="w-full mb-8 overflow-hidden rounded-lg shadow-xs">
+                                        <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                            Coupon Code: <%= order.cart.couponDetails.couponCode %>
+                                        </p>
+                                        <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                            Coupon Type : <%= order.cart.couponDetails.deductionType %>
+                                        </p>
+                                        <% if(order.cart.couponDetails.deductionType==="percentage" ){ %>
+                                            <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                Coupon Deduction : <%= order.cart.couponDetails.deduction %>%
+                                            </p>
+                                            <% } else { %>
+                                                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                    Coupon Deduction : $<%= order.cart.couponDetails.deduction %>
+                                                </p>
+                                                <% } %>
+                                    </div>
+                                    <% }else { %>
+                                        <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                            Coupon Details: Nil
+                                        </h4>
+                                        <% } %>
+                                            <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                                Ordered Date: <%= order.createdAt %>
+                                            </h4>
+                                            <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                                Total Cart Amount: <%= order.cart.grandtotal %>
+                                            </h4>
+                                            <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                                Total Purchase Amount: <%= order.finalPrice %>
+                                            </h4>
+                                            <form
+                                                action="/admin/dash/orders/order-details?orderId=<%= order._id %>&_method=PATCH"
+                                                method="post">
+                                                <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
+                                                    Order Status:
+                                                    <select name="orderStatus" id="orderStatus"
+                                                        class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+                                                        <option selected disabled value="<%= order.orderStatus %>">
+                                                            <%= order.orderStatus %>
+                                                        </option>
+                                                        <% if (order.orderStatus==="confirmed" ) { %>
+                                                            <option value="shipped">
+                                                                shipped
+                                                            </option>
+                                                            <option value="out_for_delivery">
+                                                                out_for_delivery
+                                                            </option>
+                                                            <option value="delivered">
+                                                                delivered
+                                                            </option>
+                                                            <option value="cancelled">
+                                                                cancelled
+                                                            </option>
+                                                            <% } else if (order.orderStatus==="shipped" ) { %>
+                                                                <option value="out_for_delivery">
+                                                                    out_for_delivery
+                                                                </option>
+                                                                <option value="delivered">
+                                                                    delivered
+                                                                </option>
+                                                                <option value="cancelled">
+                                                                    cancelled
+                                                                </option>
+                                                                <% } else if (order.orderStatus==="out_for_delivery" ) {
+                                                                    %>
+                                                                    <option value="delivered">
+                                                                        delivered
+                                                                    </option>
+                                                                    <option value="cancelled">
+                                                                        cancelled
+                                                                    </option>
+                                                                    <% } %>
+
+                                                    </select>
+                                                </h4>
+                                                <button type="submit"
+                                                    class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                                    Update
+                                                </button>
+                                            </form>
                             </div>
                         </div>
                     </main>

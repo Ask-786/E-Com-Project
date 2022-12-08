@@ -14,6 +14,10 @@ const orderSchema = new Schema(
       ref: "Cart",
       required: true,
     },
+    finalPrice: {
+      type: Number,
+      required: true,
+    },
     address: {
       type: Object,
     },

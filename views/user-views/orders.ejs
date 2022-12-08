@@ -7,7 +7,6 @@
     </div>
   </section>
 
-
   <section class="emty_cart_area p_80">
     <div class="container">
       <div class="emty_cart_inner">
@@ -16,7 +15,7 @@
             <div class="col-lg-6">
               <div class="order_cards">
                 <h4 class="mb_30">Ordered Items</h4>
-                <table class=" table">
+                <table class="table card_table">
                   <thead class="thead-light">
                     <tr>
                       <th scope="col">Item</th>
@@ -44,18 +43,52 @@
                         </td>
                       </tr>
                       <% } %>
-                        <tr>
-                          <th>
-                            Grand Total
-                          </th>
-                          <td>
-                          </td>
-                          <td>
-                          </td>
-                          <th>
-                            <%= orders[j].cart.grandtotal %>
-                          </th>
-                        </tr>
+                        <% if (orders[j].cart.coupon===true) { %>
+                          <tr>
+                            <td class="text-start">
+                              Cart Total
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                              <%= orders[j].cart.grandtotal %>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              Discount
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <% if (orders[j].cart.couponDetails.deductionType==="percentage" ) { %>
+                              <td>
+                                <% let val=orders[j].cart.grandtotal/100 * orders[j].cart.couponDetails.deduction %>
+                                  <%= Math.round(val*Math.pow(10,2))/Math.pow(10,2); %>(<%=
+                                      orders[j].cart.couponDetails.deduction %>%)
+                              </td>
+                              <% } else { %>
+                                <td>
+                                  $<%= orders[j].cart.couponDetails.deduction %>
+                                </td>
+                                <% } %>
+                          </tr>
+                          <% } %>
+                            <tr>
+                              <th>
+                                Grand Total
+                              </th>
+                              <td>
+                              </td>
+                              <td>
+                              </td>
+                              <th>
+                                <%= orders[j].finalPrice %>
+                              </th>
+                            </tr>
                   </tbody>
                 </table>
                 <div class="row">
@@ -91,18 +124,22 @@
                     </h4>
                   </div>
                   <div class="col-6 order_status mt_auto">
-                    <h4 class="mt_30">Order Status : <%= orders[j].orderStatus %>
+                    <h4 class="mt_30" id="order-status<%= j %>">Order Status : <%= orders[j].orderStatus %>
                     </h4>
                   </div>
                 </div>
                 <div class="row mt_30">
-                  <% if (orders[j].orderStatus==='cancelled' ) { %>
-                    <div class="col-6 order_status cancelled_btn">
+                  <% if (orders[j].orderStatus==='cancelled' || orders[j].orderStatus==='delivered' ||
+                    orders[j].orderStatus==='out_for_delivery' ) { %>
+                    <div class="col-6 order_status cancelled_btn" id="cancelled_btn<%= j %>">
                       <a>Cancel Order?</a>
                     </div>
                     <% } else { %>
-                      <div class="col-6 order_status">
-                        <a onclick="cancelOrder('<%= orders[j]._id %>')">Cancel Order?</a>
+                      <div class="col-6 order_status" id="cancel_btn<%= j %>">
+                        <a onclick="cancelOrder('<%= orders[j]._id %>','<%= j %>')">Cancel Order?</a>
+                      </div>
+                      <div class="col-6 order_status cancelled_btn" id="cancelled_btn<%= j %>" style="display: none;">
+                        <a>Cancel Order?</a>
                       </div>
                       <% } %>
                 </div>
@@ -134,7 +171,7 @@
     </script>
     <% } %>
       <script>
-        function cancelOrder(orderId) {
+        function cancelOrder(orderId, index) {
           Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -152,7 +189,9 @@
                 location.href = "/login";
               } else {
                 if (response.data.status) {
-                  location.href = "/orders";
+                  $(`#order-status${index}`).text(`Order Status : ${response.data.orderStatus}`)
+                  $(`#cancel_btn${index}`).hide()
+                  $(`#cancelled_btn${index}`).show()
                 }
               }
             }

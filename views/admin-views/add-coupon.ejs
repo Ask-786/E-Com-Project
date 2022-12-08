@@ -1,0 +1,81 @@
+<body>
+    <div class="flex h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen}">
+        <%- include('../admin-views/partials/side-bar.ejs') %>
+            <div class="flex flex-col flex-1 w-full">
+                <%- include('../admin-views/partials/header.ejs') %>
+                    <main class="h-full pb-16 overflow-y-auto">
+                        <!-- Remove everything INSIDE this div to a really blank page -->
+                        <div class="container px-6 mx-auto grid">
+                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                                Add Coupon
+                            </h2>
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                                <form method="post" action="/admin/dash/add-coupon">
+                                    <!-- Helper text -->
+                                    <label class="block mt-4 text-sm">
+                                        <span class="text-gray-700 dark:text-gray-400">
+                                            Coupon Code
+                                        </span>
+                                        <input
+                                            class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
+                                            placeholder="Coupon Code" name="couponCode" type="text" required />
+                                    </label>
+                                    <label class="block mt-4 text-sm">
+                                        <% if (message.length>0) { %>
+                                            <span class="text-red-700 dark:text-red-400">
+                                                <%= message %>
+                                            </span>
+                                            <% } else { %>
+                                                <span class="text-gray-700 dark:text-gray-400">
+                                                    Expr Date
+                                                </span>
+                                                <% } %>
+                                                    <input
+                                                        class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
+                                                        placeholder="Expr Date" name="expiryDate" type="datetime-local"
+                                                        required />
+                                    </label>
+                                    <label class="block mt-4 text-sm">
+                                        <span class="text-gray-700 dark:text-gray-400">
+                                            Deduction Type
+                                        </span>
+                                        <select
+                                            class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                                            name="deductionType">
+                                            <option value="percentage">percentage</option>
+                                            <option value="amount">amount</option>
+                                        </select>
+                                    </label>
+                                    <label class="block mt-4 text-sm">
+                                        <span class="text-gray-700 dark:text-gray-400">
+                                            Deduction
+                                        </span>
+                                        <input
+                                            class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
+                                            placeholder="Deduction" name="deduction" type="number" required />
+                                    </label>
+                                    <label class="block mt-4 text-sm">
+                                        <span class="text-gray-700 dark:text-gray-400">
+                                            Minimum Amount
+                                        </span>
+                                        <input
+                                            class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
+                                            placeholder="Minimum Amount" name="minAmount" type="number" required />
+                                    </label>
+
+
+                                    <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+
+                                    </h2>
+                                    <button
+                                        class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+                                        type="submit">
+                                        Submit
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </main>
+            </div>
+    </div>
+</body>

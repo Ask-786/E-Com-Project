@@ -39,18 +39,53 @@
                   </td>
                 </tr>
                 <% } %>
-                  <tr>
-                    <th>
-                      Grand Total
-                    </th>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <th>
-                      <%= order.cart.grandtotal %>
-                    </th>
-                  </tr>
+                  <% if (order.cart.coupon===true) { %>
+                    <tr>
+                      <td>
+                        Cart Total
+                      </td>
+                      <td>
+                      </td>
+                      <td>
+                      </td>
+                      <td>
+                        <%= order.cart.grandtotal %>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        Discount
+                      </td>
+                      <td>
+                      </td>
+                      <td>
+                      </td>
+
+                      <% if (order.cart.couponDetails.deductionType==="percentage" ) { %>
+                        <td>
+                          <% let val=order.cart.grandtotal/100 * order.cart.couponDetails.deduction %>
+                            <%= Math.round(val*Math.pow(10,2))/Math.pow(10,2); %>(<%= order.cart.couponDetails.deduction
+                                %>%)
+                        </td>
+                        <% } else { %>
+                          <td>
+                            $<%= order.cart.couponDetails.deduction %>
+                          </td>
+                          <% } %>
+                    </tr>
+                    <% } %>
+                      <tr>
+                        <th>
+                          Grand Total
+                        </th>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <th>
+                          <%= order.finalPrice %>
+                        </th>
+                      </tr>
             </tbody>
           </table>
           <div class="row">

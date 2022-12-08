@@ -1,0 +1,72 @@
+<body>
+    <div class="flex h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen}">
+        <%- include('../admin-views/partials/side-bar.ejs') %>
+            <div class="flex flex-col flex-1 w-full">
+                <%- include('../admin-views/partials/header.ejs') %>
+                    <main class="h-full pb-16 overflow-y-auto">
+                        <!-- Remove everything INSIDE this div to a really blank page -->
+                        <div class="container px-6 mx-auto grid">
+                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                                Coupons
+                            </h2>
+                            <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
+                                <!-- Card -->
+                                <% if (coupons.length>0) { %>
+                                    <% for( let i=0; i < coupons.length; i++ ) { %>
+                                        <div
+                                            class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                                            <% if (coupons[i].diactivated===true) { %>
+                                                <div
+                                                    class="p-3 mr-4 text-red-500 bg-red-100 rounded-full dark:text-green-100 dark:bg-red-600">
+                                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd"
+                                                            d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
+                                                            clip-rule="evenodd"></path>
+                                                    </svg>
+                                                </div>
+                                                <% } else { %>
+                                                    <div
+                                                        class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500">
+                                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd"
+                                                                d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
+                                                                clip-rule="evenodd"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <% } %>
+                                                        <div>
+                                                            <p
+                                                                class=" mb-2 text-lg font-semibold text-gray-700 dark:text-gray-200">
+                                                                <%= coupons[i].couponCode %>
+                                                            </p>
+                                                            <p
+                                                                class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                                                Expr : <%= coupons[i].expiryDate %>
+                                                            </p>
+                                                            <p
+                                                                class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                                                Type : <%= coupons[i].deductionType %>
+                                                            </p>
+                                                            <% if (coupons[i].deductionType==="percentage" ) { %>
+                                                                <p
+                                                                    class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                                                    Deduction : <%= coupons[i].deduction %> %
+                                                                </p>
+                                                                <% } else { %>
+                                                                    <p
+                                                                        class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                                                        Deduction : $ <%= coupons[i].deduction %>
+                                                                    </p>
+                                                                    <% } %>
+
+
+                                                        </div>
+                                        </div>
+                                        <% } %>
+                                            <% } %>
+                            </div>
+                        </div>
+                    </main>
+            </div>
+    </div>
+</body>

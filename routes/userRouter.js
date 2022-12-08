@@ -30,6 +30,8 @@ const {
   getOrders,
   postVerifyPayment,
   patchCancelOrder,
+  postVerifyCoupon,
+  patchRemoveCoupon,
 } = require("../controllers/userController");
 
 const {
@@ -124,6 +126,14 @@ router
 router
   .route("/cart/checkout/order-confirmation")
   .get(checkAuthenticated, getOrderConfirmation);
+
+router
+  .route("/cart/verify-coupon")
+  .post(checkAuthenticatedAxios, checkAuthenticated, postVerifyCoupon);
+
+router
+  .route("/cart/remove-coupon")
+  .patch(checkAuthenticatedAxios, checkAuthenticated, patchRemoveCoupon);
 
 router
   .route("/orders/cancel-order")

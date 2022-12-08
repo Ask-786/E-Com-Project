@@ -8,6 +8,15 @@ const cartSchema = new Schema(
       ref: "User",
       required: true,
     },
+    coupon: {
+      type: Boolean,
+      default: false,
+    },
+    couponDetails: {
+      type: Schema.Types.ObjectId,
+      ref: "Coupon",
+      default: null,
+    },
     bucket: [
       {
         products: {

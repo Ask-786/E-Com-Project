@@ -31,6 +31,9 @@ const {
   getUserDetails,
   patchOrderDetails,
   getOrderDetails,
+  getCoupons,
+  getAdddCoupons,
+  postAddCoupon,
 } = require("../controllers/adminController");
 
 const {
@@ -103,6 +106,13 @@ router
   .patch(checkAuthenticated, patchOrderDetails);
 
 router.route("/dash/orders").get(checkAuthenticated, getOrders);
+
+router.route("/dash/coupons").get(checkAuthenticated, getCoupons);
+
+router
+  .route("/dash/add-coupon")
+  .get(checkAuthenticated, getAdddCoupons)
+  .post(checkAuthenticated, postAddCoupon);
 
 router.route("/adlogout").delete(deleteLogout);
 

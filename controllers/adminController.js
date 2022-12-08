@@ -13,6 +13,7 @@ const {
   deleteProductImages,
 } = require("../config/delete-file");
 const Order = require("../models/Orders");
+const Coupon = require("../models/Coupons");
 
 initializePassport(passport);
 
@@ -146,7 +147,10 @@ const getUserDetails = async (req, res, next) => {
       },
     ]);
     const PreUser1 = await Cart.populate(preUser, { path: "orders.cart" });
-    const user = await Product.populate(PreUser1, {
+    const preUser2 = await Coupon.populate(PreUser1, {
+      path: "orders.cart.couponDetails",
+    });
+    const user = await Product.populate(preUser2, {
       path: "orders.cart.bucket.products",
     });
     const newUser = { ...user[0] };
@@ -210,7 +214,10 @@ const getOrderDetails = async (req, res, next) => {
     .populate("user")
     .populate("cart")
     .sort({ updatedAt: -1 });
-  const order = await Product.populate(preOrder, {
+  const preOrder1 = await Coupon.populate(preOrder, {
+    path: "cart.couponDetails",
+  });
+  const order = await Product.populate(preOrder1, {
     path: "cart.bucket.products",
   });
   const formatedOrder = { ...order._doc };
@@ -219,6 +226,28 @@ const getOrderDetails = async (req, res, next) => {
     message: req.flash("message"),
     layout: "./layouts/admin-layout",
     order: formatedOrder,
+  });
+};
+
+const getCoupons = async (req, res, next) => {
+  const coupons = await Coupon.find().sort({ updatedAt: -1 });
+  const formattedCoupons = coupons.map((el) => {
+    const newEl = { ...el._doc };
+    newEl.expiryDate = moment(newEl.expiryDate).format("lll");
+    newEl.createdAt = moment(newEl.createdAt).format("lll");
+    newEl.updatedAt = moment(newEl.updatedAt).format("lll");
+    return newEl;
+  });
+  res.render("admin-views/coupons", {
+    layout: "./layouts/admin-layout",
+    coupons: formattedCoupons,
+  });
+};
+
+const getAdddCoupons = async (req, res, next) => {
+  res.render("admin-views/add-coupon", {
+    layout: "./layouts/admin-layout",
+    message: req.flash("message"),
   });
 };
 
@@ -357,6 +386,25 @@ const postAddCategory = async (req, res, next) => {
   }
 };
 
+const postAddCoupon = async (req, res, next) => {
+  const now = moment(Date.now()).format();
+  const expr = moment(req.body.expiryDate).format();
+  const { couponCode, expiryDate, deductionType, deduction, minAmount } =
+    req.body;
+  if (expr > now) {
+    await Coupon.create({
+      couponCode,
+      expiryDate: moment(expiryDate).toISOString(),
+      deductionType,
+      deduction,
+      minAmount,
+    });
+  } else {
+    req.flash("message", "input a valid expr date");
+    res.redirect("/admin/dash/add-coupon");
+  }
+};
+
 const postEditCategory = async (req, res) => {
   if (req.file) {
     const preCategory = await Category.findOne({ name: req.body.name });
@@ -427,4 +475,7 @@ module.exports = {
   getUserDetails,
   patchOrderDetails,
   getOrderDetails,
+  getCoupons,
+  getAdddCoupons,
+  postAddCoupon,
 };

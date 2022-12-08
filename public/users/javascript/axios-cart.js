@@ -3,33 +3,34 @@ async function incrementButton(index, id) {
   var sst = result.value;
   if (!isNaN(sst)) {
     let response = await axios.get(`/cart-item-increment?id=${id}`);
-    console.log(response.data);
     if (response.data.denied) {
       location.href = "/login";
     } else {
       if (response.data.noStock) {
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.addEventListener("mouseenter", Swal.stopTimer);
-            toast.addEventListener("mouseleave", Swal.resumeTimer);
-          },
-        });
-
-        Toast.fire({
-          icon: "error",
-          title: "No stock more than the limit",
-        });
+        showPopupError("No stock more than the limit");
       } else {
-        result.value = response.data.count;
-        document.getElementById(
-          `sub-total-per-item${index}`
-        ).innerHTML = `$ ${response.data.subtotal}`;
-        changeTotalPrice(response.data.grandtotal);
+        if (response.data.type === "percentage") {
+          $("#cart-discount-price p").text(
+            `${response.data.discount} (${response.data.deduction}%)`
+          );
+          $("#cart-total-price").text(response.data.grandtotal);
+          result.value = response.data.count;
+          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
+          $("#products-only-total p").text(response.data.grandtotal);
+          changeTotalPrice(response.data.total);
+        } else if (response.data.type === "amount") {
+          $("#products-only-total p").text(response.data.grandtotal);
+          $("#cart-discount-price p").text(`$ ${response.data.deduction}`);
+          $("#cart-total-price").text(response.data.grandtotal);
+          result.value = response.data.count;
+          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
+          changeTotalPrice(response.data.total);
+        } else {
+          result.value = response.data.count;
+          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
+          $("#products-only-total p").text(response.data.grandtotal);
+          changeTotalPrice(response.data.grandtotal);
+        }
       }
     }
   }
@@ -44,29 +45,34 @@ async function decrementButton(index, id, price) {
     if (response.data.denied) {
       location.href = "/login";
     } else {
-      result.value = response.data.count;
-      document.getElementById(
-        `sub-total-per-item${index}`
-      ).innerHTML = `$ ${response.data.subtotal}`;
-      changeTotalPrice(response.data.grandtotal);
+      if (response.data.status === true) {
+        if (response.data.type === "percentage") {
+          $("#cart-discount-price p").text(
+            `${response.data.discount} (${response.data.deduction}%)`
+          );
+          $("#cart-total-price").text(response.data.grandtotal);
+          result.value = response.data.count;
+          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
+          $("#products-only-total p").text(response.data.grandtotal);
+          changeTotalPrice(response.data.total);
+        } else if (response.data.type === "amount") {
+          $("#products-only-total p").text(response.data.grandtotal);
+          $("#cart-discount-price p").text(`$ ${response.data.discount}`);
+          result.value = response.data.count;
+          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
+          changeTotalPrice(response.data.total);
+        } else {
+          result.value = response.data.count;
+          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
+          $("#products-only-total p").text(response.data.grandtotal);
+          changeTotalPrice(response.data.grandtotal);
+        }
+      } else {
+        showPopupError(response.data.message);
+      }
     }
   } else {
-    const Toast = Swal.mixin({
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener("mouseenter", Swal.stopTimer);
-        toast.addEventListener("mouseleave", Swal.resumeTimer);
-      },
-    });
-
-    Toast.fire({
-      icon: "error",
-      title: "Minimum value is 1. Deleted the item instead",
-    });
+    showPopupError("Minimum value is 1. Deleted the item instead");
   }
   return false;
 }
@@ -76,42 +82,84 @@ async function deleteButton(id) {
   if (response.data.status) {
     changeTotalPrice(response.data.grandtotal);
     location.href = "/cart";
-    const Toast = Swal.mixin({
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener("mouseenter", Swal.stopTimer);
-        toast.addEventListener("mouseleave", Swal.resumeTimer);
-      },
-    });
-
-    Toast.fire({
-      icon: "success",
-      title: "Cart Item Deleted Successfully",
-    });
+    showPopupSuccess("Cart Item Deleted Successfully");
   } else {
-    const Toast = Swal.mixin({
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener("mouseenter", Swal.stopTimer);
-        toast.addEventListener("mouseleave", Swal.resumeTimer);
-      },
-    });
-
-    Toast.fire({
-      icon: "error",
-      title: "Something Went Wrong",
-    });
+    showPopupError(response.data.message);
   }
 }
 
 function changeTotalPrice(grandtotal) {
   document.getElementById("cart-total-price").innerHTML = `$ ${grandtotal}`;
+}
+
+async function addCoupon() {
+  const couponCode = $("#coupon-input").val();
+  const response = await axios.post("/cart/verify-coupon", { couponCode });
+  const type = response.data.type;
+  if (response.data.status === true) {
+    if (type === "percentage") {
+      $("#cart-discount-price p").text(
+        `${response.data.discount} (${response.data.deduction}%)`
+      );
+      $("#cart-total-price").text(response.data.total);
+      $("#error-msg").text("Coupon Applied").css("color", "green");
+    } else {
+      $("#error-msg").text("Coupon Applied").css("color", "green");
+      $("#cart-discount-price p").text(`$ ${response.data.deduction}`);
+      $("#cart-total-price").text(response.data.total);
+    }
+  } else {
+    const error = $("#error-msg");
+    error.text(response.data.message).css("color", "red");
+  }
+}
+
+async function removeCoupon() {
+  const couponCode = $("#coupon-input").val();
+  const response = await axios.patch("/cart/remove-coupon", { couponCode });
+  if (response.data.denied) {
+    location.href = "/login";
+  } else {
+    if (response.data.removeStatus === true) {
+      location.href = "";
+    } else {
+      showPopupError(response.data.message);
+    }
+  }
+}
+
+function showPopupSuccess(message) {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener("mouseenter", Swal.stopTimer);
+      toast.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+  });
+  Toast.fire({
+    icon: "success",
+    title: message,
+  });
+}
+
+function showPopupError(message) {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener("mouseenter", Swal.stopTimer);
+      toast.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+  });
+  Toast.fire({
+    icon: "error",
+    title: message,
+  });
 }
