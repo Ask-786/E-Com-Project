@@ -10,14 +10,29 @@ async function incrementButton(index, id) {
         showPopupError("No stock more than the limit");
       } else {
         if (response.data.type === "percentage") {
-          $("#cart-discount-price p").text(
-            `${response.data.discount} (${response.data.deduction}%)`
-          );
-          $("#cart-total-price").text(response.data.grandtotal);
-          result.value = response.data.count;
-          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
-          $("#products-only-total p").text(response.data.grandtotal);
-          changeTotalPrice(response.data.total);
+          if (response.data.max) {
+            $("#cart-discount-price p").text(
+              `${response.data.discount} (MAX!!)`
+            );
+            $("#cart-total-price").text(response.data.grandtotal);
+            result.value = response.data.count;
+            $(`#sub-total-per-item${index}`).text(
+              `$ ${response.data.subtotal}`
+            );
+            $("#products-only-total p").text(response.data.grandtotal);
+            changeTotalPrice(response.data.total);
+          } else {
+            $("#cart-discount-price p").text(
+              `${response.data.discount} (${response.data.deduction}%)`
+            );
+            $("#cart-total-price").text(response.data.grandtotal);
+            result.value = response.data.count;
+            $(`#sub-total-per-item${index}`).text(
+              `$ ${response.data.subtotal}`
+            );
+            $("#products-only-total p").text(response.data.grandtotal);
+            changeTotalPrice(response.data.total);
+          }
         } else if (response.data.type === "amount") {
           $("#products-only-total p").text(response.data.grandtotal);
           $("#cart-discount-price p").text(`$ ${response.data.deduction}`);
@@ -47,14 +62,29 @@ async function decrementButton(index, id, price) {
     } else {
       if (response.data.status === true) {
         if (response.data.type === "percentage") {
-          $("#cart-discount-price p").text(
-            `${response.data.discount} (${response.data.deduction}%)`
-          );
-          $("#cart-total-price").text(response.data.grandtotal);
-          result.value = response.data.count;
-          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
-          $("#products-only-total p").text(response.data.grandtotal);
-          changeTotalPrice(response.data.total);
+          if (response.data.max) {
+            $("#cart-discount-price p").text(
+              `${response.data.discount} (MAX!!)`
+            );
+            $("#cart-total-price").text(response.data.grandtotal);
+            result.value = response.data.count;
+            $(`#sub-total-per-item${index}`).text(
+              `$ ${response.data.subtotal}`
+            );
+            $("#products-only-total p").text(response.data.grandtotal);
+            changeTotalPrice(response.data.total);
+          } else {
+            $("#cart-discount-price p").text(
+              `${response.data.discount} (${response.data.deduction}%)`
+            );
+            $("#cart-total-price").text(response.data.grandtotal);
+            result.value = response.data.count;
+            $(`#sub-total-per-item${index}`).text(
+              `$ ${response.data.subtotal}`
+            );
+            $("#products-only-total p").text(response.data.grandtotal);
+            changeTotalPrice(response.data.total);
+          }
         } else if (response.data.type === "amount") {
           $("#products-only-total p").text(response.data.grandtotal);
           $("#cart-discount-price p").text(`$ ${response.data.discount}`);
@@ -98,15 +128,27 @@ async function addCoupon() {
   const type = response.data.type;
   if (response.data.status === true) {
     if (type === "percentage") {
-      $("#cart-discount-price p").text(
-        `${response.data.discount} (${response.data.deduction}%)`
-      );
-      $("#cart-total-price").text(response.data.total);
-      $("#error-msg").text("Coupon Applied").css("color", "green");
+      if (response.data.max) {
+        $("#cart-discount-price p").text(`${response.data.discount} (MAX!!)`);
+        $("#cart-total-price").text(response.data.total);
+        $("#error-msg").text("Coupon Applied").css("color", "green");
+        $("#btn-add-coupon").hide();
+        $("#btn-remove-coupon").show();
+      } else {
+        $("#cart-discount-price p").text(
+          `${response.data.discount} (${response.data.deduction}%)`
+        );
+        $("#cart-total-price").text(response.data.total);
+        $("#error-msg").text("Coupon Applied").css("color", "green");
+        $("#btn-add-coupon").hide();
+        $("#btn-remove-coupon").show();
+      }
     } else {
       $("#error-msg").text("Coupon Applied").css("color", "green");
       $("#cart-discount-price p").text(`$ ${response.data.deduction}`);
       $("#cart-total-price").text(response.data.total);
+      $("#btn-add-coupon").hide();
+      $("#btn-remove-coupon").show();
     }
   } else {
     const error = $("#error-msg");

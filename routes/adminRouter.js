@@ -34,6 +34,7 @@ const {
   getCoupons,
   getAdddCoupons,
   postAddCoupon,
+  getChartDetails,
 } = require("../controllers/adminController");
 
 const {
@@ -113,6 +114,8 @@ router
   .route("/dash/add-coupon")
   .get(checkAuthenticated, getAdddCoupons)
   .post(checkAuthenticated, postAddCoupon);
+
+router.route("/dash/getChartDetails").get(checkAuthenticated, getChartDetails);
 
 router.route("/adlogout").delete(deleteLogout);
 

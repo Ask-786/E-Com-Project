@@ -28,8 +28,51 @@ const getDashboard = async (req, res) => {
   let products = await Product.find({});
   res.render("admin-views/dashboard", {
     layout: "./layouts/admin-layout",
-    products: products,
+    products,
   });
+};
+
+const getChartDetails = async (req, res, next) => {
+  const date = moment().subtract(7, "days").toISOString();
+
+  const orders = await Order.find({ createdAt: { $gt: date } }).populate(
+    "cart"
+  );
+
+  await Product.populate(orders, {
+    path: "cart.bucket.products",
+  });
+
+  await Category.populate(orders, {
+    path: "cart.bucket.products.category",
+  });
+
+  const filteredOrderData = orders.map((el) => {
+    return el.cart.bucket.reduce((result, el1) => {
+      if (result[el1.products.category.name] == null) {
+        result[el1.products.category.name] = 0;
+      }
+      result[el1.products.category.name] += el1.quantity;
+      return result;
+    }, {});
+  });
+
+  const groupedOrderData = filteredOrderData.reduce((result, el) => {
+    for (let [key, value] of Object.entries(el)) {
+      let data = {};
+      if (result.some((e) => e.name == key)) {
+        objIndex = result.findIndex((obj) => obj.name == key);
+        result[objIndex].quantity += value;
+      } else {
+        data.quantity = value;
+        data.name = key;
+        result.push(data);
+      }
+    }
+    return result;
+  }, []);
+
+  res.json({ status: true, groupedOrderData });
 };
 
 const getProductAdd = async (req, res) => {
@@ -247,7 +290,10 @@ const getCoupons = async (req, res, next) => {
 const getAdddCoupons = async (req, res, next) => {
   res.render("admin-views/add-coupon", {
     layout: "./layouts/admin-layout",
-    message: req.flash("message"),
+    dateMessage: req.flash("dateMessage"),
+    maxAmountMessage: req.flash("maxAmountMessage"),
+    errMessag: req.flash("errMessag"),
+    successMessage: req.flash("successMessage"),
   });
 };
 
@@ -291,24 +337,26 @@ const postProductAdd = async (req, res) => {
       size: req.body.size,
       stock: req.body.stock,
       images: [
-        req.files[0].filename,
-        req.files[1].filename,
-        req.files[2].filename,
-        req.files[3].filename,
+        req.files.image0[0].filename,
+        req.files.image1[0].filename,
+        req.files.image2[0].filename,
+        req.files.image3[0].filename,
       ],
     });
     req.flash("message", "Product Added Successfully");
     res.redirect("/admin/dash/add-product");
   } catch (err) {
+    console.log(err.message);
     req.flash("message", err.message);
     res.redirect("/admin/dash/add-product");
   }
 };
 
 const postEditProduct = async (req, res) => {
+  const { image0, image1, image2, image3 } = req.files;
   const page = req.query.page;
   const limit = req.query.limit;
-  if (req.files.length > 0) {
+  if ((image0, image1, image2, image3)) {
     let preProduct = await Product.findOne({ _id: req.query.id });
     let data = req.body;
     await Product.updateOne(
@@ -322,10 +370,10 @@ const postEditProduct = async (req, res) => {
           size: data.size,
           stock: data.stock,
           images: [
-            req.files[0].filename,
-            req.files[1].filename,
-            req.files[2].filename,
-            req.files[3].filename,
+            req.files.image0[0].filename,
+            req.files.image1[0].filename,
+            req.files.image2[0].filename,
+            req.files.image3[0].filename,
           ],
         },
       }
@@ -389,23 +437,61 @@ const postAddCategory = async (req, res, next) => {
 const postAddCoupon = async (req, res, next) => {
   const now = moment(Date.now()).format();
   const expr = moment(req.body.expiryDate).format();
-  const { couponCode, expiryDate, deductionType, deduction, minAmount } =
-    req.body;
-  if (expr > now) {
-    await Coupon.create({
-      couponCode,
-      expiryDate: moment(expiryDate).toISOString(),
-      deductionType,
-      deduction,
-      minAmount,
-    });
-  } else {
-    req.flash("message", "input a valid expr date");
+  const {
+    couponCode,
+    expiryDate,
+    deductionType,
+    deduction,
+    minAmount,
+    maxLimit,
+    maxUsers,
+  } = req.body;
+  try {
+    if (expr > now) {
+      if (deductionType === "percentage") {
+        await Coupon.create({
+          couponCode,
+          expiryDate: moment(expiryDate).toISOString(),
+          deductionType,
+          deduction,
+          minAmount,
+          maxLimit,
+          maxUsers,
+        });
+        req.flash("successMessage", "Coupon Added Successfully");
+        res.redirect("/admin/dash/add-coupon");
+      } else {
+        if (maxLimit) {
+          req.flash(
+            "maxAmountMessage",
+            "You there is no need to add Max limti with deduction type of amount"
+          );
+          res.redirect("/admin/dash/add-coupon");
+        } else {
+          await Coupon.create({
+            couponCode,
+            expiryDate: moment(expiryDate).toISOString(),
+            deductionType,
+            deduction,
+            minAmount,
+            maxUsers,
+          });
+          req.flash("successMessage", "Coupon Added Successfully");
+          res.redirect("/admin/dash/add-coupon");
+        }
+      }
+    } else {
+      req.flash("dateMessage", "input a valid expr date");
+      res.redirect("/admin/dash/add-coupon");
+    }
+  } catch (err) {
+    req.flash("errMessag", err.message);
     res.redirect("/admin/dash/add-coupon");
   }
 };
 
 const postEditCategory = async (req, res) => {
+  console.log(req.file);
   if (req.file) {
     const preCategory = await Category.findOne({ name: req.body.name });
     await Category.updateOne(
@@ -478,4 +564,5 @@ module.exports = {
   getCoupons,
   getAdddCoupons,
   postAddCoupon,
+  getChartDetails,
 };

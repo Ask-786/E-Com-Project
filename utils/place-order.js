@@ -1,5 +1,6 @@
 const Order = require("../models/Orders");
 const Propduct = require("../models/Product");
+const Category = require("../models/Category");
 const Cart = require("../models/Cart");
 const mongoose = require("mongoose");
 
@@ -25,7 +26,10 @@ const placeOrder = (
           rzPayId: rzPayId,
         },
       });
-      const cart = await Cart.findOne({ user: user, isexpired: false });
+      const cart = await Cart.findOne({
+        user: user,
+        isexpired: false,
+      });
       await Cart.updateOne(
         { user: user, isexpired: false },
         { $set: { isexpired: true } }

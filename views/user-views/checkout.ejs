@@ -33,7 +33,12 @@
                               cart.grandtotal %>.00</span></h4>
                         <h5 class="checkout-discount">
                           Discounts (<%= cart.couponDetails.couponCode %>) : <span>
-                              <%= discount %> (<%= `${deduction}%` %>)
+                              <% if (max) { %>
+                                <%= discount %> (MAX!!)
+                                  <% } else { %>
+                                    <%= discount %> (<%= `${deduction}%` %>)
+                                        <% } %>
+
                             </span>
                         </h5>
                         <% } else if (cart.coupon===true && type==='amount' ) { %>

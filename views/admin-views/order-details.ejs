@@ -140,6 +140,9 @@
                                             <p class="mb-4 text-gray-600 dark:text-gray-400">
                                                 Coupon Deduction : <%= order.cart.couponDetails.deduction %>%
                                             </p>
+                                            <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                Coupon Maximum Amount Limit : $<%= order.cart.couponDetails.maxLimit %>
+                                            </p>
                                             <% } else { %>
                                                 <p class="mb-4 text-gray-600 dark:text-gray-400">
                                                     Coupon Deduction : $<%= order.cart.couponDetails.deduction %>

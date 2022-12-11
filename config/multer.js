@@ -18,10 +18,24 @@ const categoryImageStorage = multer.diskStorage({
   },
 });
 
-const uploadProductImgs = multer({ storage: productImageStorage }).array(
-  "image",
-  4
-);
+const uploadProductImgs = multer({ storage: productImageStorage }).fields([
+  {
+    name: "image0",
+    maxCount: 1,
+  },
+  {
+    name: "image1",
+    maxCount: 1,
+  },
+  {
+    name: "image2",
+    maxCount: 1,
+  },
+  {
+    name: "image3",
+    maxCount: 1,
+  },
+]);
 const uploadCategoryImg = multer({ storage: categoryImageStorage }).single(
   "image"
 );

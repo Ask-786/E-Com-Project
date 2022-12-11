@@ -26,28 +26,32 @@ const checkVerificationToken =
 initializePassport(passport);
 
 const getHome = async (req, res) => {
-  const category = await Category.find({});
-  const product = await Product.find({})
-    .populate("category")
-    .sort({ updatedAt: -1 })
-    .limit(12);
-  res.render("user-views/home", {
-    name: req.user,
-    product,
-    category,
-  });
+  try {
+    const category = await Category.find({});
+    const product = await Product.find({})
+      .populate("category")
+      .sort({ updatedAt: -1 })
+      .limit(12);
+    res.render("user-views/home", {
+      name: req.user,
+      product,
+      category,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const getLogin = (req, res) => {
   res.render("user-views/login");
 };
 
-const getUserProfile = async (req, res) => {
+const getUserProfile = async (req, res, next) => {
   try {
     let Addresses = await Address.findOne({ user: req.user._id });
     res.render("user-views/profile", { user: req.user, address: Addresses });
-  } catch {
-    res.redirect("/home");
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -55,7 +59,7 @@ const getAddAddress = (req, res) => {
   res.render("user-views/add-address");
 };
 
-const getDeleteAddress = async (req, res) => {
+const getDeleteAddress = async (req, res, next) => {
   try {
     await Address.updateOne(
       { user: req.user._id },
@@ -69,7 +73,7 @@ const getDeleteAddress = async (req, res) => {
     );
     res.json({ status: true });
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 
@@ -85,7 +89,7 @@ const getContact = (req, res) => {
   res.render("user-views/contact");
 };
 
-const getShop = async (req, res) => {
+const getShop = async (req, res, next) => {
   try {
     const category = await Category.find({});
     const products = await Product.find({}).populate("category").limit(20);
@@ -94,7 +98,7 @@ const getShop = async (req, res) => {
       category,
     });
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 
@@ -109,7 +113,7 @@ const getProduct = async (req, res, next) => {
   }
 };
 
-const getCart = async (req, res) => {
+const getCart = async (req, res, next) => {
   try {
     let cart = await Cart.findOne({
       user: req.user._id,
@@ -129,16 +133,31 @@ const getCart = async (req, res) => {
         cart.couponDetails.deductionType === "percentage"
       ) {
         const discount = (cart.grandtotal / 100) * cart.couponDetails.deduction;
-        let total = cart.grandtotal - discount;
-        res.render("user-views/cart", {
-          message: req.flash("message"),
-          cart,
-          total,
-          discount,
-          grandtotal: cart.grandtotal,
-          deduction: cart.couponDetails.deduction,
-          type: "percentage",
-        });
+        if (discount <= cart.couponDetails.maxLimit) {
+          let total = cart.grandtotal - discount;
+          res.render("user-views/cart", {
+            message: req.flash("message"),
+            max: false,
+            cart,
+            total,
+            discount,
+            grandtotal: cart.grandtotal,
+            deduction: cart.couponDetails.deduction,
+            type: "percentage",
+          });
+        } else {
+          let total = cart.grandtotal - cart.couponDetails.maxLimit;
+          res.render("user-views/cart", {
+            message: req.flash("message"),
+            max: true,
+            cart,
+            total,
+            discount: cart.couponDetails.maxLimit,
+            grandtotal: cart.grandtotal,
+            deduction: cart.couponDetails.deduction,
+            type: "percentage",
+          });
+        }
       } else if (
         cart.coupon === true &&
         cart.couponDetails.deductionType === "amount"
@@ -167,7 +186,7 @@ const getCart = async (req, res) => {
       res.render("user-views/empty-cart");
     }
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 
@@ -277,16 +296,31 @@ const getCartItemIncrement = async (req, res, next) => {
         cart.couponDetails.deductionType === "percentage"
       ) {
         const discount = (cart.grandtotal / 100) * cart.couponDetails.deduction;
-        let total = cart.grandtotal - discount;
-        res.json({
-          count: cartItem.quantity,
-          subtotal: cartItem.subtotal,
-          grandtotal: cart.grandtotal,
-          discount,
-          deduction: cart.couponDetails.deduction,
-          total,
-          type: "percentage",
-        });
+        if (discount <= cart.couponDetails.maxLimit) {
+          let total = cart.grandtotal - discount;
+          res.json({
+            max: false,
+            count: cartItem.quantity,
+            subtotal: cartItem.subtotal,
+            grandtotal: cart.grandtotal,
+            discount,
+            deduction: cart.couponDetails.deduction,
+            total,
+            type: "percentage",
+          });
+        } else {
+          let total = cart.grandtotal - cart.couponDetails.maxLimit;
+          res.json({
+            max: true,
+            count: cartItem.quantity,
+            subtotal: cartItem.subtotal,
+            grandtotal: cart.grandtotal,
+            discount: cart.couponDetails.maxLimit,
+            deduction: cart.couponDetails.deduction,
+            total,
+            type: "percentage",
+          });
+        }
       } else if (
         cart.coupon === true &&
         cart.couponDetails.deductionType === "amount"
@@ -362,17 +396,33 @@ const getCartItemDecrement = async (req, res) => {
       cart.couponDetails.deductionType === "percentage"
     ) {
       const discount = (cart.grandtotal / 100) * cart.couponDetails.deduction;
-      let total = cart.grandtotal - discount;
-      res.json({
-        status: true,
-        count: cartItem.quantity,
-        subtotal: cartItem.subtotal,
-        grandtotal: cart.grandtotal,
-        discount,
-        deduction: cart.couponDetails.deduction,
-        total,
-        type: "percentage",
-      });
+      if (discount <= cart.couponDetails.maxLimit) {
+        let total = cart.grandtotal - discount;
+        res.json({
+          max: false,
+          status: true,
+          count: cartItem.quantity,
+          subtotal: cartItem.subtotal,
+          grandtotal: cart.grandtotal,
+          discount,
+          deduction: cart.couponDetails.deduction,
+          total,
+          type: "percentage",
+        });
+      } else {
+        let total = cart.grandtotal - cart.couponDetails.maxLimit;
+        res.json({
+          max: true,
+          status: true,
+          count: cartItem.quantity,
+          subtotal: cartItem.subtotal,
+          grandtotal: cart.grandtotal,
+          discount: cart.couponDetails.maxLimit,
+          deduction: cart.couponDetails.deduction,
+          total,
+          type: "percentage",
+        });
+      }
     } else if (
       cart.coupon === true &&
       cart.couponDetails.deductionType === "amount"
@@ -500,7 +550,7 @@ const getAddToFavorites = async (req, res) => {
   }
 };
 
-const getFavoriteItemDelete = async (req, res) => {
+const getFavoriteItemDelete = async (req, res, next) => {
   try {
     let favorites = await Favorites.findOne({ user: req.user._id });
     let favoriteItem = favorites.products.find((elm) => {
@@ -514,176 +564,136 @@ const getFavoriteItemDelete = async (req, res) => {
     );
     res.json({ status: true });
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 
 const getCheckout = async (req, res, next) => {
-  let userCart = await Cart.findOne({
-    user: req.user._id,
-    isexpired: false,
-  })
-    .populate("bucket.products")
-    .populate("couponDetails");
+  try {
+    let userCart = await Cart.findOne({
+      user: req.user._id,
+      isexpired: false,
+    })
+      .populate("bucket.products")
+      .populate("couponDetails");
 
-  if (userCart !== null) {
-    userCart.bucket.forEach((product) => {
-      if (product.quantity > product.products.stock) {
-        req.flash(
-          "message",
-          `${product.products.title} is not in stock right now`
-        );
-        return res.redirect("/cart");
-      }
-    });
+    if (userCart !== null) {
+      userCart.bucket.forEach((product) => {
+        if (product.quantity > product.products.stock) {
+          req.flash(
+            "message",
+            `${product.products.title} is not in stock right now`
+          );
+          return res.redirect("/cart");
+        }
+      });
 
-    let userAddress = await Address.findOne({ user: req.user._id });
+      let userAddress = await Address.findOne({ user: req.user._id });
 
-    if (
-      userCart.coupon === true &&
-      userCart.couponDetails.deductionType === "percentage"
-    ) {
-      const discount =
-        (userCart.grandtotal / 100) * userCart.couponDetails.deduction;
-      let total = userCart.grandtotal - discount;
-      res.render("user-views/checkout", {
-        cart: userCart,
-        total,
-        discount,
-        grandtotal: userCart.grandtotal,
-        deduction: userCart.couponDetails.deduction,
-        type: "percentage",
-        address: userAddress,
-      });
-    } else if (
-      userCart.coupon === true &&
-      userCart.couponDetails.deductionType === "amount"
-    ) {
-      const discount = userCart.couponDetails.deduction;
-      let total = userCart.grandtotal - discount;
-      res.render("user-views/checkout", {
-        cart: userCart,
-        total,
-        grandtotal: userCart.grandtotal,
-        deduction: userCart.couponDetails.deduction,
-        discount,
-        type: "amount",
-        address: userAddress,
-      });
-    } else {
-      let total = userCart.grandtotal;
-      res.render("user-views/checkout", {
-        cart: userCart,
-        total,
-        grandtotal: userCart.grandtotal,
-        address: userAddress,
-      });
-    }
-  } else {
-    res.redirect("/cart");
-  }
-};
-
-const postVerifyCoupon = async (req, res, next) => {
-  const cart = await Cart.findOne({ user: req.user._id, isexpired: false });
-  const coupon = await Coupon.findOne({ couponCode: req.body.couponCode });
-  if (coupon !== null) {
-    const userCheck = coupon.users.includes(req.user._id);
-    const expr = moment(coupon.expiryDate).format();
-    const now = moment(Date.now()).format();
-    if (coupon.diactivated === true) {
-      res.json({
-        status: false,
-        message: "This coupon was removed by admins for some reason",
-      });
-    } else if (now > expr) {
-      res.json({
-        status: false,
-        message: "This coupon is expired",
-      });
-    } else if (userCheck === true) {
-      res.json({
-        status: false,
-        message: "You have already availed this coupon",
-      });
-    } else if (coupon.minAmount > cart.grandtotal) {
-      res.json({
-        status: false,
-        message: `This coupon is applicable only for purchases above $ ${coupon.minAmount}`,
-      });
-    } else {
-      const cart = await Cart.findOneAndUpdate(
-        {
-          user: req.user._id,
-          isexpired: false,
-        },
-        { coupon: true, couponDetails: coupon._id },
-        { new: true }
-      ).populate("couponDetails");
-      coupon.users.push(req.user._id);
-      await coupon.save();
-
-      if (coupon.deductionType === "percentage") {
-        const discount = (cart.grandtotal / 100) * coupon.deduction;
-        const total = cart.grandtotal - discount;
-        res.json({
-          status: true,
+      if (
+        userCart.coupon === true &&
+        userCart.couponDetails.deductionType === "percentage"
+      ) {
+        const discount =
+          (userCart.grandtotal / 100) * userCart.couponDetails.deduction;
+        if (discount <= userCart.couponDetails.maxLimit) {
+          let total = userCart.grandtotal - discount;
+          res.render("user-views/checkout", {
+            max: false,
+            cart: userCart,
+            total,
+            discount,
+            grandtotal: userCart.grandtotal,
+            deduction: userCart.couponDetails.deduction,
+            type: "percentage",
+            address: userAddress,
+          });
+        } else {
+          let total = userCart.grandtotal - userCart.couponDetails.maxLimit;
+          res.render("user-views/checkout", {
+            max: true,
+            cart: userCart,
+            total,
+            discount: userCart.couponDetails.maxLimit,
+            grandtotal: userCart.grandtotal,
+            deduction: userCart.couponDetails.deduction,
+            type: "percentage",
+            address: userAddress,
+          });
+        }
+      } else if (
+        userCart.coupon === true &&
+        userCart.couponDetails.deductionType === "amount"
+      ) {
+        const discount = userCart.couponDetails.deduction;
+        let total = userCart.grandtotal - discount;
+        res.render("user-views/checkout", {
+          cart: userCart,
           total,
-          discount,
-          type: "percentage",
-          deduction: coupon.deduction,
-        });
-      } else {
-        const discount = coupon.deduction;
-        const total = cart.grandtotal - discount;
-        res.json({
-          status: true,
-          total,
+          grandtotal: userCart.grandtotal,
+          deduction: userCart.couponDetails.deduction,
           discount,
           type: "amount",
-          deduction: coupon.deduction,
+          address: userAddress,
+        });
+      } else {
+        let total = userCart.grandtotal;
+        res.render("user-views/checkout", {
+          cart: userCart,
+          total,
+          grandtotal: userCart.grandtotal,
+          address: userAddress,
         });
       }
+    } else {
+      res.redirect("/cart");
     }
-  } else {
-    console.log("hello");
-    res.json({ status: false, message: "There is no such coupon!!" });
+  } catch (err) {
+    next(err);
   }
 };
 
 const getOrderConfirmation = async (req, res, next) => {
-  const preOrder = await Orders.findById(req.query.id).populate("cart");
-  const preOrder1 = await Coupon.populate(preOrder, {
-    path: "cart.couponDetails",
-  });
-  const order = await Product.populate(preOrder1, {
-    path: "cart.bucket.products",
-  });
-  res.render("user-views/order-confirm", { order, user: req.user });
+  try {
+    const preOrder = await Orders.findById(req.query.id).populate("cart");
+    const preOrder1 = await Coupon.populate(preOrder, {
+      path: "cart.couponDetails",
+    });
+    const order = await Product.populate(preOrder1, {
+      path: "cart.bucket.products",
+    });
+    res.render("user-views/order-confirm", { order, user: req.user });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const getOrders = async (req, res, next) => {
-  const preOrders = await Orders.find({ user: req.user._id })
-    .populate("cart")
-    .sort({ updatedAt: -1 });
-  const preOrders1 = await Coupon.populate(preOrders, {
-    path: "cart.couponDetails",
-  });
-  const orders = await Product.populate(preOrders1, {
-    path: "cart.bucket.products",
-  });
-  const formatedOrders = orders.map((el) => {
-    let newEl = { ...el._doc };
-    newEl.createdAt = moment(newEl.createdAt).format("LL");
-    return newEl;
-  });
-  if (formatedOrders.length > 0) {
-    res.render("user-views/orders", {
-      orders: formatedOrders,
-      message: req.flash("message"),
+  try {
+    const preOrders = await Orders.find({ user: req.user._id })
+      .populate("cart")
+      .sort({ updatedAt: -1 });
+    const preOrders1 = await Coupon.populate(preOrders, {
+      path: "cart.couponDetails",
     });
-  } else {
-    res.render("user-views/empty-orders");
+    const orders = await Product.populate(preOrders1, {
+      path: "cart.bucket.products",
+    });
+    const formatedOrders = orders.map((el) => {
+      let newEl = { ...el._doc };
+      newEl.createdAt = moment(newEl.createdAt).format("LL");
+      return newEl;
+    });
+    if (formatedOrders.length > 0) {
+      res.render("user-views/orders", {
+        orders: formatedOrders,
+        message: req.flash("message"),
+      });
+    } else {
+      res.render("user-views/empty-orders");
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -699,39 +709,75 @@ const postCheckout = async (req, res, next) => {
         const address = Addressess.Addressess.find((elm) => {
           return elm._id.toString() === req.body.address;
         });
-        placeOrder(
-          req.user._id,
-          req.body.cartId,
-          address,
-          req.body.payType,
-          "pending",
-          "",
-          cart.grandtotal -
-            (cart.grandtotal / 100) * cart.couponDetails.deduction
-        ).then((order) => {
-          res.json({ order, codStatus: true });
-        });
-      } else if (req.body.payType === "Razor Pay") {
-        const amount =
-          cart.grandtotal -
-          (cart.grandtotal / 100) * cart.couponDetails.deduction;
-        createOrderRz(amount, req.body.cartId)
-          .then((val) => {
-            res.json({
-              rzSuccess: true,
-              order: val,
-              keyId: process.env.RAZORPAY_KEY_ID,
-              user: req.user,
-              address: req.body.address,
-              payType: req.body.payType,
-            });
-          })
-          .catch((err) => {
-            res.json({
-              rzError: true,
-              message: err.error,
-            });
+        const discount = (cart.grandtotal / 100) * cart.couponDetails.deduction;
+        if (discount <= cart.couponDetails.maxLimit) {
+          placeOrder(
+            req.user._id,
+            req.body.cartId,
+            address,
+            req.body.payType,
+            "pending",
+            "",
+            cart.grandtotal - discount
+          ).then((order) => {
+            res.json({ order, codStatus: true });
           });
+        } else {
+          placeOrder(
+            req.user._id,
+            req.body.cartId,
+            address,
+            req.body.payType,
+            "pending",
+            "",
+            cart.grandtotal - cart.couponDetails.maxLimit
+          ).then((order) => {
+            res.json({ order, codStatus: true });
+          });
+        }
+      } else if (req.body.payType === "Razor Pay") {
+        const discount = (cart.grandtotal / 100) * cart.couponDetails.deduction;
+        if (discount <= cart.couponDetails.maxLimit) {
+          const amount =
+            cart.grandtotal -
+            (cart.grandtotal / 100) * cart.couponDetails.deduction;
+          createOrderRz(amount, req.body.cartId)
+            .then((val) => {
+              res.json({
+                rzSuccess: true,
+                order: val,
+                keyId: process.env.RAZORPAY_KEY_ID,
+                user: req.user,
+                address: req.body.address,
+                payType: req.body.payType,
+              });
+            })
+            .catch((err) => {
+              res.json({
+                rzError: true,
+                message: err.error,
+              });
+            });
+        } else {
+          const amount = cart.grandtotal - cart.couponDetails.maxLimit;
+          createOrderRz(amount, req.body.cartId)
+            .then((val) => {
+              res.json({
+                rzSuccess: true,
+                order: val,
+                keyId: process.env.RAZORPAY_KEY_ID,
+                user: req.user,
+                address: req.body.address,
+                payType: req.body.payType,
+              });
+            })
+            .catch((err) => {
+              res.json({
+                rzError: true,
+                message: err.error,
+              });
+            });
+        }
       }
     } else if (
       cart.coupon === true &&
@@ -815,7 +861,7 @@ const postCheckout = async (req, res, next) => {
   }
 };
 
-const postAddAddress = async (req, res) => {
+const postAddAddress = async (req, res, next) => {
   try {
     let addressExists = await Address.exists({ user: req.user._id });
     if (addressExists === null) {
@@ -834,7 +880,7 @@ const postAddAddress = async (req, res) => {
       res.redirect("/userprofile");
     }
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 
@@ -903,62 +949,169 @@ const postOtpVerify = (req, res) => {
 };
 
 const postVerifyPayment = async (req, res, next) => {
-  verifyPayment(req.body.response).then(async (response) => {
-    if (response) {
-      const cartId = req.body.order.receipt;
-      const cart = await Cart.findById(cartId).populate("couponDetails");
-      const Addressess = await Address.findOne({ user: req.user._id });
-      const address = Addressess.Addressess.find((elm) => {
-        return elm._id.toString() === req.body.addressId;
-      });
-      if (
-        cart.coupon === true &&
-        cart.couponDetails.deductionType === "percentage"
-      ) {
-        placeOrder(
-          req.user._id,
-          cartId,
-          address,
-          req.body.payType,
-          "success",
-          req.body.response.razorpay_payment_id,
-          cart.grandtotal -
-            (cart.grandtotal / 100) * cart.couponDetails.deduction
-        ).then((order) => {
-          res.json({ order, rzStatus: true });
+  try {
+    verifyPayment(req.body.response).then(async (response) => {
+      if (response.signatureIsValid) {
+        const cartId = req.body.order.receipt;
+        const cart = await Cart.findById(cartId).populate("couponDetails");
+        const Addressess = await Address.findOne({ user: req.user._id });
+        const address = Addressess.Addressess.find((elm) => {
+          return elm._id.toString() === req.body.addressId;
         });
-      } else if (
-        cart.coupon === true &&
-        cart.couponDetails.deductionType === "amount"
-      ) {
-        placeOrder(
-          req.user._id,
-          cartId,
-          address,
-          req.body.payType,
-          "success",
-          req.body.response.razorpay_payment_id,
-          cart.grandtotal - cart.couponDetails.deduction
-        ).then((order) => {
-          res.json({ order, rzStatus: true });
+        if (
+          cart.coupon === true &&
+          cart.couponDetails.deductionType === "percentage"
+        ) {
+          const discount =
+            (cart.grandtotal / 100) * cart.couponDetails.deduction;
+          if (discount <= cart.couponDetails.maxLimit) {
+            placeOrder(
+              req.user._id,
+              cartId,
+              address,
+              req.body.payType,
+              "success",
+              req.body.response.razorpay_payment_id,
+              cart.grandtotal - discount
+            ).then((order) => {
+              res.json({ order, rzStatus: true });
+            });
+          } else {
+            placeOrder(
+              req.user._id,
+              cartId,
+              address,
+              req.body.payType,
+              "success",
+              req.body.response.razorpay_payment_id,
+              cart.grandtotal - cart.couponDetails.maxLimit
+            ).then((order) => {
+              res.json({ order, rzStatus: true });
+            });
+          }
+        } else if (
+          cart.coupon === true &&
+          cart.couponDetails.deductionType === "amount"
+        ) {
+          placeOrder(
+            req.user._id,
+            cartId,
+            address,
+            req.body.payType,
+            "success",
+            req.body.response.razorpay_payment_id,
+            cart.grandtotal - cart.couponDetails.deduction
+          ).then((order) => {
+            res.json({ order, rzStatus: true });
+          });
+        } else {
+          placeOrder(
+            req.user._id,
+            cartId,
+            address,
+            req.body.payType,
+            "success",
+            req.body.response.razorpay_payment_id,
+            cart.grandtotal
+          ).then((order) => {
+            res.json({ order, rzStatus: true });
+          });
+        }
+      } else {
+        res.json({ rzStatus: false });
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const postVerifyCoupon = async (req, res, next) => {
+  try {
+    const cart = await Cart.findOne({ user: req.user._id, isexpired: false });
+    let coupon = await Coupon.findOne({ couponCode: req.body.couponCode });
+    if (coupon !== null) {
+      const userCheck = coupon.users.includes(req.user._id);
+      const expr = moment(coupon.expiryDate).format();
+      const now = moment(Date.now()).format();
+      if (coupon.diactivated === true) {
+        res.json({
+          status: false,
+          message: "This coupon was removed by admins for some reason",
+        });
+      } else if (now > expr) {
+        res.json({
+          status: false,
+          message: "This coupon is expired",
+        });
+      } else if (userCheck === true) {
+        res.json({
+          status: false,
+          message: "You have already availed this coupon",
+        });
+      } else if (coupon.minAmount > cart.grandtotal) {
+        res.json({
+          status: false,
+          message: `This coupon is applicable only for purchases above $ ${coupon.minAmount}`,
+        });
+      } else if (coupon.users.length === coupon.maxUsers) {
+        res.json({
+          status: false,
+          message: `This coupon was available only for limited number of persons`,
         });
       } else {
-        placeOrder(
-          req.user._id,
-          cartId,
-          address,
-          req.body.payType,
-          "success",
-          req.body.response.razorpay_payment_id,
-          cart.grandtotal
-        ).then((order) => {
-          res.json({ order, rzStatus: true });
-        });
+        const cart = await Cart.findOneAndUpdate(
+          {
+            user: req.user._id,
+            isexpired: false,
+          },
+          { coupon: true, couponDetails: coupon._id },
+          { new: true }
+        ).populate("couponDetails");
+        coupon.users.push(req.user._id);
+        const something = await coupon.save();
+        console.log(something);
+        if (coupon.deductionType === "percentage") {
+          const discount = (cart.grandtotal / 100) * coupon.deduction;
+          if (discount <= coupon.maxLimit) {
+            const total = cart.grandtotal - discount;
+            res.json({
+              max: false,
+              status: true,
+              total,
+              discount,
+              type: "percentage",
+              deduction: coupon.deduction,
+            });
+          } else {
+            const total = cart.grandtotal - coupon.maxLimit;
+            res.json({
+              max: true,
+              status: true,
+              total,
+              discount: coupon.maxLimit,
+              type: "percentage",
+              deduction: coupon.deduction,
+            });
+          }
+        } else {
+          const discount = coupon.deduction;
+          const total = cart.grandtotal - discount;
+          res.json({
+            status: true,
+            total,
+            discount,
+            type: "amount",
+            deduction: coupon.deduction,
+          });
+        }
       }
     } else {
-      res.json({ rzStatus: false });
+      res.json({ status: false, message: "There is no such coupon!!" });
     }
-  });
+  } catch (err) {
+    console.log(err.message);
+  }
 };
 
 // const postLogin = (req, res) => {
@@ -996,12 +1149,16 @@ const postVerifyPayment = async (req, res, next) => {
 // };
 
 const patchCancelOrder = async (req, res, next) => {
-  await Orders.updateOne(
-    { _id: req.body.orderId },
-    { orderStatus: "cancelled" }
-  );
-  req.flash("message", "Order Cancelled Successfully");
-  res.json({ status: true, orderStatus: "cancelled" });
+  try {
+    await Orders.updateOne(
+      { _id: req.body.orderId },
+      { orderStatus: "cancelled" }
+    );
+    req.flash("message", "Order Cancelled Successfully");
+    res.json({ status: true, orderStatus: "cancelled" });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const patchRemoveCoupon = async (req, res, next) => {

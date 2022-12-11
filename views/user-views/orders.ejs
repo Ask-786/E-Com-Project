@@ -65,16 +65,22 @@
                             <td>
                             </td>
                             <% if (orders[j].cart.couponDetails.deductionType==="percentage" ) { %>
-                              <td>
-                                <% let val=orders[j].cart.grandtotal/100 * orders[j].cart.couponDetails.deduction %>
-                                  <%= Math.round(val*Math.pow(10,2))/Math.pow(10,2); %>(<%=
-                                      orders[j].cart.couponDetails.deduction %>%)
-                              </td>
-                              <% } else { %>
-                                <td>
-                                  $<%= orders[j].cart.couponDetails.deduction %>
-                                </td>
-                                <% } %>
+                              <% let discount=orders[j].cart.grandtotal/100 * orders[j].cart.couponDetails.deduction %>
+                                <% if (discount <=orders[j].cart.couponDetails.maxLimit) { %>
+                                  <td>
+                                    <%= Math.round(discount*Math.pow(10,2))/Math.pow(10,2); %>(<%=
+                                        orders[j].cart.couponDetails.deduction %>%)
+                                  </td>
+                                  <% } else { %>
+                                    <td>
+                                      <%= orders[j].cart.couponDetails.maxLimit %>(MAX!!)
+                                    </td>
+                                    <% } %>
+                                      <% } else { %>
+                                        <td>
+                                          $<%= orders[j].cart.couponDetails.deduction %>
+                                        </td>
+                                        <% } %>
                           </tr>
                           <% } %>
                             <tr>

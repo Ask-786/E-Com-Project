@@ -29,8 +29,9 @@ function verifyPayment(responseRZ) {
       .update(body.toString())
       .digest("hex");
     var response = { signatureIsValid: "false" };
-    if (expectedSignature === responseRZ.razorpay_signature)
+    if (expectedSignature === responseRZ.razorpay_signature) {
       response = { signatureIsValid: "true" };
+    }
     resolve(response);
   });
 }

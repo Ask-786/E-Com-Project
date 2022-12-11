@@ -15,9 +15,7 @@ const couponSchema = new Schema(
     },
     users: {
       type: [Schema.Types.ObjectId],
-      default: [],
       ref: "Users",
-      unique: true,
     },
     minAmount: {
       type: Number,
@@ -27,6 +25,10 @@ const couponSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    maxUsers: {
+      type: Number,
+      required: true,
+    },
     deductionType: {
       type: String,
       enum: ["percentage", "amount"],
@@ -35,6 +37,10 @@ const couponSchema = new Schema(
     deduction: {
       type: Number,
       required: true,
+    },
+    maxLimit: {
+      type: Number,
+      default: null,
     },
   },
   {

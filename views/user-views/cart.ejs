@@ -92,12 +92,19 @@
                         </td>
                         <td>
                           <% if (cart.coupon===true) { %>
-                            <a onclick="removeCoupon()" style="cursor: pointer;">
+                            <a onclick="removeCoupon()" style="cursor: pointer;" id="btn-remove-coupon">
                               <h3>Remove Coupon</h3>
                             </a>
+                            <a onclick="addCoupon()" style="cursor: pointer; display: none;" id="btn-add-coupon">
+                              <h3>add coupon</h3>
+                            </a>
                             <% } else { %>
-                              <a onclick="addCoupon()" style="cursor: pointer;">
-                                <h3>update cart</h3>
+                              <a onclick="removeCoupon()" style="cursor: pointer; display: none;"
+                                id="btn-remove-coupon">
+                                <h3>Remove Coupon</h3>
+                              </a>
+                              <a onclick="addCoupon()" style="cursor: pointer;" id="btn-add-coupon">
+                                <h3>add coupon</h3>
                               </a>
                               <% } %>
 
@@ -139,17 +146,24 @@
                 <div class="media-body" style="text-align:right;" id="cart-discount-price">
                   <% if (cart.coupon===true) { %>
                     <% if (type==="percentage" ) { %>
-                      <p>
-                        <%= `${discount} (${deduction}%)` %>
-                      </p>
-                      <% } else if (type==="amount" ) { %>
-                        <%= `$ ${discount}` %>
+                      <% if (max) { %>
+                        <p>
+                          <%= `${discount} (MAX!!)` %>
+                        </p>
+                        <% } else { %>
+                          <p>
+                            <%= `${discount} (${deduction}%)` %>
+                          </p>
                           <% } %>
-                            <% } else { %>
-                              <p>
-                                --
-                              </p>
-                              <% } %>
+
+                            <% } else if (type==="amount" ) { %>
+                              <%= `$ ${discount}` %>
+                                <% } %>
+                                  <% } else { %>
+                                    <p>
+                                      --
+                                    </p>
+                                    <% } %>
                 </div>
               </div>
             </div>
