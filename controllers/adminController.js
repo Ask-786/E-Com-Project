@@ -491,7 +491,6 @@ const postAddCoupon = async (req, res, next) => {
 };
 
 const postEditCategory = async (req, res) => {
-  console.log(req.file);
   if (req.file) {
     const preCategory = await Category.findOne({ name: req.body.name });
     await Category.updateOne(

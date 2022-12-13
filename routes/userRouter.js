@@ -32,6 +32,12 @@ const {
   patchCancelOrder,
   postVerifyCoupon,
   patchRemoveCoupon,
+  getForgotPassword,
+  postForgotPassword,
+  getOtpVerifyResetPass,
+  postOtpverifyResetPass,
+  getResetPass,
+  patchResetPass,
 } = require("../controllers/userController");
 
 const {
@@ -148,6 +154,21 @@ router
   .route("/otp-verify")
   .get(checkNotAuthenticated, getOtpVerify)
   .post(checkNotAuthenticated, postOtpVerify);
+
+router
+  .route("/forgot-password")
+  .get(checkNotAuthenticated, getForgotPassword)
+  .post(checkNotAuthenticated, postForgotPassword);
+
+router
+  .route("/otp-verify-reset-pass")
+  .get(checkNotAuthenticated, getOtpVerifyResetPass)
+  .post(checkNotAuthenticated, postOtpverifyResetPass);
+
+router
+  .route("/reset-pass")
+  .get(checkNotAuthenticated, getResetPass)
+  .patch(checkNotAuthenticated, patchResetPass);
 
 router.route("/logout").delete(checkAuthenticated, deleteLogout);
 

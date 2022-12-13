@@ -15,8 +15,8 @@ $("#input-image0").change(function () {
     scalable: false,
     zoomable: false,
     movable: false,
-    minCropBoxWidth: 200,
-    minCropBoxHeight: 200,
+    minCropBoxWidth: 270,
+    minCropBoxHeight: 320,
   });
   $("#btnCrop0").click(function () {
     cropper.getCroppedCanvas().toBlob((blob) => {
@@ -56,8 +56,8 @@ $("#input-image1").change(function () {
     scalable: false,
     zoomable: false,
     movable: false,
-    minCropBoxWidth: 200,
-    minCropBoxHeight: 200,
+    minCropBoxWidth: 270,
+    minCropBoxHeight: 320,
   });
   $("#btnCrop1").click(function () {
     cropper.getCroppedCanvas().toBlob((blob) => {
@@ -97,8 +97,8 @@ $("#input-image2").change(function () {
     scalable: false,
     zoomable: false,
     movable: false,
-    minCropBoxWidth: 200,
-    minCropBoxHeight: 200,
+    minCropBoxWidth: 270,
+    minCropBoxHeight: 320,
   });
   $("#btnCrop2").click(function () {
     cropper.getCroppedCanvas().toBlob((blob) => {
@@ -138,8 +138,8 @@ $("#input-image3").change(function () {
     scalable: false,
     zoomable: false,
     movable: false,
-    minCropBoxWidth: 200,
-    minCropBoxHeight: 200,
+    minCropBoxWidth: 270,
+    minCropBoxHeight: 320,
   });
   $("#btnCrop3").click(function () {
     cropper.getCroppedCanvas().toBlob((blob) => {

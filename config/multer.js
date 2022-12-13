@@ -5,20 +5,26 @@ const productImageStorage = multer.diskStorage({
     callback(null, "./public/products-images");
   },
   filename: (req, file, callback) => {
-    callback(null, Date.now() + "-" + file.originalname);
+    const filename = file.originalname.replace(/\s+/g, "-");
+
+    callback(null, Date.now() + "-" + filename);
   },
 });
 
 const categoryImageStorage = multer.diskStorage({
   destination: (req, file, callback) => {
+    console.log(file);
     callback(null, "./public/category-images");
   },
   filename: (req, file, callback) => {
-    callback(null, Date.now() + "-" + file.originalname);
+    const filename = file.originalname.replace(/\s+/g, "-");
+    callback(null, Date.now() + "-" + filename);
   },
 });
 
-const uploadProductImgs = multer({ storage: productImageStorage }).fields([
+const uploadProductImgs = multer({
+  storage: productImageStorage,
+}).fields([
   {
     name: "image0",
     maxCount: 1,
@@ -36,6 +42,7 @@ const uploadProductImgs = multer({ storage: productImageStorage }).fields([
     maxCount: 1,
   },
 ]);
+
 const uploadCategoryImg = multer({ storage: categoryImageStorage }).single(
   "image"
 );

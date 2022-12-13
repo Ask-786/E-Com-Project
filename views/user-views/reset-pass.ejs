@@ -1,0 +1,40 @@
+<body>
+  <section class="solid_banner_area">
+    <div class="container">
+      <div class="solid_banner_inner">
+        <h3>Forgot Password </h3>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="#">forgot password</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="login_area p_100">
+    <div class="container">
+      <div class="login_inner">
+        <div class="row">
+          <div class="col-lg-4">
+          </div>
+          <div class="col-lg-4">
+            <div class="login_title">
+              <h2>Enter Your New Password</h2>
+            </div>
+            <form class="login_form row" action="/reset-pass?_method=PATCH" method="POST">
+              <div class="col-lg-12 form-group">
+                <input class="form-control" type="text" placeholder="New Password" name="password" required>
+              </div>
+
+              <div class="col-lg-12 form-group">
+                <button type="submit" value="submit" class="btn update_btn form-control">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</body>

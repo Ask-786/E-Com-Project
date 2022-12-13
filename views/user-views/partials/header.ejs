@@ -38,9 +38,18 @@
                         </li>
                         <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
                     </ul>
-                    <ul class="navbar-nav justify-content-end">
-                        <li class="search_icon nav-item"><a href="#"><span class="icon-magnifier"></span></i></a>
+                    <ul class="navbar-nav justify-content-end search">
+                        <li class="cart_cart nav-item">
+                            <form class="search_form" action="/global-search" method="POST">
+                                <div class="form-group inner-div">
+                                    <span class="icon-magnifier"></span>
+                                    <input class="form-control" type="text" placeholder="Search" name="searchData"
+                                        required>
+                                </div>
+                            </form>
                         </li>
+                    </ul>
+                    <ul class="navbar-nav justify-content-end">
                         <li class="cart_cart nav-item"><a href="/cart"><span class="icon-handbag"></span></a></li>
                         <li class="cart_cart nav-item"><a href="/favorites"><span class="icon_heart_alt"></span></a>
                         </li>

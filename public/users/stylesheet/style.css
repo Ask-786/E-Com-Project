@@ -923,8 +923,53 @@ i:before {
   transition: all 400ms linear 0s;
 }
 
+.carousel_menu_inner .navbar .navbar-nav.justify-content-end.search {
+  position: relative;
+  margin: 0 10px 0 10px;
+}
+
+.carousel_menu_inner
+  .navbar
+  .navbar-nav.justify-content-end.search
+  .form-group.inner-div {
+  position: relative;
+  display: flex;
+  justify-content: end;
+}
+
+.carousel_menu_inner
+  .navbar
+  .navbar-nav.justify-content-end.search
+  .form-group.inner-div
+  span {
+  margin: 19px 13px 0 0;
+}
+
+.carousel_menu_inner .navbar .navbar-nav.justify-content-end li input {
+  font-size: 15px;
+  border: 1px solid #cccccc;
+  color: #333333;
+  text-align: center;
+  display: block;
+  line-height: 48px;
+  padding: 0px 20px;
+  -webkit-transition: all 400ms linear 0s;
+  -o-transition: all 400ms linear 0s;
+  transition: all 400ms linear 0s;
+}
+
+.carousel_menu_inner .navbar .navbar-nav.justify-content-end li :hover input {
+  border-color: #0b1033;
+  color: #0b1033;
+}
+
 .carousel_menu_inner .navbar .navbar-nav.justify-content-end li a i {
   padding-left: 0px;
+}
+
+.carousel_menu_inner .navbar .navbar-nav.justify-content-end.search li span {
+  position: absolute;
+  cursor: pointer;
 }
 
 .carousel_menu_inner .navbar .navbar-nav.justify-content-end li:last-child {
@@ -5919,6 +5964,60 @@ i:before {
 }
 
 /* End Login Area css
+============================================================================================ */
+/* Search input box
+============================================================================================ */
+
+.search_form .form-group {
+  margin-bottom: 30px;
+}
+
+.search_form .form-group:last-child {
+  margin-bottom: 0px;
+}
+
+.search_form .form-group input {
+  height: 50px;
+  border: 1px solid #cccccc;
+  border-radius: 0px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  outline: none;
+  padding: 0px 22px;
+  box-shadow: none;
+  line-height: 50px;
+  text-align: left !important;
+}
+
+.search_form .form-group input.placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+  text-align: left;
+}
+
+.search_form .form-group input:-moz-placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+  text-align: left;
+}
+
+.search_form .form-group input::-moz-placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+  text-align: left;
+}
+
+.search_form .form-group input::-webkit-input-placeholder {
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: #666666;
+  text-align: left;
+}
+
+/* Search input box
 ============================================================================================ */
 /* Error Area css
 ============================================================================================ */

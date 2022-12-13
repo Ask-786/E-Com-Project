@@ -43,7 +43,7 @@ const getHome = async (req, res) => {
 };
 
 const getLogin = (req, res) => {
-  res.render("user-views/login");
+  res.render("user-views/login", { message: req.flash("message") });
 };
 
 const getUserProfile = async (req, res, next) => {
@@ -697,6 +697,22 @@ const getOrders = async (req, res, next) => {
   }
 };
 
+const getForgotPassword = (req, res, next) => {
+  res.render("user-views/forgot-pass", { message: req.flash("message") });
+};
+
+const getOtpVerifyResetPass = (req, res, next) => {
+  res.render("user-views/otp-verify-reset-pass");
+};
+
+const getResetPass = (req, res, next) => {
+  if (req.session.temp) {
+    res.render("user-views/reset-pass");
+  } else {
+    res.redirect("/login");
+  }
+};
+
 const postCheckout = async (req, res, next) => {
   try {
     const cart = await Cart.findById(req.body.cartId).populate("couponDetails");
@@ -917,6 +933,23 @@ const postSignUp = async (req, res) => {
   }
 };
 
+const postForgotPassword = async (req, res, next) => {
+  const { nameOrEmail } = req.body;
+  const user = await User.findOne({
+    $or: [{ email: nameOrEmail }, { username: nameOrEmail }],
+    isadmin: false,
+  });
+  if (user !== null) {
+    req.session.temp = user;
+    sendVerifyToken(user.phone).then(() => {
+      res.redirect("/otp-verify-reset-pass");
+    });
+  } else {
+    req.flash("message", "There is no such user with that username or email");
+    res.redirect("/forgot-password");
+  }
+};
+
 const postLogin = passport.authenticate("local", {
   successRedirect: "/",
   failureRedirect: "/login",
@@ -935,9 +968,7 @@ const postOtpVerify = (req, res) => {
           });
         } else {
           req.logOut((err) => {
-            const query = querystring.stringify({
-              errMessage: "Wrong OTP",
-            });
+            req.flash("message", "Wrong OTP");
             res.redirect("/signup");
           });
         }
@@ -945,6 +976,39 @@ const postOtpVerify = (req, res) => {
     );
   } catch (err) {
     console.log(err.message);
+  }
+};
+
+const postOtpverifyResetPass = (req, res, next) => {
+  try {
+    checkVerificationToken(req.session.temp.phone, req.body.otp).then(
+      (status) => {
+        if (status === "approved") {
+          res.redirect("/reset-pass");
+        } else {
+          req.logOut((err) => {
+            req.flash("message", "Wrong OTP");
+            res.redirect("/forgot-password");
+          });
+        }
+      }
+    );
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+const patchResetPass = async (req, res, next) => {
+  console.log(req.session.temp._id);
+  const user = await User.findById(req.session.temp._id);
+  user.password = req.body.password;
+  try {
+    await user.save();
+    req.flash("message", "password reset successfully");
+    res.redirect("/login");
+  } catch (err) {
+    req.flash("message", "something went wrong");
+    res.redirect("/forgot-password");
   }
 };
 
@@ -1227,4 +1291,10 @@ module.exports = {
   patchCancelOrder,
   postVerifyCoupon,
   patchRemoveCoupon,
+  getForgotPassword,
+  postForgotPassword,
+  getOtpVerifyResetPass,
+  postOtpverifyResetPass,
+  getResetPass,
+  patchResetPass,
 };

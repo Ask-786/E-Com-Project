@@ -1,0 +1,47 @@
+<body>
+  <section class="solid_banner_area">
+    <div class="container">
+      <div class="solid_banner_inner">
+        <h3>Forgot Password </h3>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="#">forgot password</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="login_area p_100">
+    <div class="container">
+      <div class="login_inner">
+        <div class="row">
+          <div class="col-lg-4">
+          </div>
+          <div class="col-lg-4">
+            <div class="login_title">
+              <h2>Reset Password</h2>
+              <% if(message.length>0) {%>
+                <p style="color: hsl(0, 100%, 44%);">
+                  <%= message %>
+                </p>
+                <% }else{ %>
+                  <p>We will send an OTP to your registered mobile number. Confirm the OTP to change the password</p>
+                  <% } %>
+            </div>
+            <form class="login_form row" action="/forgot-password" method="POST">
+              <div class="col-lg-12 form-group">
+                <input class="form-control" type="text" placeholder="Username or Email" name="nameOrEmail" required>
+              </div>
+
+              <div class="col-lg-12 form-group">
+                <button type="submit" value="submit" class="btn update_btn form-control">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</body>

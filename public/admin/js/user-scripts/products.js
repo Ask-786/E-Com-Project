@@ -1,7 +1,7 @@
 function deleteAlert(array) {
   document.getElementById(
     "button-delete"
-  ).href = `/admin/dash/products/delete-product?id=${array[0]}`;
+  ).href = `/admin/dash/products/disable-product?id=${array[0]}`;
   document.getElementById("model-header").innerHTML = `Delete ${array[1]} ?`;
   document.getElementById("model-body").innerHTML = `Are You Sure?`;
   document.getElementById("model-sub-1").style.display = "none";

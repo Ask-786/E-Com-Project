@@ -9,7 +9,7 @@ $("#input-image0").change(function () {
   $("#btnCrop0").css("display", "block");
 
   const cropper = new Cropper(image[0], {
-    aspectRatio: 37 / 52,
+    aspectRatio: 32 / 55,
     autoCropArea: 1,
     viewMode: 1,
     scalable: false,

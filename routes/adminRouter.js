@@ -64,7 +64,7 @@ router
   .post(checkAuthenticated, uploadProductImgs, postEditProduct);
 
 router
-  .route("/dash/products/delete-product")
+  .route("/dash/products/disable-product")
   .get(checkAuthenticated, getDeleteProduct);
 
 router.route("/dash/categories").get(checkAuthenticated, getCategories);
