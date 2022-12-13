@@ -21,6 +21,7 @@ const getLogin = (req, res) => {
   res.render("admin-views/login", {
     layout: "./layouts/admin-layout",
     message: req.message,
+    title: "Persuit: login",
   });
 };
 
@@ -29,6 +30,7 @@ const getDashboard = async (req, res) => {
   res.render("admin-views/dashboard", {
     layout: "./layouts/admin-layout",
     products,
+    title: "Persuit: Dashboard",
   });
 };
 
@@ -80,6 +82,7 @@ const getProductAdd = async (req, res) => {
   res.render("admin-views/add-product", {
     layout: "./layouts/admin-layout",
     category,
+    title: "Persuit: Add Products",
   });
 };
 
@@ -89,6 +92,7 @@ const getProducts = async (req, res) => {
     layout: "./layouts/admin-layout",
     products,
     message: req.flash("message"),
+    title: "Persuit: Products",
   });
 };
 
@@ -101,6 +105,7 @@ const getEditProduct = async (req, res) => {
     category,
     page: req.query.page,
     limit: req.query.limit,
+    title: "Persuit: Edit Products",
   });
 };
 
@@ -122,6 +127,7 @@ const getCategories = async (req, res) => {
     layout: "./layouts/admin-layout",
     categories,
     message: req.flash("message"),
+    title: "Persuit: Categories",
   });
 };
 
@@ -129,6 +135,7 @@ const getAddCategory = (req, res) => {
   res.render("admin-views/add-category", {
     layout: "./layouts/admin-layout",
     message: req.flash("message"),
+    title: "Persuit: Add Category",
   });
 };
 
@@ -156,6 +163,7 @@ const getEditCategory = async (req, res, next) => {
     res.render("admin-views/edit-category", {
       layout: "./layouts/admin-layout",
       category,
+      title: "Persuit: Edit CAtegory",
     });
   } catch (err) {
     next(err);
@@ -168,6 +176,7 @@ const getUsers = async (req, res) => {
     layout: "./layouts/admin-layout",
     users,
     message: req.flash("message"),
+    title: "Persuit: Users List",
   });
 };
 
@@ -205,6 +214,7 @@ const getUserDetails = async (req, res, next) => {
       layout: "./layouts/admin-layout",
       user: newUser,
       message: req.flash("message"),
+      title: "Persuit: User Details",
     });
   } catch (err) {
     next(err);
@@ -249,6 +259,7 @@ const getOrders = async (req, res, next) => {
   res.render("admin-views/orders", {
     layout: "./layouts/admin-layout",
     orders,
+    title: "Persuit: Orders",
   });
 };
 
@@ -269,6 +280,7 @@ const getOrderDetails = async (req, res, next) => {
     message: req.flash("message"),
     layout: "./layouts/admin-layout",
     order: formatedOrder,
+    title: "Persuit: Order Details",
   });
 };
 
@@ -284,6 +296,7 @@ const getCoupons = async (req, res, next) => {
   res.render("admin-views/coupons", {
     layout: "./layouts/admin-layout",
     coupons: formattedCoupons,
+    title: "Persuit: Coupons",
   });
 };
 
@@ -294,6 +307,7 @@ const getAdddCoupons = async (req, res, next) => {
     maxAmountMessage: req.flash("maxAmountMessage"),
     errMessag: req.flash("errMessag"),
     successMessage: req.flash("successMessage"),
+    title: "Persuit: AddCoupons",
   });
 };
 
