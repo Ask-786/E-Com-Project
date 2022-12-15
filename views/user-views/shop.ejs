@@ -21,27 +21,6 @@
                 <div class="first_fillter">
                   <h4>Showing 1 to 12 of 30 total</h4>
                 </div>
-                <div class="secand_fillter">
-                  <h4>SORT BY :</h4>
-                  <select class="selectpicker">
-                    <option>Name</option>
-                    <option>Name 2</option>
-                    <option>Name 3</option>
-                  </select>
-                </div>
-                <div class="third_fillter">
-                  <h4>Show : </h4>
-                  <select class="selectpicker">
-                    <option>09</option>
-                    <option>10</option>
-                    <option>10</option>
-                  </select>
-                </div>
-                <div class="four_fillter">
-                  <h4>View</h4>
-                  <a class="active" href="#"><i class="icon_grid-2x2"></i></a>
-                  <a href="#"><i class="icon_grid-3x3"></i></a>
-                </div>
               </div>
             </div>
             <div class="categories_product_area">
@@ -53,49 +32,58 @@
                 </div>
                 <% } %>
                   <div class="row" id="all-products">
-                    <% for (i=0; i<products.length;i++) { %>
-                      <div class="col-lg-4 col-sm-6">
-                        <div class="l_product_item">
-                          <div class="l_p_img">
-                            <a href="/shop/product?id=<%= products[i]._id %>">
-                              <img src="/products-images/<%= products[i].images[0] %>" alt="" height="100%"
-                                width="100%">
-                              <h5 class="new">New</h5>
-                            </a>
-                          </div>
-                          <div class="l_p_text">
-                            <ul>
-                              <li class="p_icon"><a style="cursor: pointer;"><i class="icon_piechart"></i></a></li>
+                    <% if (products.results.length>0) { %>
+                      <% for (i=0; i<products.results.length;i++) { %>
+                        <div class="col-lg-4 col-sm-6">
+                          <div class="l_product_item">
+                            <div class="l_p_img">
+                              <a href="/shop/product?id=<%= products.results[i]._id %>">
+                                <img src="/products-images/<%= products.results[i].images[0] %>" alt="" height="100%"
+                                  width="100%">
+                                <h5 class="new">New</h5>
+                              </a>
+                            </div>
+                            <div class="l_p_text">
+                              <ul>
+                                <li class="p_icon"><a style="cursor: pointer;"><i class="icon_piechart"></i></a></li>
 
-                              <li><button class="add_cart_btn" onclick="addToCart('<%= products[i]._id %>')"
-                                  style="cursor: pointer;">Add To Cart</button>
-                              </li>
+                                <li><button class="add_cart_btn" onclick="addToCart('<%= products.results[i]._id %>')"
+                                    style="cursor: pointer;">Add To Cart</button>
+                                </li>
 
-                              <li class="p_icon"><a onclick="addToFavorites('<%= products[i]._id %>')"><i
-                                    class="icon_heart_alt"></i></a></li>
-                            </ul>
-                            <h4>
-                              <%= products[i].title %>
-                            </h4>
-                            <h5><del>$45.50</del>
-                              <%= products[i].price %>
-                            </h5>
+                                <li class="p_icon"><a onclick="addToFavorites('<%= products.results[i]._id %>')"><i
+                                      class="icon_heart_alt"></i></a></li>
+                              </ul>
+                              <h4>
+                                <%= products.results[i].title %>
+                              </h4>
+                              <h5><del>$45.50</del>
+                                <%= products.results[i].price %>
+                              </h5>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <% } %>
+                        <% } %>
+                          <% } %>
                   </div>
                   <nav aria-label="Page navigation example" id="pagination_area" class="pagination_area">
-                    <ul class="pagination">
-                      <li class="page-item"><a class="page-link" href="#">1</a></li>
-                      <li class="page-item"><a class="page-link" href="#">2</a></li>
-                      <li class="page-item"><a class="page-link" href="#">3</a></li>
-                      <li class="page-item"><a class="page-link" href="#">4</a></li>
-                      <li class="page-item"><a class="page-link" href="#">5</a></li>
-                      <li class="page-item"><a class="page-link" href="#">6</a></li>
-                      <li class="page-item next"><a class="page-link" href="#"><i class="fa fa-angle-right"
-                            aria-hidden="true"></i></a></li>
-                    </ul>
+                    <% if (pagination) { %>
+                      <ul class="pagination">
+                        <% if (products.previous) { %>
+                          <li class="page-item next"><a class="page-link"
+                              href="/shop?page=<%= products.previous.page %>&limit=<%= products.previous.limit %>"><i
+                                class="fa fa-angle-left" aria-hidden="true"></i></a></li>
+                          <% } %>
+                            <li class="page-item"><a class="page-link" href="#">
+                                <%= products.current.page %>
+                              </a></li>
+                            <% if (products.next) { %>
+                              <li class="page-item next"><a class="page-link"
+                                  href="/shop?page=<%= products.next.page %>&limit=<%= products.next.limit %>"><i
+                                    class="fa fa-angle-right" aria-hidden="true"></i></a></li>
+                              <% } %>
+                      </ul>
+                      <% } %>
                   </nav>
             </div>
           </div>
@@ -108,17 +96,13 @@
                 <ul class="navbar-nav">
                   <% for (i=0;i<category.length;i++) { %>
                     <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <a class="nav-link dropdown-toggle" onclick="categorySearch('<%= category[i]._id %>')"
+                        id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
                         <%= category[i].name %>
                           <i class="icon_plus" aria-hidden="true"></i>
                           <i class="icon_minus-06" aria-hidden="true"></i>
                       </a>
-                      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li class="nav-item"><a class="nav-link" href="#">Hoodies & Sweatshirts</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Jackets & Coats</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Blouses & Shirts</a></li>
-                      </ul>
                     </li>
                     <% } %>
                 </ul>

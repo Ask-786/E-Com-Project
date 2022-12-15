@@ -30,8 +30,10 @@
                       <td>
                         <div class="media">
                           <div class="d-flex">
-                            <img src="/products-images/<%= cart.bucket[i].products.images[0] %> "
-                              style="max-width: 102px; max-height: 123px;" alt="">
+                            <a href="/shop/product?id=<%= cart.bucket[i].products._id %>">
+                              <img src="/products-images/<%= cart.bucket[i].products.images[0] %> "
+                                style="max-width: 102px; max-height: 123px;" alt="">
+                            </a>
                           </div>
                           <div class="media-body">
                             <h4>

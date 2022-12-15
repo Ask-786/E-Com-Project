@@ -31,7 +31,7 @@
                             <a class="nav-link" href="/">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/shop">Shop</a>
+                            <a class="nav-link" href="/shop?page=1&limit=20">Shop</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/orders">Orders</a>
@@ -41,7 +41,7 @@
                     <% if (search) { %>
                         <ul class="navbar-nav justify-content-end search">
                             <li class="cart_cart nav-item">
-                                <form class="search_form" id="search-form" action="/global-search" method="POST">
+                                <form class="search_form" id="search-form">
                                     <div class="form-group inner-div">
                                         <span id="search-button" class="icon-magnifier"></span>
                                         <input class="form-control" type="text" id="searchData" placeholder="Search"

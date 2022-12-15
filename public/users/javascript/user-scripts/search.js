@@ -1,3 +1,7 @@
+$("#search-form").submit((e) => {
+  e.preventDefault();
+});
+
 document.getElementById("search-button").onclick = () => {
   const searchData = $("#searchData").val();
   if (window.location.pathname == "/shop") {

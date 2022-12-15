@@ -1,4 +1,7 @@
 const express = require("express");
+
+const Product = require("../models/Product");
+
 const router = express.Router();
 const {
   getHome,
@@ -45,6 +48,7 @@ const {
   getSearchResult,
 } = require("../controllers/userController");
 
+const { productPaginationResults } = require("../utils/pagination");
 const {
   checkAuthenticated,
   checkNotAuthenticated,
@@ -109,7 +113,7 @@ router
 
 router.route("/contact").get(getContact);
 
-router.route("/shop").get(getShop);
+router.route("/shop").get(productPaginationResults(Product), getShop);
 
 router.route("/shop/product").get(getProduct);
 

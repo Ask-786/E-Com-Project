@@ -35,8 +35,10 @@
                     <td>
                       <div class="media">
                         <div class="d-flex">
-                          <img src="products-images/<%= products[i].images[0] %>"
-                            style="max-width:102px ; max-height:123px ;">
+                          <a href="/shop/product?id=<%= products[i]._id %>">
+                            <img src="products-images/<%= products[i].images[0] %>"
+                              style="max-width:102px ; max-height:123px ;">
+                          </a>
                         </div>
                         <div class="media-body">
                           <h4>

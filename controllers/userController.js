@@ -124,40 +124,49 @@ const getContact = (req, res) => {
 };
 
 const getShop = async (req, res, next) => {
-  if (req.query.searchData) {
-    const searchData = req.query.searchData;
-    const regEx = new RegExp(searchData, "i");
-    const products = await Product.find({
-      $or: [{ title: { $regex: regEx } }, { description: { $regex: regEx } }],
-    });
-    if (products.length > 0) {
-      await Category.populate(products, { path: "category" });
-      const category = await Category.find({});
-      res.render("user-views/shop", {
-        message: req.flash("message"),
-        search: true,
-        products,
-        category,
-        title: "Persuit: Shop",
+  try {
+    if (req.query.searchData) {
+      const products = {};
+      const searchData = req.query.searchData;
+      const regEx = new RegExp(searchData, "i");
+      products.results = await Product.find({
+        $or: [{ title: { $regex: regEx } }, { description: { $regex: regEx } }],
       });
+      if (products.results.length > 0) {
+        const category = await Category.find({});
+        res.render("user-views/shop", {
+          pagination: false,
+          message: req.flash("message"),
+          search: true,
+          products,
+          category,
+          title: "Persuit: Shop",
+        });
+      } else {
+        req.flash("message", "No Search Results");
+        res.redirect("/shop");
+      }
+    } else if (req.query.category) {
+      const products = await Product.find({ category: req.query.category });
+      if (products.length > 0) {
+        res.json({ products, status: true });
+      } else {
+        res.json({ status: false });
+      }
     } else {
-      req.flash("message", "No Search Results");
-      res.redirect("/shop");
-    }
-  } else {
-    try {
       const category = await Category.find({});
-      const products = await Product.find({}).populate("category").limit(20);
+      const products = res.paginatedResults;
       res.render("user-views/shop", {
+        pagination: true,
         message: req.flash("message"),
         search: true,
         products,
         category,
         title: "Persuit: Shop",
       });
-    } catch (err) {
-      next(err);
     }
+  } catch (err) {
+    next(err);
   }
 };
 
