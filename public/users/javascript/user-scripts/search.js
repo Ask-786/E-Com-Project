@@ -44,6 +44,7 @@ async function productSearch() {
                 </div>
             </div>`);
         }
+        $("#pagination_area").hide();
       } else {
         showPopupError("No results!!");
       }
