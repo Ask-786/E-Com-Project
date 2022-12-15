@@ -33,6 +33,7 @@ const getHome = async (req, res) => {
       .sort({ updatedAt: -1 })
       .limit(12);
     res.render("user-views/home", {
+      search: true,
       name: req.user,
       product,
       category,
@@ -45,6 +46,7 @@ const getHome = async (req, res) => {
 
 const getLogin = (req, res) => {
   res.render("user-views/login", {
+    search: false,
     message: req.flash("message"),
     title: "Persuit: Login",
   });
@@ -54,8 +56,10 @@ const getUserProfile = async (req, res, next) => {
   try {
     let Addresses = await Address.findOne({ user: req.user._id });
     res.render("user-views/profile", {
+      search: false,
       user: req.user,
       address: Addresses,
+      message: req.flash("message"),
       title: "Persuit: Profile",
     });
   } catch (err) {
@@ -64,7 +68,19 @@ const getUserProfile = async (req, res, next) => {
 };
 
 const getAddAddress = (req, res) => {
-  res.render("user-views/add-address", { title: "Persuit: Add Address" });
+  if (req.query.from === "checkOut") {
+    res.render("user-views/add-address", {
+      search: false,
+      title: "Persuit: Add Address",
+      from: req.query.from,
+    });
+  } else {
+    res.render("user-views/add-address", {
+      search: false,
+      title: "Persuit: Add Address",
+      from: null,
+    });
+  }
 };
 
 const getDeleteAddress = async (req, res, next) => {
@@ -86,31 +102,62 @@ const getDeleteAddress = async (req, res, next) => {
 };
 
 const getOtpVerify = (req, res) => {
-  res.render("user-views/otp-verify", { title: "Persuit: OTP Verify" });
+  res.render("user-views/otp-verify", {
+    search: false,
+    title: "Persuit: OTP Verify",
+  });
 };
 
 const getSignUp = (req, res) => {
   res.render("user-views/signup", {
+    search: false,
     message: req.flash("message"),
     title: "Persuit: SignUp",
   });
 };
 
 const getContact = (req, res) => {
-  res.render("user-views/contact", { title: "Persuit: Contact Us" });
+  res.render("user-views/contact", {
+    search: false,
+    title: "Persuit: Contact Us",
+  });
 };
 
 const getShop = async (req, res, next) => {
-  try {
-    const category = await Category.find({});
-    const products = await Product.find({}).populate("category").limit(20);
-    res.render("user-views/shop", {
-      products,
-      category,
-      title: "Persuit: Shop",
+  if (req.query.searchData) {
+    const searchData = req.query.searchData;
+    const regEx = new RegExp(searchData, "i");
+    const products = await Product.find({
+      $or: [{ title: { $regex: regEx } }, { description: { $regex: regEx } }],
     });
-  } catch (err) {
-    next(err);
+    if (products.length > 0) {
+      await Category.populate(products, { path: "category" });
+      const category = await Category.find({});
+      res.render("user-views/shop", {
+        message: req.flash("message"),
+        search: true,
+        products,
+        category,
+        title: "Persuit: Shop",
+      });
+    } else {
+      req.flash("message", "No Search Results");
+      res.redirect("/shop");
+    }
+  } else {
+    try {
+      const category = await Category.find({});
+      const products = await Product.find({}).populate("category").limit(20);
+      res.render("user-views/shop", {
+        message: req.flash("message"),
+        search: true,
+        products,
+        category,
+        title: "Persuit: Shop",
+      });
+    } catch (err) {
+      next(err);
+    }
   }
 };
 
@@ -118,6 +165,7 @@ const getProduct = async (req, res, next) => {
   try {
     const product = await Product.findById(req.query.id);
     res.render("user-views/product", {
+      search: true,
       product,
       title: `Persuit: ${product.title}`,
     });
@@ -149,6 +197,7 @@ const getCart = async (req, res, next) => {
         if (discount <= cart.couponDetails.maxLimit) {
           let total = cart.grandtotal - discount;
           res.render("user-views/cart", {
+            search: false,
             title: "Persuit: Cart",
             message: req.flash("message"),
             max: false,
@@ -162,6 +211,7 @@ const getCart = async (req, res, next) => {
         } else {
           let total = cart.grandtotal - cart.couponDetails.maxLimit;
           res.render("user-views/cart", {
+            search: false,
             title: "Persuit: Cart",
             message: req.flash("message"),
             max: true,
@@ -180,6 +230,7 @@ const getCart = async (req, res, next) => {
         const discount = cart.couponDetails.deduction;
         let total = cart.grandtotal - discount;
         res.render("user-views/cart", {
+          search: false,
           title: "Persuit: Cart",
           message: req.flash("message"),
           cart,
@@ -192,6 +243,7 @@ const getCart = async (req, res, next) => {
       } else {
         let total = cart.grandtotal;
         res.render("user-views/cart", {
+          search: false,
           title: "Persuit: Cart",
           message: req.flash("message"),
           cart,
@@ -201,6 +253,7 @@ const getCart = async (req, res, next) => {
       }
     } else {
       res.render("user-views/empty-cart", {
+        search: false,
         title: "Persuit: Cart",
       });
     }
@@ -531,11 +584,13 @@ const getFavorites = async (req, res) => {
     );
     if (favorites !== null && favorites.products.length > 0) {
       res.render("user-views/favorites", {
+        search: false,
         products: favorites.products,
         title: "Persuit: Favorites",
       });
     } else {
       res.render("user-views/empty-favorites", {
+        search: false,
         title: "Persuit: Favorites",
       });
     }
@@ -623,6 +678,7 @@ const getCheckout = async (req, res, next) => {
         if (discount <= userCart.couponDetails.maxLimit) {
           let total = userCart.grandtotal - discount;
           res.render("user-views/checkout", {
+            search: false,
             title: "Persuit: Checkout",
             max: false,
             cart: userCart,
@@ -636,6 +692,7 @@ const getCheckout = async (req, res, next) => {
         } else {
           let total = userCart.grandtotal - userCart.couponDetails.maxLimit;
           res.render("user-views/checkout", {
+            search: false,
             title: "Persuit: Checkout",
             max: true,
             cart: userCart,
@@ -654,6 +711,7 @@ const getCheckout = async (req, res, next) => {
         const discount = userCart.couponDetails.deduction;
         let total = userCart.grandtotal - discount;
         res.render("user-views/checkout", {
+          search: false,
           title: "Persuit: Checkout",
           cart: userCart,
           total,
@@ -666,6 +724,7 @@ const getCheckout = async (req, res, next) => {
       } else {
         let total = userCart.grandtotal;
         res.render("user-views/checkout", {
+          search: false,
           title: "Persuit: Checkout",
           cart: userCart,
           total,
@@ -691,6 +750,7 @@ const getOrderConfirmation = async (req, res, next) => {
       path: "cart.bucket.products",
     });
     res.render("user-views/order-confirm", {
+      search: false,
       order,
       user: req.user,
       title: "Persuit: Thank You for Your Order!!",
@@ -718,12 +778,14 @@ const getOrders = async (req, res, next) => {
     });
     if (formatedOrders.length > 0) {
       res.render("user-views/orders", {
+        search: false,
         title: "Persuit: Your Orders",
         orders: formatedOrders,
         message: req.flash("message"),
       });
     } else {
       res.render("user-views/empty-orders", {
+        search: false,
         title: "Persuit: Your Orders",
       });
     }
@@ -734,6 +796,7 @@ const getOrders = async (req, res, next) => {
 
 const getForgotPassword = (req, res, next) => {
   res.render("user-views/forgot-pass", {
+    search: false,
     message: req.flash("message"),
     title: "Persuit: Rest Password",
   });
@@ -741,6 +804,7 @@ const getForgotPassword = (req, res, next) => {
 
 const getOtpVerifyResetPass = (req, res, next) => {
   res.render("user-views/otp-verify-reset-pass", {
+    search: false,
     title: "Persuit: Enter OTP",
   });
 };
@@ -748,10 +812,59 @@ const getOtpVerifyResetPass = (req, res, next) => {
 const getResetPass = (req, res, next) => {
   if (req.session.temp) {
     res.render("user-views/reset-pass", {
+      search: false,
       title: "Persuit: Reset Password",
     });
   } else {
     res.redirect("/login");
+  }
+};
+
+const getEditUserDetails = async (req, res, next) => {
+  res.render("user-views/edit-user-details", {
+    search: false,
+    title: "Persuit: Update User Details",
+    user: req.user,
+  });
+};
+
+const getSearchResult = async (req, res, next) => {
+  const searchData = req.query.searchData;
+  const regEx = new RegExp(searchData, "i");
+  const products = await Product.find({
+    $or: [{ title: { $regex: regEx } }, { description: { $regex: regEx } }],
+  });
+  res.json({ status: true, products });
+};
+
+const getEditAddress = async (req, res, next) => {
+  try {
+    const allAddress = await Address.findOne({ user: req.user._id });
+    const address = allAddress.Addressess.find((el) => {
+      return el._id == req.query.id;
+    });
+    res.render("user-views/edit-address", {
+      search: false,
+      title: "Persuit: Edit Address",
+      address,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const postEditUserDetails = async (req, res, next) => {
+  const { username, fullname, phone, email } = req.body;
+  try {
+    const user = await User.findById(req.user._id);
+    user.username = username;
+    user.fullname = fullname;
+    user.phone = phone;
+    user.email = email;
+    await user.save();
+    res.redirect("/userprofile");
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -927,7 +1040,11 @@ const postAddAddress = async (req, res, next) => {
         user: req.user._id,
         Addressess: req.body,
       });
-      res.redirect("/userprofile");
+      if (req.query.from === "checkOut") {
+        res.redirect("/cart/checkout");
+      } else {
+        res.redirect("/userprofile");
+      }
     } else {
       await Address.updateOne(
         { user: req.user._id },
@@ -935,7 +1052,11 @@ const postAddAddress = async (req, res, next) => {
           $push: { Addressess: req.body },
         }
       );
-      res.redirect("/userprofile");
+      if (req.query.from === "checkOut") {
+        res.redirect("/cart/checkout");
+      } else {
+        res.redirect("/userprofile");
+      }
     }
   } catch (err) {
     next(err);
@@ -1117,7 +1238,7 @@ const postVerifyPayment = async (req, res, next) => {
             address,
             req.body.payType,
             "success",
-            req.body.response.razorpay_payment_id,
+            req.body.responsegetSearchResult.razorpay_payment_id,
             cart.grandtotal
           ).then((order) => {
             res.json({ order, rzStatus: true });
@@ -1294,6 +1415,24 @@ const patchRemoveCoupon = async (req, res, next) => {
   }
 };
 
+const patchEditAddress = async (req, res, next) => {
+  try {
+    const allAddress = await Address.findOne({ user: req.user._id });
+    const address = allAddress.Addressess.map((el) => {
+      if (el._id == req.body._id) {
+        el = req.body;
+      }
+      return el;
+    });
+    allAddress.Addressess = address;
+    await allAddress.save();
+    req.flash("message", "Address Updated Successfully");
+    res.redirect("/userprofile");
+  } catch (err) {
+    next(err);
+  }
+};
+
 const deleteLogout = (req, res) => {
   req.logOut((err) => {
     console.log("logged out");
@@ -1339,4 +1478,9 @@ module.exports = {
   postOtpverifyResetPass,
   getResetPass,
   patchResetPass,
+  getEditUserDetails,
+  postEditUserDetails,
+  getEditAddress,
+  patchEditAddress,
+  getSearchResult,
 };

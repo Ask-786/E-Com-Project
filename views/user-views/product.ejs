@@ -20,7 +20,7 @@
                     <div class="product_details_slider">
                         <div id="product_slider2" class="rev_slider" data-version="5.3.1.6">
                             <ul>
-                                <li data-index="rs-303" data-transition="scaledownfromleft" data-slotamount="default"
+                                <li data-index="rs-300" data-transition="scaledownfromleft" data-slotamount="default"
                                     data-easein="default" data-easeout="default" data-masterspeed="800"
                                     data-thumb="/products-images/<%= product.images[0] %>" data-rotate="0"
                                     data-saveperformance="off" data-title="The Dreaming Girl"
@@ -32,7 +32,7 @@
                                         class="rev-slidebg" data-no-retina>
 
                                 </li>
-                                <li data-index="rs-303" data-transition="scaledownfromleft" data-slotamount="default"
+                                <li data-index="rs-301" data-transition="scaledownfromleft" data-slotamount="default"
                                     data-easein="default" data-easeout="default" data-masterspeed="800"
                                     data-thumb="/products-images/<%= product.images[1] %>" data-rotate="0"
                                     data-saveperformance="off" data-title="The Dreaming Girl"
@@ -45,7 +45,7 @@
 
                                 </li>
 
-                                <li data-index="rs-301" data-transition="scaledownfromleft" data-slotamount="default"
+                                <li data-index="rs-302" data-transition="scaledownfromleft" data-slotamount="default"
                                     data-easein="default" data-easeout="default" data-masterspeed="800"
                                     data-thumb="/products-images/<%= product.images[2] %>" data-rotate="0"
                                     data-saveperformance="off" data-title="Ride my Bike" data-param1="September 4, 2015"
@@ -58,13 +58,13 @@
 
                                 </li>
 
-                                <li data-index="rs-302" data-transition="scaledownfromleft" data-slotamount="default"
+                                <li data-index="rs-303" data-transition="scaledownfromleft" data-slotamount="default"
                                     data-easein="default" data-easeout="default" data-masterspeed="800"
                                     data-thumb="/products-images/<%= product.images[3] %>" data-rotate="0"
                                     data-saveperformance="off" data-title="Ride my Bike" data-param1="September 4, 2015"
                                     data-param2="Why not another Image?" data-description="">
 
-                                    <img src="/products-images/<%= product.images[3] %>" alt="" width="1920"
+                                    <img src="/products-images/<%= product.images[3] %>" alt="" id="image4" width="1920"
                                         height="1080" data-lazyload="/products-images/<%= product.images[3] %>"
                                         data-bgposition="center center" data-bgfit="contain" data-bgrepeat="no-repeat"
                                         class="rev-slidebg" data-no-retina>
@@ -102,25 +102,6 @@
                                         <p>
                                             <%= product.description %>
                                         </p>
-                                        <div class="p_color">
-                                            <h4 class="p_d_title">color <span>*</span></h4>
-                                            <ul class="color_list">
-                                                <li><a href="#"></a></li>
-                                                <li><a href="#"></a></li>
-                                                <li><a href="#"></a></li>
-                                                <li><a href="#"></a></li>
-                                                <li><a href="#"></a></li>
-                                                <li><a href="#"></a></li>
-                                            </ul>
-                                        </div>
-                                        <div class="p_color">
-                                            <h4 class="p_d_title">size <span>*</span></h4>
-                                            <select class="selectpicker">
-                                                <option>Select your size</option>
-                                                <option>Select your size M</option>
-                                                <option>Select your size XL</option>
-                                            </select>
-                                        </div>
                                         <div class="quantity">
                                             <button class="add_cart_btn"
                                                 onclick="addToFavorites('<%= product._id %>')">add to favirites</button>
@@ -153,12 +134,6 @@
                         aria-controls="nav-home" aria-selected="true">Product Description</a>
                     <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab"
                         aria-controls="nav-profile" aria-selected="false">Reviews (1)</a>
-                    <a class="nav-item nav-link" id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab"
-                        aria-controls="nav-contact" aria-selected="false">Tags</a>
-                    <a class="nav-item nav-link" id="nav-info-tab" data-toggle="tab" href="#nav-info" role="tab"
-                        aria-controls="nav-info" aria-selected="false">additional information</a>
-                    <a class="nav-item nav-link" id="nav-gur-tab" data-toggle="tab" href="#nav-gur" role="tab"
-                        aria-controls="nav-gur" aria-selected="false">gurantees</a>
                 </div>
             </nav>
             <div class="tab-content" id="nav-tabContent">
@@ -176,39 +151,6 @@
                         <li><a href="#"><i class="fa fa-star"></i></a></li>
                         <li><a href="#"><i class="fa fa-star"></i></a></li>
                     </ul>
-                </div>
-                <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
-                    <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est
-                        laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-                        doloremque laudantium,
-                        totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae
-                        vitae dicta sunt
-                        explicabo. Emo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed
-                        quia consequuntur.
-                    </p>
-                </div>
-                <div class="tab-pane fade" id="nav-info" role="tabpanel" aria-labelledby="nav-info-tab">
-                    <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est
-                        laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-                        doloremque laudantium,
-                        totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae
-                        vitae dicta sunt
-                        explicabo. Emo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed
-                        quia consequuntur.
-                    </p>
-                </div>
-                <div class="tab-pane fade" id="nav-gur" role="tabpanel" aria-labelledby="nav-gur-tab">
-                    <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est
-                        laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
-                        doloremque laudantium,
-                        totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae
-                        vitae dicta sunt
-                        explicabo. Emo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed
-                        quia consequuntur.
-                    </p>
                 </div>
             </div>
         </div>

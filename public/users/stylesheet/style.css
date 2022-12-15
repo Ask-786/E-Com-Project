@@ -2705,7 +2705,7 @@ i:before {
 .subs_btn {
   background: #333333;
   text-transform: uppercase;
-  color: #fff;
+  color: #fff !important;
   font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-size: 14px;
@@ -2725,7 +2725,7 @@ i:before {
 
 .subs_btn:hover {
   background: transparent;
-  color: #333333;
+  color: #333333 !important;
 }
 
 .update_btn {

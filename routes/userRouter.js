@@ -38,6 +38,11 @@ const {
   postOtpverifyResetPass,
   getResetPass,
   patchResetPass,
+  getEditUserDetails,
+  postEditUserDetails,
+  getEditAddress,
+  patchEditAddress,
+  getSearchResult,
 } = require("../controllers/userController");
 
 const {
@@ -169,6 +174,18 @@ router
   .route("/reset-pass")
   .get(checkNotAuthenticated, getResetPass)
   .patch(checkNotAuthenticated, patchResetPass);
+
+router
+  .route("/userprofile/edit-user-details")
+  .get(checkAuthenticated, getEditUserDetails)
+  .post(checkAuthenticated, postEditUserDetails);
+
+router
+  .route("/userprofile/edit-address")
+  .get(checkAuthenticated, getEditAddress)
+  .patch(checkAuthenticated, patchEditAddress);
+
+router.route("/shop/search").get(getSearchResult);
 
 router.route("/logout").delete(checkAuthenticated, deleteLogout);
 

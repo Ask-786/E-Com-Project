@@ -1,0 +1,81 @@
+<body>
+  <section class="solid_banner_area">
+    <div class="container">
+      <div class="solid_banner_inner">
+        <h3>checkout register</h3>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="checkout.html">Checkout Register</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="register_area p_100">
+    <div class="container">
+      <div class="register_inner">
+        <div class="row">
+          <div class="col-lg-2"></div>
+          <div class="col-lg-8">
+            <div class="user_details">
+              <h2 class="reg_title">Add Address</h2>
+              <form class="billing_inner row" action="/userprofile/edit-address?_method=PATCH" method="post">
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="fullname">Full Name </label>
+                    <input type="text" class="form-control" value="<%= address.fullname %>" id="fullname"
+                      name="fullname" aria-describedby="fullname" placeholder="" required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="number" class="form-control" value="<%= address.phone %>" id="phone" name="phone"
+                      aria-describedby="phone" placeholder="" required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" class="form-control" id="state" value="<%= address.state %>" name="state"
+                      aria-describedby="state" placeholder="" required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" class="form-control" id="city" value="<%= address.city %>" name="city"
+                      aria-describedby="city" placeholder="" required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="buildingName">Hose number / Building name</label>
+                    <input type="text" class="form-control" value="<%= address.buildingName %>" id="buildingName"
+                      name="buildingName" aria-describedby="buildingName" placeholder="" required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="area">Area</label>
+                    <input type="text" class="form-control" value="<%= address.area %>" id="area" name="area"
+                      aria-describedby="area" placeholder="" required>
+                  </div>
+                </div>
+                <div class="col-lg-12">
+                  <div class="form-group">
+                    <label for="PIN">PIN Code</label>
+                    <input type="number" class="form-control" value="<%= address.PIN %>" id="PIN" name="PIN"
+                      aria-describedby="PIN" placeholder="" required>
+                    <input value="<%= address._id %>" id="_id" name="_id" hidden>
+                  </div>
+                  <button type="submit" class="add_cart_btn">Submit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>

@@ -1,7 +1,3 @@
-const {
-  EsimProfileContext,
-} = require("twilio/lib/rest/supersim/v1/esimProfile");
-
 async function addToCart(id) {
   let response = await axios.get(`/shop/addtocart?id=${id}`);
   if (response.data.denied) {

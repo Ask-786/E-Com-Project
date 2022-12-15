@@ -34,7 +34,7 @@ const productsPaginatedResults = (model) => {
       res.paginatedResults = results;
       next();
     } catch (err) {
-      consolo.log(err.message);
+      console.log(err.message);
     }
   };
 };
@@ -74,9 +74,54 @@ const usersPaginatedResults = (model) => {
       res.paginatedResults = results;
       next();
     } catch (err) {
-      consolo.log(err.message);
+      console.log(err.message);
     }
   };
 };
 
-module.exports = { productsPaginatedResults, usersPaginatedResults };
+const orderPaginationResults = (model) => {
+  return async (req, res, next) => {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const results = {};
+    results.totalLength = await model.countDocuments().exec();
+    results.current = { page, limit };
+    if (endIndex < results.totalLength) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+
+    if (startIndex > 0) {
+      results.previous = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+
+    try {
+      results.results = await model
+        .find()
+        .populate("user")
+        .limit(limit)
+        .sort({ updatedAt: -1 })
+        .skip(startIndex)
+        .exec();
+      res.paginatedResults = results;
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+};
+
+module.exports = {
+  productsPaginatedResults,
+  usersPaginatedResults,
+  orderPaginationResults,
+};

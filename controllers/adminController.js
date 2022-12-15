@@ -25,110 +25,138 @@ const getLogin = (req, res) => {
   });
 };
 
-const getDashboard = async (req, res) => {
-  let products = await Product.find({});
-  res.render("admin-views/dashboard", {
-    layout: "./layouts/admin-layout",
-    products,
-    title: "Persuit: Dashboard",
-  });
-};
-
-const getChartDetails = async (req, res, next) => {
-  const date = moment().subtract(7, "days").toISOString();
-
-  const orders = await Order.find({ createdAt: { $gt: date } }).populate(
-    "cart"
-  );
-
-  await Product.populate(orders, {
-    path: "cart.bucket.products",
-  });
-
-  await Category.populate(orders, {
-    path: "cart.bucket.products.category",
-  });
-
-  const filteredOrderData = orders.map((el) => {
-    return el.cart.bucket.reduce((result, el1) => {
-      if (result[el1.products.category.name] == null) {
-        result[el1.products.category.name] = 0;
-      }
-      result[el1.products.category.name] += el1.quantity;
-      return result;
-    }, {});
-  });
-
-  const groupedOrderData = filteredOrderData.reduce((result, el) => {
-    for (let [key, value] of Object.entries(el)) {
-      let data = {};
-      if (result.some((e) => e.name == key)) {
-        objIndex = result.findIndex((obj) => obj.name == key);
-        result[objIndex].quantity += value;
-      } else {
-        data.quantity = value;
-        data.name = key;
-        result.push(data);
-      }
-    }
-    return result;
-  }, []);
-
-  res.json({ status: true, groupedOrderData });
-};
-
-const getProductAdd = async (req, res) => {
-  let category = await Category.find();
-  res.render("admin-views/add-product", {
-    layout: "./layouts/admin-layout",
-    category,
-    title: "Persuit: Add Products",
-  });
-};
-
-const getProducts = async (req, res) => {
-  let products = res.paginatedResults;
-  res.render("admin-views/products", {
-    layout: "./layouts/admin-layout",
-    products,
-    message: req.flash("message"),
-    title: "Persuit: Products",
-  });
-};
-
-const getEditProduct = async (req, res) => {
-  let product = await Product.findById(req.query.id);
-  let category = await Category.find();
-  res.render("admin-views/edit-product", {
-    layout: "./layouts/admin-layout",
-    product,
-    category,
-    page: req.query.page,
-    limit: req.query.limit,
-    title: "Persuit: Edit Products",
-  });
-};
-
-const getDeleteProduct = async (req, res, next) => {
+const getDashboard = async (req, res, next) => {
   try {
-    let preProduct = await Product.findOne({ _id: req.query.id });
-    await Product.deleteOne({ _id: req.query.id });
-    await deleteProductImages(preProduct.images).then((val) => {
-      res.redirect("/admin/dash/products");
+    let products = await Product.find({});
+    res.render("admin-views/dashboard", {
+      layout: "./layouts/admin-layout",
+      products,
+      title: "Persuit: Dashboard",
     });
   } catch (err) {
     next(err);
   }
 };
 
-const getCategories = async (req, res) => {
-  let categories = await Category.find().sort({ updatedAt: -1 });
-  res.render("admin-views/categories", {
-    layout: "./layouts/admin-layout",
-    categories,
-    message: req.flash("message"),
-    title: "Persuit: Categories",
-  });
+const getChartDetails = async (req, res, next) => {
+  try {
+    const date = moment().subtract(7, "days").toISOString();
+
+    const orders = await Order.find({ createdAt: { $gt: date } }).populate(
+      "cart"
+    );
+
+    await Product.populate(orders, {
+      path: "cart.bucket.products",
+    });
+
+    await Category.populate(orders, {
+      path: "cart.bucket.products.category",
+    });
+
+    const filteredOrderData = orders.map((el) => {
+      return el.cart.bucket.reduce((result, el1) => {
+        if (result[el1.products.category.name] == null) {
+          result[el1.products.category.name] = 0;
+        }
+        result[el1.products.category.name] += el1.quantity;
+        return result;
+      }, {});
+    });
+
+    const groupedOrderData = filteredOrderData.reduce((result, el) => {
+      for (let [key, value] of Object.entries(el)) {
+        let data = {};
+        if (result.some((e) => e.name == key)) {
+          objIndex = result.findIndex((obj) => obj.name == key);
+          result[objIndex].quantity += value;
+        } else {
+          data.quantity = value;
+          data.name = key;
+          result.push(data);
+        }
+      }
+      return result;
+    }, []);
+
+    res.json({ status: true, groupedOrderData });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getProductAdd = async (req, res, next) => {
+  try {
+    let category = await Category.find();
+    res.render("admin-views/add-product", {
+      layout: "./layouts/admin-layout",
+      category,
+      title: "Persuit: Add Products",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getProducts = async (req, res, next) => {
+  try {
+    let products = res.paginatedResults;
+    res.render("admin-views/products", {
+      layout: "./layouts/admin-layout",
+      products,
+      message: req.flash("message"),
+      title: "Persuit: Products",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getEditProduct = async (req, res, next) => {
+  try {
+    let product = await Product.findById(req.query.id);
+    let category = await Category.find();
+    res.render("admin-views/edit-product", {
+      layout: "./layouts/admin-layout",
+      product,
+      category,
+      page: req.query.page,
+      limit: req.query.limit,
+      title: "Persuit: Edit Products",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getDeleteProduct = async (req, res, next) => {
+  try {
+    let preProduct = await Product.findOne({ _id: req.query.id });
+    await Product.deleteOne({ _id: req.query.id });
+    await deleteProductImages(preProduct.images)
+      .then((val) => {
+        res.redirect("/admin/dash/products");
+      })
+      .catch(() => {
+        res.redirect("/admin/dash/products");
+      });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getCategories = async (req, res, next) => {
+  try {
+    let categories = await Category.find().sort({ updatedAt: -1 });
+    res.render("admin-views/categories", {
+      layout: "./layouts/admin-layout",
+      categories,
+      message: req.flash("message"),
+      title: "Persuit: Categories",
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const getAddCategory = (req, res) => {
@@ -139,21 +167,30 @@ const getAddCategory = (req, res) => {
   });
 };
 
-const getDeleteCategory = async (req, res) => {
-  let check = await Products.exists({ category: req.query.id });
-  if (check === null) {
-    const preCategory = await Category.findOne({ _id: req.query.id });
-    await Category.deleteOne({ _id: req.query.id });
-    deleteCategoryImage(preCategory.image).then((val) => {
-      req.flash("message", "Category Deleted Successfully");
+const getDeleteCategory = async (req, res, next) => {
+  try {
+    let check = await Products.exists({ category: req.query.id });
+    if (check === null) {
+      const preCategory = await Category.findOne({ _id: req.query.id });
+      await Category.deleteOne({ _id: req.query.id });
+      deleteCategoryImage(preCategory.image)
+        .then((val) => {
+          req.flash("message", "Category Deleted Successfully");
+          res.redirect("/admin/dash/categories");
+        })
+        .catch(() => {
+          req.flash("message", "There are some Issues with Deleting Images");
+          res.redirect("/admin/dash/categories");
+        });
+    } else {
+      req.flash(
+        "message",
+        "Category Can't be Deleted Because it's already in use!"
+      );
       res.redirect("/admin/dash/categories");
-    });
-  } else {
-    req.flash(
-      "message",
-      "Category Can't be Deleted Because it's already in use!"
-    );
-    res.redirect("/admin/dash/categories");
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -170,14 +207,18 @@ const getEditCategory = async (req, res, next) => {
   }
 };
 
-const getUsers = async (req, res) => {
-  const users = res.paginatedResults;
-  res.render("admin-views/users", {
-    layout: "./layouts/admin-layout",
-    users,
-    message: req.flash("message"),
-    title: "Persuit: Users List",
-  });
+const getUsers = async (req, res, next) => {
+  try {
+    const users = res.paginatedResults;
+    res.render("admin-views/users", {
+      layout: "./layouts/admin-layout",
+      users,
+      message: req.flash("message"),
+      title: "Persuit: Users List",
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const getUserDetails = async (req, res, next) => {
@@ -246,58 +287,70 @@ const getUnblockUser = async (req, res, next) => {
 };
 
 const getOrders = async (req, res, next) => {
-  const preOrders = await Orders.find()
-    .populate("user")
-    .sort({ updatedAt: -1 });
+  try {
+    const preOrders = await Orders.find()
+      .populate("user")
+      .sort({ updatedAt: -1 });
 
-  const orders = preOrders.map((el) => {
-    let newEl = { ...el._doc };
-    newEl.createdAt = moment(newEl.createdAt).format("LL");
-    return newEl;
-  });
+    const orders = preOrders.map((el) => {
+      let newEl = { ...el._doc };
+      newEl.createdAt = moment(newEl.createdAt).format("LL");
+      return newEl;
+    });
 
-  res.render("admin-views/orders", {
-    layout: "./layouts/admin-layout",
-    orders,
-    title: "Persuit: Orders",
-  });
+    res.render("admin-views/orders", {
+      layout: "./layouts/admin-layout",
+      orders,
+      title: "Persuit: Orders",
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const getOrderDetails = async (req, res, next) => {
-  const preOrder = await Orders.findById(req.query.id)
-    .populate("user")
-    .populate("cart")
-    .sort({ updatedAt: -1 });
-  const preOrder1 = await Coupon.populate(preOrder, {
-    path: "cart.couponDetails",
-  });
-  const order = await Product.populate(preOrder1, {
-    path: "cart.bucket.products",
-  });
-  const formatedOrder = { ...order._doc };
-  formatedOrder.createdAt = moment(formatedOrder.createdAt).format("LL");
-  res.render("admin-views/order-details", {
-    message: req.flash("message"),
-    layout: "./layouts/admin-layout",
-    order: formatedOrder,
-    title: "Persuit: Order Details",
-  });
+  try {
+    const preOrder = await Orders.findById(req.query.id)
+      .populate("user")
+      .populate("cart")
+      .sort({ updatedAt: -1 });
+    const preOrder1 = await Coupon.populate(preOrder, {
+      path: "cart.couponDetails",
+    });
+    const order = await Product.populate(preOrder1, {
+      path: "cart.bucket.products",
+    });
+    const formatedOrder = { ...order._doc };
+    formatedOrder.createdAt = moment(formatedOrder.createdAt).format("LL");
+    res.render("admin-views/order-details", {
+      message: req.flash("message"),
+      layout: "./layouts/admin-layout",
+      order: formatedOrder,
+      title: "Persuit: Order Details",
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const getCoupons = async (req, res, next) => {
-  const coupons = await Coupon.find().sort({ updatedAt: -1 });
-  const formattedCoupons = coupons.map((el) => {
-    const newEl = { ...el._doc };
-    newEl.expiryDate = moment(newEl.expiryDate).format("lll");
-    newEl.createdAt = moment(newEl.createdAt).format("lll");
-    newEl.updatedAt = moment(newEl.updatedAt).format("lll");
-    return newEl;
-  });
-  res.render("admin-views/coupons", {
-    layout: "./layouts/admin-layout",
-    coupons: formattedCoupons,
-    title: "Persuit: Coupons",
-  });
+  try {
+    const coupons = await Coupon.find().sort({ updatedAt: -1 });
+    const formattedCoupons = coupons.map((el) => {
+      const newEl = { ...el._doc };
+      newEl.expiryDate = moment(newEl.expiryDate).format("lll");
+      newEl.createdAt = moment(newEl.createdAt).format("lll");
+      newEl.updatedAt = moment(newEl.updatedAt).format("lll");
+      return newEl;
+    });
+    res.render("admin-views/coupons", {
+      layout: "./layouts/admin-layout",
+      coupons: formattedCoupons,
+      title: "Persuit: Coupons",
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 const getAdddCoupons = async (req, res, next) => {
@@ -309,6 +362,34 @@ const getAdddCoupons = async (req, res, next) => {
     successMessage: req.flash("successMessage"),
     title: "Persuit: AddCoupons",
   });
+};
+
+const getSalesReport = async (req, res, next) => {
+  try {
+    const preOrders = res.paginatedResults;
+
+    const orders = preOrders.results.map((el) => {
+      let newEl = { ...el._doc };
+      newEl.createdAt = moment(newEl.createdAt).format("LL");
+      return newEl;
+    });
+
+    const total = preOrders.results.reduce((total, order) => {
+      total += order.finalPrice;
+      return total;
+    }, 0);
+
+    preOrders.results = orders;
+
+    res.render("admin-views/sales-report", {
+      title: "Persuit: Sales Report",
+      layout: "./layouts/admin-layout",
+      orders: preOrders,
+      total,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 // const postLogin = (req, res) => {
@@ -341,7 +422,7 @@ const getAdddCoupons = async (req, res, next) => {
 //   }
 // };
 
-const postProductAdd = async (req, res) => {
+const postProductAdd = async (req, res, next) => {
   try {
     await Product.create({
       title: req.body.title,
@@ -366,53 +447,65 @@ const postProductAdd = async (req, res) => {
   }
 };
 
-const postEditProduct = async (req, res) => {
-  const { image0, image1, image2, image3 } = req.files;
-  const page = req.query.page;
-  const limit = req.query.limit;
-  if ((image0, image1, image2, image3)) {
-    let preProduct = await Product.findOne({ _id: req.query.id });
-    let data = req.body;
-    await Product.updateOne(
-      { _id: req.query.id },
-      {
-        $set: {
-          title: data.title,
-          price: data.price,
-          category: data.category,
-          description: data.description,
-          size: data.size,
-          stock: data.stock,
-          images: [
-            req.files.image0[0].filename,
-            req.files.image1[0].filename,
-            req.files.image2[0].filename,
-            req.files.image3[0].filename,
-          ],
-        },
-      }
-    );
-    deleteProductImages(preProduct.images).then((val) => {
+const postEditProduct = async (req, res, next) => {
+  try {
+    const { image0, image1, image2, image3 } = req.files;
+    const page = req.query.page;
+    const limit = req.query.limit;
+    if ((image0, image1, image2, image3)) {
+      let preProduct = await Product.findOne({ _id: req.query.id });
+      let data = req.body;
+      await Product.updateOne(
+        { _id: req.query.id },
+        {
+          $set: {
+            title: data.title,
+            price: data.price,
+            category: data.category,
+            description: data.description,
+            size: data.size,
+            stock: data.stock,
+            images: [
+              req.files.image0[0].filename,
+              req.files.image1[0].filename,
+              req.files.image2[0].filename,
+              req.files.image3[0].filename,
+            ],
+          },
+        }
+      );
+      deleteProductImages(preProduct.images)
+        .then((val) => {
+          req.flash("message", "Product Updated Successfully");
+          res.redirect(`/admin/dash/products?page=${page}&limit=${limit}`);
+        })
+        .catch(() => {
+          req.flash(
+            "message",
+            "There are some problems with deleting old images"
+          );
+          res.redirect(`/admin/dash/products?page=${page}&limit=${limit}`);
+        });
+    } else {
+      let data = req.body;
+      await Product.updateOne(
+        { _id: req.query.id },
+        {
+          $set: {
+            title: data.title,
+            price: data.price,
+            category: data.category,
+            description: data.description,
+            size: data.size,
+            stock: data.stock,
+          },
+        }
+      );
       req.flash("message", "Product Updated Successfully");
       res.redirect(`/admin/dash/products?page=${page}&limit=${limit}`);
-    });
-  } else {
-    let data = req.body;
-    await Product.updateOne(
-      { _id: req.query.id },
-      {
-        $set: {
-          title: data.title,
-          price: data.price,
-          category: data.category,
-          description: data.description,
-          size: data.size,
-          stock: data.stock,
-        },
-      }
-    );
-    req.flash("message", "Product Updated Successfully");
-    res.redirect(`/admin/dash/products?page=${page}&limit=${limit}`);
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -504,43 +597,56 @@ const postAddCoupon = async (req, res, next) => {
   }
 };
 
-const postEditCategory = async (req, res) => {
-  if (req.file) {
-    const preCategory = await Category.findOne({ name: req.body.name });
-    await Category.updateOne(
-      { _id: req.query.id },
-      {
-        name: req.body.name,
-        description: req.body.description,
-        image: req.file.filename,
-      }
-    );
-    deleteCategoryImage(preCategory.image).then((val) => {
+const postEditCategory = async (req, res, next) => {
+  try {
+    if (req.file) {
+      const preCategory = await Category.findOne({ name: req.body.name });
+      await Category.updateOne(
+        { _id: req.query.id },
+        {
+          name: req.body.name,
+          description: req.body.description,
+          image: req.file.filename,
+        }
+      );
+      deleteCategoryImage(preCategory.image)
+        .then((val) => {
+          req.flash("message", "Category Updated Successfully");
+          res.redirect("/admin/dash/categories");
+        })
+        .catch(() => {
+          req.flash("message", "There are some Issues with Deleting Images");
+          res.redirect("/admin/dash/categories");
+        });
+    } else {
+      await Category.updateOne({ _id: req.query.id }, req.body);
       req.flash("message", "Category Updated Successfully");
       res.redirect("/admin/dash/categories");
-    });
-  } else {
-    await Category.updateOne({ _id: req.query.id }, req.body);
-    req.flash("message", "Category Updated Successfully");
-    res.redirect("/admin/dash/categories");
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
 const patchOrderDetails = async (req, res, next) => {
-  if (req.query.id) {
-    await Orders.updateOne(
-      { user: req.query.id, _id: req.query.orderId },
-      { $set: { orderStatus: req.body.orderStatus } }
-    );
-    req.flash("message", "Order status updated");
-    res.redirect(`/admin/dash/users/user-details?id=${req.query.id}`);
-  } else {
-    await Orders.updateOne(
-      { _id: req.query.orderId },
-      { $set: { orderStatus: req.body.orderStatus } }
-    );
-    req.flash("message", "Order status updated");
-    res.redirect(`/admin/dash/orders/order-details?id=${req.query.orderId}`);
+  try {
+    if (req.query.id) {
+      await Orders.updateOne(
+        { user: req.query.id, _id: req.query.orderId },
+        { $set: { orderStatus: req.body.orderStatus } }
+      );
+      req.flash("message", "Order status updated");
+      res.redirect(`/admin/dash/users/user-details?id=${req.query.id}`);
+    } else {
+      await Orders.updateOne(
+        { _id: req.query.orderId },
+        { $set: { orderStatus: req.body.orderStatus } }
+      );
+      req.flash("message", "Order status updated");
+      res.redirect(`/admin/dash/orders/order-details?id=${req.query.orderId}`);
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -578,4 +684,5 @@ module.exports = {
   getAdddCoupons,
   postAddCoupon,
   getChartDetails,
+  getSalesReport,
 };

@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const Order = require("../models/Orders");
 const Product = require("../models/Product");
 const {
   productsPaginatedResults,
   usersPaginatedResults,
+  orderPaginationResults,
 } = require("../utils/pagination");
 const { uploadCategoryImg, uploadProductImgs } = require("../config/multer");
 const {
@@ -35,6 +37,7 @@ const {
   getAdddCoupons,
   postAddCoupon,
   getChartDetails,
+  getSalesReport,
 } = require("../controllers/adminController");
 
 const {
@@ -116,6 +119,10 @@ router
   .post(checkAuthenticated, postAddCoupon);
 
 router.route("/dash/getChartDetails").get(checkAuthenticated, getChartDetails);
+
+router
+  .route("/dash/sales-report")
+  .get(checkAuthenticated, orderPaginationResults(Order), getSalesReport);
 
 router.route("/adlogout").delete(deleteLogout);
 
