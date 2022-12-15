@@ -12,7 +12,8 @@
                             <% if(orders.results.length>0){ %>
                                 <div class="w-full overflow-hidden rounded-lg shadow-xs">
                                     <div class="w-full overflow-x-auto">
-                                        <table class="w-full whitespace-no-wrap">
+                                        <iframe id="txtArea1" style="display:none"></iframe>
+                                        <table class="w-full whitespace-no-wrap" id="sales-report-table">
                                             <thead>
                                                 <tr
                                                     class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
@@ -126,6 +127,10 @@
                                         </span>
                                     </div>
                                 </div>
+                                <button id="btnExport" onclick="fnExcelReport();"
+                                    class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                    EXPORT
+                                </button>
                                 <% } else { %>
                                     <main class="h-full pb-16 overflow-y-auto">
                                         <div class="container flex flex-col items-center px-6 mx-auto">
@@ -138,7 +143,6 @@
                                             <br>
                                             <p class="text-gray-700 dark:text-gray-300">
                                                 No orders found. Advertise well!!
-
                                             </p>
                                         </div>
                                     </main>
@@ -147,4 +151,37 @@
                     </main>
             </div>
     </div>
+    <script>
+        function fnExcelReport() {
+            var tab_text = "<table border='2px'><tr bgcolor='#87AFC6'>";
+            var textRange; var j = 0;
+            tab = document.getElementById('sales-report-table'); // id of table
+
+            for (j = 0; j < tab.rows.length; j++) {
+                tab_text = tab_text + tab.rows[j].innerHTML + "</tr>";
+                //tab_text=tab_text+"</tr>";
+            }
+
+            tab_text = tab_text + "</table>";
+            tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
+            tab_text = tab_text.replace(/<img[^>]*>/gi, ""); // remove if u want images in your table
+            tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
+
+            var ua = window.navigator.userAgent;
+            var msie = ua.indexOf("MSIE ");
+
+            if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
+            {
+                txtArea1.document.open("txt/html", "replace");
+                txtArea1.document.write(tab_text);
+                txtArea1.document.close();
+                txtArea1.focus();
+                sa = txtArea1.document.execCommand("SaveAs", true, "Say Thanks to Sumit.xls");
+            }
+            else                 //other browser not tested on IE 11
+                sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));
+
+            return (sa);
+        }
+    </script>
 </body>

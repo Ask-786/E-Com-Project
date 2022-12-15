@@ -26,11 +26,36 @@ const getLogin = (req, res) => {
 };
 
 const getDashboard = async (req, res, next) => {
+  const date = moment().startOf("month").toISOString();
   try {
-    let products = await Product.find({});
+    const totalClients = await User.find().count();
+
+    const lastMonthSales = await Order.find({ createdAt: { $gt: date } });
+    const lastMonthRevenue = lastMonthSales.reduce((total, order) => {
+      return (total += order.finalPrice);
+    }, 0);
+
+    const pendingOrders = await Order.find({
+      orderStatus: { $nin: ["delivered", "cancelled"] },
+    }).count();
+    const lastMonthTotalSales = await Order.find({
+      createdAt: { $gt: date },
+    }).count();
+    const users = await User.find().sort({ createdAt: -1 }).limit(5);
+    const orders = await Order.find().sort({ createdAt: -1 }).limit(5);
+    const formattedOrders = orders.map((el) => {
+      let newEl = { ...el._doc };
+      newEl.createdAt = moment(newEl.createdAt).format("lll");
+      return newEl;
+    });
     res.render("admin-views/dashboard", {
       layout: "./layouts/admin-layout",
-      products,
+      users,
+      totalClients,
+      pendingOrders,
+      lastMonthTotalSales,
+      lastMonthRevenue,
+      orders: formattedOrders,
       title: "Persuit: Dashboard",
     });
   } catch (err) {
@@ -38,7 +63,7 @@ const getDashboard = async (req, res, next) => {
   }
 };
 
-const getChartDetails = async (req, res, next) => {
+const getPieChartDetails = async (req, res, next) => {
   try {
     const date = moment().subtract(7, "days").toISOString();
 
@@ -81,9 +106,11 @@ const getChartDetails = async (req, res, next) => {
 
     res.json({ status: true, groupedOrderData });
   } catch (err) {
-    next(err);
+    res.json({ status: false, message: err.message });
   }
 };
+
+const getBarChartDetails = async (req, res, next) => {};
 
 const getProductAdd = async (req, res, next) => {
   try {
@@ -683,6 +710,7 @@ module.exports = {
   getCoupons,
   getAdddCoupons,
   postAddCoupon,
-  getChartDetails,
+  getPieChartDetails,
   getSalesReport,
+  getBarChartDetails,
 };

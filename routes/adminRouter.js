@@ -36,8 +36,9 @@ const {
   getCoupons,
   getAdddCoupons,
   postAddCoupon,
-  getChartDetails,
+  getPieChartDetails,
   getSalesReport,
+  getBarChartDetails,
 } = require("../controllers/adminController");
 
 const {
@@ -118,7 +119,13 @@ router
   .get(checkAuthenticated, getAdddCoupons)
   .post(checkAuthenticated, postAddCoupon);
 
-router.route("/dash/getChartDetails").get(checkAuthenticated, getChartDetails);
+router
+  .route("/dash/getPieChartDetails")
+  .get(checkAuthenticated, getPieChartDetails);
+
+router
+  .route("/dash/getBarChartDetails")
+  .get(checkAuthenticated, getBarChartDetails);
 
 router
   .route("/dash/sales-report")

@@ -1247,7 +1247,7 @@ const postVerifyPayment = async (req, res, next) => {
             address,
             req.body.payType,
             "success",
-            req.body.responsegetSearchResult.razorpay_payment_id,
+            req.body.response.razorpay_payment_id,
             cart.grandtotal
           ).then((order) => {
             res.json({ order, rzStatus: true });

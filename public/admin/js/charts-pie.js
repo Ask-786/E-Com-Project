@@ -3,7 +3,7 @@
  */
 
 $(document).ready(async () => {
-  const response = await axios.get("/admin/dash/getChartDetails");
+  const response = await axios.get("/admin/dash/getPieChartDetails");
   if (response.data.status) {
     const groupedOrderData = response.data.groupedOrderData;
     const pieConfig = {
@@ -51,5 +51,43 @@ $(document).ready(async () => {
     // change this to the id of your chart element in HMTL
     const pieCtx = document.getElementById("pie");
     window.myPie = new Chart(pieCtx, pieConfig);
+  } else {
+    showPopupError(response.data.message);
   }
 });
+
+function showPopupSuccess(message) {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener("mouseenter", Swal.stopTimer);
+      toast.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+  });
+  Toast.fire({
+    icon: "success",
+    title: message,
+  });
+}
+
+function showPopupError(message) {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener("mouseenter", Swal.stopTimer);
+      toast.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+  });
+  Toast.fire({
+    icon: "error",
+    title: message,
+  });
+}
