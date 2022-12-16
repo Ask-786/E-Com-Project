@@ -105,32 +105,34 @@
                 <div class="price_single_cost">
                   <h4>Choose Address</h4>
                 </div>
-                <% if (address.Addressess.length>0) { %>
-                  <div id="accordion2" role="tablist" class="price_method">
-                    <% for( let i=0; i < address.Addressess.length; i++ ) { %>
-                      <div class="card">
-                        <div class="card-header" role="tab" id="heading<%= i %>">
-                          <h5 class="mb-0">
-                            <a id="address" class="collapsed" data-toggle="collapse"
-                              data-id="<%= address.Addressess[i]._id %>" href="#collapse<%= i %>" role="button"
-                              aria-expanded="false" aria-controls="collapse<%= i %>">
-                              <%= address.Addressess[i].fullname %>
-                            </a>
-                          </h5>
-                        </div>
-                        <div id="collapse<%= i %>" class="collapse" role="tabpanel" aria-labelledby="heading<%= i %>"
-                          data-parent="#accordion2">
-                          <div class="card-body">
-                            phone: <%= address.Addressess[i].phone %>,
-                              <%= address.Addressess[i].state %>, <%= address.Addressess[i].city %>, <%=
-                                    address.Addressess[i].buildingName %>(H), <%= address.Addressess[i].area %>, <%=
-                                        address.Addressess[i].PIN %>
+                <% if (address !==null) { %>
+                  <% if (address.Addressess.length>0) { %>
+                    <div id="accordion2" role="tablist" class="price_method">
+                      <% for( let i=0; i < address.Addressess.length; i++ ) { %>
+                        <div class="card">
+                          <div class="card-header" role="tab" id="heading<%= i %>">
+                            <h5 class="mb-0">
+                              <a id="address" class="collapsed" data-toggle="collapse"
+                                data-id="<%= address.Addressess[i]._id %>" href="#collapse<%= i %>" role="button"
+                                aria-expanded="false" aria-controls="collapse<%= i %>">
+                                <%= address.Addressess[i].fullname %>
+                              </a>
+                            </h5>
+                          </div>
+                          <div id="collapse<%= i %>" class="collapse" role="tabpanel" aria-labelledby="heading<%= i %>"
+                            data-parent="#accordion2">
+                            <div class="card-body">
+                              phone: <%= address.Addressess[i].phone %>,
+                                <%= address.Addressess[i].state %>, <%= address.Addressess[i].city %>, <%=
+                                      address.Addressess[i].buildingName %>(H), <%= address.Addressess[i].area %>, <%=
+                                          address.Addressess[i].PIN %>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                        <% } %>
+                    </div>
+                    <% } %>
                       <% } %>
-                  </div>
-                  <% } %>
               </div>
               <a href="/userprofile/add-address?from=checkOut" class="btn subs_btn form-control">Add Address</a>
             </div>
