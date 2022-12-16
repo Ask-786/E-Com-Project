@@ -62,7 +62,11 @@ $("#get-button").click(async () => {
       } else {
         showPopupError("Choose a To Date Less Than Now");
       }
+    } else {
+      showPopupError("From Should be less than to");
     }
+  } else {
+    showPopupError("Select Both fields");
   }
 });
 
