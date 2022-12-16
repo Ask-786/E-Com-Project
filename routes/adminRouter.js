@@ -39,6 +39,7 @@ const {
   getPieChartDetails,
   getSalesReport,
   getBarChartDetails,
+  postQueriedSalesReport,
 } = require("../controllers/adminController");
 
 const {
@@ -130,6 +131,10 @@ router
 router
   .route("/dash/sales-report")
   .get(checkAuthenticated, orderPaginationResults(Order), getSalesReport);
+
+router
+  .route("/dash/queried-sales-report")
+  .post(checkAuthenticated, postQueriedSalesReport);
 
 router.route("/adlogout").delete(deleteLogout);
 

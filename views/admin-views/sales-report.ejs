@@ -9,8 +9,38 @@
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
                                 Sales Report
                             </h2>
+
+                            <div class="mt-4 text-sm">
+                                <span class="text-gray-700 dark:text-gray-400">
+                                    Select Date
+                                </span>
+
+                                <div class="mt-2">
+                                    <label class="block text-sm">
+                                        <span class="text-gray-700 dark:text-gray-400">From</span>
+                                        <input type="datetime-local" id="from-date"
+                                            class="block w- mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" />
+                                    </label>
+                                    <label class="block text-sm">
+                                        <span class="text-gray-700 dark:text-gray-400">To</span>
+                                        <input type="datetime-local" id="to-date"
+                                            class="block w- mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" />
+                                    </label>
+                                    <button id="get-button"
+                                        class="px-3 py-1 mt-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                        Get
+                                    </button>
+                                </div>
+                            </div>
+
+                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"></h2>
+
+                            <h2 id="orders-heading"
+                                class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                                All Orders
+                            </h2>
                             <% if(orders.results.length>0){ %>
-                                <div class="w-full overflow-hidden rounded-lg shadow-xs">
+                                <div id="orders-table-div" class="w-full overflow-hidden rounded-lg shadow-xs">
                                     <div class="w-full overflow-x-auto">
                                         <iframe id="txtArea1" style="display:none"></iframe>
                                         <table class="w-full whitespace-no-wrap" id="sales-report-table">
@@ -24,7 +54,8 @@
                                                     <th class="px-4 py-3">Order Amount</th>
                                                 </tr>
                                             </thead>
-                                            <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                                            <tbody id="orders-table-body"
+                                                class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                                                 <% for(var i=0;i<orders.results.length;i++){ %>
                                                     <tr class="text-gray-700 dark:text-gray-400">
                                                         <td class="px-4 py-3">
@@ -56,15 +87,7 @@
                                                     </tr>
                                                     <% } %>
                                                         <tr
-                                                            class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                                                            <th class="px-4 py-3"></th>
-                                                            <th class="px-4 py-3"></th>
-                                                            <th class="px-4 py-3"></th>
-                                                            <th class="px-4 py-3"></th>
-                                                            <th class="px-4 py-3"></th>
-                                                        </tr>
-                                                        <tr
-                                                            class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                                                            class="text-xs mt-1 font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
                                                             <th class="px-4 py-3">Total</th>
                                                             <th class="px-4 py-3"></th>
                                                             <th class="px-4 py-3"></th>
@@ -76,7 +99,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div
+                                    <div id="pagination-div"
                                         class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
                                         <span class="flex items-center col-span-3">
                                             Showing <%= orders.results.length %> of <%= orders.results.length %>
@@ -127,9 +150,10 @@
                                         </span>
                                     </div>
                                 </div>
+                                <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"></h2>
                                 <button id="btnExport" onclick="fnExcelReport();"
                                     class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
-                                    EXPORT
+                                    EXPORT AS EXCEL SHEET
                                 </button>
                                 <% } else { %>
                                     <main class="h-full pb-16 overflow-y-auto">
@@ -147,6 +171,7 @@
                                         </div>
                                     </main>
                                     <% } %>
+
                         </div>
                     </main>
             </div>
@@ -184,4 +209,5 @@
             return (sa);
         }
     </script>
+    <script src="/admin/js/sales-report.js"></script>
 </body>

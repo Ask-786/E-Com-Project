@@ -96,9 +96,9 @@
                 <ul class="navbar-nav">
                   <% for (i=0;i<category.length;i++) { %>
                     <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" onclick="categorySearch('<%= category[i]._id %>')"
-                        id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
+                      <a class="nav-link dropdown-toggle" style="cursor: pointer;"
+                        onclick="categorySearch('<%= category[i]._id %>')" id="navbarDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <%= category[i].name %>
                           <i class="icon_plus" aria-hidden="true"></i>
                           <i class="icon_minus-06" aria-hidden="true"></i>

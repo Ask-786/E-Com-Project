@@ -655,6 +655,30 @@ const postEditCategory = async (req, res, next) => {
   }
 };
 
+const postQueriedSalesReport = async (req, res, next) => {
+  const { from, to } = req.body;
+  const now = moment().toISOString();
+  const formattedFrom = moment(from).toISOString();
+  const formattedTo = moment(to).toISOString();
+  if (formattedTo <= now) {
+    const orders = await Order.find({
+      createdAt: { $gt: formattedFrom, $lt: formattedTo },
+    }).populate("user");
+    const formattedOrders = orders.map((el) => {
+      let newEl = { ...el._doc };
+      newEl.createdAt = moment(newEl.createdAt).format("LL");
+      return newEl;
+    });
+    const totalPrice = formattedOrders.reduce((total, orders) => {
+      total += orders.finalPrice;
+      return total;
+    }, 0);
+    res.json({ status: true, orders: formattedOrders, totalPrice });
+  } else {
+    res.json({ status: false });
+  }
+};
+
 const patchOrderDetails = async (req, res, next) => {
   try {
     if (req.query.id) {
@@ -713,4 +737,5 @@ module.exports = {
   getPieChartDetails,
   getSalesReport,
   getBarChartDetails,
+  postQueriedSalesReport,
 };
