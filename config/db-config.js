@@ -6,7 +6,7 @@ const DB = process.env.DB;
 
 async function runConnection() {
   try {
-    await mongoose.connect(localDb, {
+    await mongoose.connect(DB, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
