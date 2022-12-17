@@ -1,0 +1,127 @@
+<body>
+    <div class="flex h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen}">
+        <%- include('../admin-views/partials/side-bar.ejs') %>
+            <div class="flex flex-col flex-1 w-full">
+                <%- include('../admin-views/partials/header.ejs') %>
+                    <main class="h-full pb-16 overflow-y-auto">
+                        <!-- Remove everything INSIDE this div to a really blank page -->
+                        <div class="container px-6 mx-auto grid">
+                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                                Edit : <%= coupon.couponCode %>
+                            </h2>
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                                <% if (errMessag.length>0) { %>
+                                    <span class="text-red-700 dark:text-red-400">
+                                        <%= errMessag %>
+                                    </span>
+                                    <% } %>
+                                        <form method="post"
+                                            action="/admin/dash/coupons/coupon-details/edit-coupon?id=<%= coupon._id %>&_method=PATCH">
+                                            <!-- Helper text -->
+                                            <label class="block mt-4 text-sm">
+                                                <% if (dateMessage.length>0) { %>
+                                                    <span class="text-red-700 dark:text-red-400">
+                                                        <%= dateMessage %>
+                                                    </span>
+                                                    <% } else { %>
+                                                        <span class="text-gray-700 dark:text-gray-400">
+                                                            Expr Date (<%= coupon.expiryDate %>)
+                                                        </span>
+                                                        <% } %>
+                                                            <input value="<%= coupon.expiryDate %>"
+                                                                class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
+                                                                placeholder="Expr Date" name="expiryDate"
+                                                                type="datetime-local" required />
+                                            </label>
+                                            <input value="<%= coupon._id %>" hidden name="id" />
+                                            <label class="block mt-4 text-sm">
+                                                <span id="deduction-span" class="text-gray-700 dark:text-gray-400">
+                                                    Deduction(<%= coupon.deductionType %> )
+                                                </span>
+                                                <input value="<%= coupon.deduction %>"
+                                                    class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
+                                                    placeholder="Deduction(<%= coupon.deductionType %> )"
+                                                    name="deduction" type="number" required />
+                                            </label>
+                                            <label class="block mt-4 text-sm">
+                                                <span class="text-gray-700 dark:text-gray-400">
+                                                    Minimum Amount(₹)
+                                                </span>
+                                                <input value="<%= coupon.minAmount %>"
+                                                    class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
+                                                    placeholder="Minimum Amount" name="minAmount" type="number"
+                                                    required />
+                                            </label>
+                                            <label class="block mt-4 text-sm">
+                                                <span class="text-gray-700 dark:text-gray-400">
+                                                    Max Users
+                                                </span>
+                                                <input value="<%= coupon.maxUsers %>"
+                                                    class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
+                                                    placeholder="Minimum Amount" name="maxUsers" type="number"
+                                                    required />
+                                            </label>
+                                            <% if (coupon.deductionType==="percentage" ) { %>
+                                                <label class="block mt-4 text-sm">
+                                                    <% if (maxAmountMessage.length>0) { %>
+                                                        <span class="text-red-700 dark:text-red-400">
+                                                            <%= maxAmountMessage %>
+                                                        </span>
+                                                        <% } else { %>
+                                                            <span class="text-gray-700 dark:text-gray-400">
+                                                                Maximum Amount(₹)
+                                                            </span>
+                                                            <% } %>
+                                                                <input value="<%= coupon.maxLimit %>"
+                                                                    class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
+                                                                    placeholder="Maximum Amount" name="maxLimit"
+                                                                    type="number" required id="max-amount" />
+                                                </label>
+                                                <% } %>
+
+                                                    <h2
+                                                        class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                                                    </h2>
+                                                    <button
+                                                        class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+                                                        type="submit">
+                                                        Submit
+                                                    </button>
+                                        </form>
+                            </div>
+                        </div>
+                    </main>
+            </div>
+    </div>
+    <% if (successMessage.length>0) { %>
+        <script>
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener("mouseenter", Swal.stopTimer);
+                    toast.addEventListener("mouseleave", Swal.resumeTimer);
+                },
+            });
+            Toast.fire({
+                icon: "success",
+                title: successMessage,
+            });
+        </script>
+        <% } %>
+            <script>
+                $('#type-select').change(() => {
+                    let selection = $('#type-select :selected').text()
+                    if (selection === "percentage") {
+                        $("#deduction-span").text('Deduction(%)')
+                        $("#max-amount").prop('disabled', false)
+                    } else {
+                        $("#deduction-span").text('Deduction(₹)')
+                        $("#max-amount").prop('disabled', true)
+                    }
+                })
+            </script>
+</body>

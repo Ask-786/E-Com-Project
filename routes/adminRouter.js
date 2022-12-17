@@ -41,6 +41,9 @@ const {
   getBarChartDetails,
   postQueriedSalesReport,
   getProductDetails,
+  getCouponDetails,
+  getEditCoupon,
+  patchEditCoupon,
 } = require("../controllers/adminController");
 
 const {
@@ -140,6 +143,15 @@ router
 router
   .route("/dash/products/product-details")
   .get(checkAuthenticated, getProductDetails);
+
+router
+  .route("/dash/coupons/coupon-details")
+  .get(checkAuthenticated, getCouponDetails);
+
+router
+  .route("/dash/coupons/coupon-details/edit-coupon")
+  .get(checkAuthenticated, getEditCoupon)
+  .patch(checkAuthenticated, patchEditCoupon);
 
 router.route("/adlogout").delete(deleteLogout);
 

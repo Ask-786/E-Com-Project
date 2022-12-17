@@ -463,6 +463,32 @@ const getSalesReport = async (req, res, next) => {
   }
 };
 
+const getCouponDetails = async (req, res, next) => {
+  const coupon = await Coupon.findById(req.query.id);
+  const formattedCoupon = { ...coupon._doc };
+  formattedCoupon.createdAt = moment(formattedCoupon.createdAt).format("lll");
+  formattedCoupon.updatedAt = moment(formattedCoupon.updatedAt).format("lll");
+  formattedCoupon.expiryDate = moment(formattedCoupon.expiryDate).format("lll");
+  res.render("admin-views/coupon-details", {
+    coupon: formattedCoupon,
+    title: coupon.couponCode,
+    layout: "./layouts/admin-layout",
+  });
+};
+
+const getEditCoupon = async (req, res, next) => {
+  const coupon = await Coupon.findById(req.query.id);
+  res.render("admin-views/edit-coupon", {
+    coupon,
+    dateMessage: req.flash("dateMessage"),
+    maxAmountMessage: req.flash("maxAmountMessage"),
+    errMessag: req.flash("errMessag"),
+    successMessage: req.flash("successMessage"),
+    title: `Edit ${coupon.couponCode}`,
+    layout: "./layouts/admin-layout",
+  });
+};
+
 // const postLogin = (req, res) => {
 //   try {
 //     Admin.findOne({ username: req.body.username }, (err, admin) => {
@@ -745,6 +771,44 @@ const patchOrderDetails = async (req, res, next) => {
   }
 };
 
+const patchEditCoupon = async (req, res, next) => {
+  const now = moment(Date.now()).format();
+  const expr = moment(req.body.expiryDate).format();
+  const id = req.body.id;
+  try {
+    if (expr > now) {
+      const coupon = await Coupon.findById(id);
+      if (coupon.deductionType === "percentage") {
+        const { expiryDate, deduction, minAmount, maxLimit, maxUsers, id } =
+          req.body;
+        coupon.expiryDate = expiryDate;
+        coupon.deduction = deduction;
+        coupon.minAmount = minAmount;
+        coupon.maxLimit = maxLimit;
+        coupon.maxUsers = maxUsers;
+        await coupon.save();
+        req.flash("successMessage", "Coupon Added Successfully");
+        res.redirect(`/admin/dash/coupons/coupon-details?id=${id}`);
+      } else {
+        const { expiryDate, deduction, minAmount, maxUsers, id } = req.body;
+        coupon.expiryDate = expiryDate;
+        coupon.deduction = deduction;
+        coupon.minAmount = minAmount;
+        coupon.maxUsers = maxUsers;
+        await coupon.save();
+        req.flash("successMessage", "Coupon Added Successfully");
+        res.redirect(`/admin/dash/coupons/coupon-details?id=${id}`);
+      }
+    } else {
+      req.flash("dateMessage", "input a valid expr date");
+      res.redirect(`/admin/dash/coupons/coupon-details/edit-coupon?id=${id}`);
+    }
+  } catch (err) {
+    req.flash("errMessag", err.message);
+    res.redirect(`/admin/dash/coupons/coupon-details/edit-coupon?id=${id}`);
+  }
+};
+
 const deleteLogout = (req, res) => {
   req.logOut((err) => {
     res.redirect("/admin");
@@ -783,4 +847,7 @@ module.exports = {
   getBarChartDetails,
   postQueriedSalesReport,
   getProductDetails,
+  getCouponDetails,
+  getEditCoupon,
+  patchEditCoupon,
 };

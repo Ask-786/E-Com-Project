@@ -1,0 +1,90 @@
+<body>
+    <div class="flex h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen}">
+        <%- include('../admin-views/partials/side-bar.ejs') %>
+            <div class="flex flex-col flex-1 w-full">
+                <%- include('../admin-views/partials/header.ejs') %>
+                    <main class="h-full pb-16 overflow-y-auto">
+                        <div class="container grid px-6 mx-auto">
+                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                                <%= coupon.couponCode %>
+                            </h2>
+                            <div class="max-w-8xl px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                                <p class="mb-4 mt-4 text-gray-600 dark:text-gray-400">
+                                    ID:<strong>
+                                        <%= coupon._id %>
+                                    </strong>
+                                </p>
+                                <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"></h2>
+                                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                    Expiry Date:<strong>
+                                        <%= coupon.expiryDate %>
+                                    </strong>
+                                </p>
+                                <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"></h2>
+                                <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                    Min Amount:<strong>
+                                        ₹ <%= coupon.minAmount %>
+                                    </strong>
+                                </p>
+                                <% if (coupon.diactivated) { %>
+                                    <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                        Status :<strong>
+                                            Diactivated
+                                        </strong>
+                                    </p>
+                                    <% } else { %>
+                                        <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                            Status :<strong>
+                                                Active
+                                            </strong>
+                                        </p>
+                                        <% } %>
+
+                                            <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                Maximum Users:<strong>
+                                                    <%= coupon.maxUsers %>
+                                                </strong>
+                                            </p>
+                                            <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                Total Availed Users:<strong>
+                                                    <%= coupon.users.length %>
+                                                </strong>
+                                            </p>
+                                            <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                Deduction Type:<strong>
+                                                    <%= coupon.deductionType %>
+                                                </strong>
+                                            </p>
+                                            <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                Deduction:<strong>
+                                                    <%= coupon.deduction %>
+                                                </strong>
+                                            </p>
+                                            <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                Maximum Limit:<strong>
+                                                    <%= coupon.maxLimit %>
+                                                </strong>
+                                            </p>
+                                            <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                createdAt:<strong>
+                                                    <%= coupon.createdAt %>
+                                                </strong>
+                                            </p>
+                                            <p class="mb-4 text-gray-600 dark:text-gray-400">
+                                                updatedAt:<strong>
+                                                    <%= coupon.updatedAt %>
+                                                </strong>
+                                            </p>
+                                            <a href="/admin/dash/coupons/coupon-details/edit-coupon?id=<%= coupon._id %> "
+                                                class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                                Edit
+                                            </a>
+                            </div>
+                        </div>
+
+            </div>
+            </main>
+
+    </div>
+    </div>
+</body>
