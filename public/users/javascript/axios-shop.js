@@ -39,9 +39,6 @@ async function categorySearch(id) {
               <h4>
                   ${product[i].title}
               </h4>
-              <h5><del>$45.50</del>
-                  ${product[i].price}
-              </h5>
           </div>
           </div>
       </div>`);
