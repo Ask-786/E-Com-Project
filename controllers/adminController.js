@@ -139,6 +139,19 @@ const getProducts = async (req, res, next) => {
   }
 };
 
+const getProductDetails = async (req, res, next) => {
+  const productId = req.query.id;
+  const product = await Product.findById(productId).populate("category");
+  const formattedProduct = { ...product._doc };
+  formattedProduct.createdAt = moment(formattedProduct.createdAt).format("lll");
+  formattedProduct.updatedAt = moment(formattedProduct.updatedAt).format("lll");
+  res.render("admin-views/product-details", {
+    product: formattedProduct,
+    layout: "./layouts/admin-layout",
+    title: product.title,
+  });
+};
+
 const getEditProduct = async (req, res, next) => {
   try {
     let product = await Product.findById(req.query.id);
@@ -738,4 +751,5 @@ module.exports = {
   getSalesReport,
   getBarChartDetails,
   postQueriedSalesReport,
+  getProductDetails,
 };

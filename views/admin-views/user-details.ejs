@@ -91,12 +91,16 @@
                                                                         <td class="px-4 py-3">
                                                                             <div class="flex items-center text-sm">
                                                                                 <div>
-                                                                                    <p class="font-semibold">
+                                                                                    <p class="font-semibold" style="overflow: hidden;
+                                                                white-space: nowrap;
+                                                                text-overflow: ellipsis; max-width:20em;">
                                                                                         <%= user.orders[i].cart.bucket[j].products.title
                                                                                             %>
                                                                                     </p>
-                                                                                    <p
-                                                                                        class="text-xs text-gray-600 dark:text-gray-400">
+                                                                                    <p class="text-xs text-gray-600 dark:text-gray-400"
+                                                                                        style="overflow: hidden;
+                                                                white-space: nowrap;
+                                                                text-overflow: ellipsis; max-width:20em;">
                                                                                         <%= user.orders[i].cart.bucket[j].products.description
                                                                                             %>
                                                                                     </p>

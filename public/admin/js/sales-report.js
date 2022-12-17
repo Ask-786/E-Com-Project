@@ -11,6 +11,7 @@ $("#get-button").click(async () => {
         const orders = response.data.orders;
         const total = response.data.totalPrice;
         if (orders.length > 0) {
+          $("#orders-table-div").show();
           $("#orders-table-body").empty();
           for (let i = 0; i < orders.length; i++) {
             $("#orders-table-body")
