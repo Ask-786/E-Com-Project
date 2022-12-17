@@ -19,12 +19,15 @@ $(document).ready(async () => {
              * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
              */
             backgroundColor: [
-              "#0694a2",
-              "#1c64f2",
-              "#7e3af2",
-              "#1c64f2",
-              "#7e3af2",
-              "#7e3af2",
+              getRandomColor(),
+              getRandomColor(),
+              getRandomColor(),
+              getRandomColor(),
+              getRandomColor(),
+              getRandomColor(),
+              getRandomColor(),
+              getRandomColor(),
+              getRandomColor(),
             ],
             label: "Dataset 1",
           },
@@ -90,4 +93,13 @@ function showPopupError(message) {
     icon: "error",
     title: message,
   });
+}
+
+function getRandomColor() {
+  var letters = "0123456789ABCDEF";
+  var color = "#";
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 }

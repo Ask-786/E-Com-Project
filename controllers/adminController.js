@@ -14,7 +14,8 @@ const {
 } = require("../config/delete-file");
 const Order = require("../models/Orders");
 const Coupon = require("../models/Coupons");
-
+const { barChartDetails } = require("../utils/chart-details");
+const { array } = require("joi");
 initializePassport(passport);
 
 const getLogin = (req, res) => {
@@ -110,7 +111,37 @@ const getPieChartDetails = async (req, res, next) => {
   }
 };
 
-const getBarChartDetails = async (req, res, next) => {};
+const getBarChartDetails = async (req, res, next) => {
+  try {
+    const allMonths = [
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const month = new Date().getMonth();
+    const months = allMonths.slice(month, month + 6);
+    const allData = await barChartDetails();
+    const check = allData.every((el) => el !== null);
+    if (check) res.json({ dataset: allData, months, status: true });
+    else res.json({ status: false });
+  } catch (err) {
+    res.json({ status: false });
+  }
+};
 
 const getProductAdd = async (req, res, next) => {
   try {
