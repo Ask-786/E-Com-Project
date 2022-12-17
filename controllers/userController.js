@@ -447,8 +447,7 @@ const getCartItemDecrement = async (req, res) => {
     ) {
       return res.json({
         status: false,
-        message:
-          "Cant decrement the item lessthan the limited amount. else remove the coupon",
+        message: `Cant decrement the item lessthan the limited amount of ${preCart.couponDetails.minAmount}. else remove the coupon`,
       });
     }
 
