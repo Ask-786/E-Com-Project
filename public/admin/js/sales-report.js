@@ -39,7 +39,7 @@ $("#get-button").click(async () => {
             ${orders[i].createdAt}
             </td>
             <td class="px-4 py-3 text-sm">
-            ${orders[i].finalPrice}
+            ₹ ${orders[i].finalPrice}
             </td>
         </tr>`);
           }
@@ -50,7 +50,7 @@ $("#get-button").click(async () => {
           <th class="px-4 py-3"></th>
           <th class="px-4 py-3"></th>
           <th class="px-4 py-3">
-              ${total}
+          ₹ ${total}
           </th>
       </tr>`);
           $("#orders-heading").text(`Orders From ${from} to ${to}`);

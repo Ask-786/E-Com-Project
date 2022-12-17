@@ -65,7 +65,7 @@
                                                             <td class="px-4 py-3">
                                                                 <div class="flex items-center text-sm">
                                                                     <p class="font-semibold">
-                                                                        <%= order.cart.grandtotal %>
+                                                                        ₹ <%= order.cart.grandtotal %>
 
                                                                     </p>
                                                                 </div>
@@ -146,11 +146,11 @@
                                                 Coupon Deduction : <%= order.cart.couponDetails.deduction %>%
                                             </p>
                                             <p class="mb-4 text-gray-600 dark:text-gray-400">
-                                                Coupon Maximum Amount Limit : $<%= order.cart.couponDetails.maxLimit %>
+                                                Coupon Maximum Amount Limit : ₹ <%= order.cart.couponDetails.maxLimit %>
                                             </p>
                                             <% } else { %>
                                                 <p class="mb-4 text-gray-600 dark:text-gray-400">
-                                                    Coupon Deduction : $<%= order.cart.couponDetails.deduction %>
+                                                    Coupon Deduction : ₹ <%= order.cart.couponDetails.deduction %>
                                                 </p>
                                                 <% } %>
                                     </div>
@@ -163,10 +163,10 @@
                                                 Ordered Date: <%= order.createdAt %>
                                             </h4>
                                             <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
-                                                Total Cart Amount: <%= order.cart.grandtotal %>
+                                                Total Cart Amount: ₹ <%= order.cart.grandtotal %>
                                             </h4>
                                             <h4 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
-                                                Total Purchase Amount: <%= order.finalPrice %>
+                                                Total Purchase Amount: ₹ <%= order.finalPrice %>
                                             </h4>
                                             <form
                                                 action="/admin/dash/orders/order-details?orderId=<%= order._id %>&_method=PATCH"

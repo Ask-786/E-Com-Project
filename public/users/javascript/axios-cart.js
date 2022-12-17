@@ -17,7 +17,7 @@ async function incrementButton(index, id) {
             $("#cart-total-price").text(response.data.grandtotal);
             result.value = response.data.count;
             $(`#sub-total-per-item${index}`).text(
-              `$ ${response.data.subtotal}`
+              `₹ ${response.data.subtotal}`
             );
             $("#products-only-total p").text(response.data.grandtotal);
             changeTotalPrice(response.data.total);
@@ -28,21 +28,21 @@ async function incrementButton(index, id) {
             $("#cart-total-price").text(response.data.grandtotal);
             result.value = response.data.count;
             $(`#sub-total-per-item${index}`).text(
-              `$ ${response.data.subtotal}`
+              `₹ ${response.data.subtotal}`
             );
             $("#products-only-total p").text(response.data.grandtotal);
             changeTotalPrice(response.data.total);
           }
         } else if (response.data.type === "amount") {
           $("#products-only-total p").text(response.data.grandtotal);
-          $("#cart-discount-price p").text(`$ ${response.data.deduction}`);
+          $("#cart-discount-price p").text(`₹ ${response.data.deduction}`);
           $("#cart-total-price").text(response.data.grandtotal);
           result.value = response.data.count;
-          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
+          $(`#sub-total-per-item${index}`).text(`₹ ${response.data.subtotal}`);
           changeTotalPrice(response.data.total);
         } else {
           result.value = response.data.count;
-          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
+          $(`#sub-total-per-item${index}`).text(`₹ ${response.data.subtotal}`);
           $("#products-only-total p").text(response.data.grandtotal);
           changeTotalPrice(response.data.grandtotal);
         }
@@ -69,7 +69,7 @@ async function decrementButton(index, id, price) {
             $("#cart-total-price").text(response.data.grandtotal);
             result.value = response.data.count;
             $(`#sub-total-per-item${index}`).text(
-              `$ ${response.data.subtotal}`
+              `₹ ${response.data.subtotal}`
             );
             $("#products-only-total p").text(response.data.grandtotal);
             changeTotalPrice(response.data.total);
@@ -80,20 +80,20 @@ async function decrementButton(index, id, price) {
             $("#cart-total-price").text(response.data.grandtotal);
             result.value = response.data.count;
             $(`#sub-total-per-item${index}`).text(
-              `$ ${response.data.subtotal}`
+              `₹ ${response.data.subtotal}`
             );
             $("#products-only-total p").text(response.data.grandtotal);
             changeTotalPrice(response.data.total);
           }
         } else if (response.data.type === "amount") {
           $("#products-only-total p").text(response.data.grandtotal);
-          $("#cart-discount-price p").text(`$ ${response.data.discount}`);
+          $("#cart-discount-price p").text(`₹ ${response.data.discount}`);
           result.value = response.data.count;
-          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
+          $(`#sub-total-per-item${index}`).text(`₹ ${response.data.subtotal}`);
           changeTotalPrice(response.data.total);
         } else {
           result.value = response.data.count;
-          $(`#sub-total-per-item${index}`).text(`$ ${response.data.subtotal}`);
+          $(`#sub-total-per-item${index}`).text(`₹ ${response.data.subtotal}`);
           $("#products-only-total p").text(response.data.grandtotal);
           changeTotalPrice(response.data.grandtotal);
         }
@@ -119,7 +119,7 @@ async function deleteButton(id) {
 }
 
 function changeTotalPrice(grandtotal) {
-  document.getElementById("cart-total-price").innerHTML = `$ ${grandtotal}`;
+  document.getElementById("cart-total-price").innerHTML = `₹ ${grandtotal}`;
 }
 
 async function addCoupon() {
@@ -145,7 +145,7 @@ async function addCoupon() {
       }
     } else {
       $("#error-msg").text("Coupon Applied").css("color", "green");
-      $("#cart-discount-price p").text(`$ ${response.data.deduction}`);
+      $("#cart-discount-price p").text(`₹ ${response.data.deduction}`);
       $("#cart-total-price").text(response.data.total);
       $("#btn-add-coupon").hide();
       $("#btn-remove-coupon").show();

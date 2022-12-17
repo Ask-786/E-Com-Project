@@ -128,7 +128,7 @@
                                                                             <td class="px-4 py-3">
                                                                                 <div class="flex items-center text-sm">
                                                                                     <p class="font-semibold">
-                                                                                        <%= user.orders[i].cart.grandtotal
+                                                                                        ₹<%= user.orders[i].cart.grandtotal
                                                                                             %>
 
                                                                                     </p>
@@ -220,11 +220,11 @@
                                                             ){ %>
                                                             <p class="mb-4 text-gray-600 dark:text-gray-400">
                                                                 Coupon Deduction : <%=
-                                                                    user.orders[i].cart.couponDetails.deduction %>%
+                                                                    user.orders[i].cart.couponDetails.deduction %> %
                                                             </p>
                                                             <% } else { %>
                                                                 <p class="mb-4 text-gray-600 dark:text-gray-400">
-                                                                    Coupon Deduction : $<%=
+                                                                    Coupon Deduction : ₹ <%=
                                                                         user.orders[i].cart.couponDetails.deduction %>
                                                                 </p>
                                                                 <% } %>
@@ -242,11 +242,13 @@
                                                             </h4>
                                                             <h4
                                                                 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
-                                                                Total Cart Amount: <%= user.orders[i].cart.grandtotal %>
+                                                                Total Cart Amount: ₹ <%= user.orders[i].cart.grandtotal
+                                                                    %>
                                                             </h4>
                                                             <h4
                                                                 class="mb-4 text-md font-semibold text-gray-600 dark:text-gray-300">
-                                                                Total Purchase Amount: <%= user.orders[i].finalPrice %>
+                                                                Total Purchase Amount: ₹ <%= user.orders[i].finalPrice
+                                                                    %>
                                                             </h4>
                                                             <form
                                                                 action="/admin/dash/users/user-details/update-order?id=<%= user._id %>&orderId=<%= user.orders[i]._id %>&_method=PATCH"

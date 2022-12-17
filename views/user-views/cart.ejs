@@ -43,7 +43,7 @@
                         </div>
                       </td>
                       <td>
-                        <p class="red">$<%= cart.bucket[i].products.price %>
+                        <p class="red">₹<%= cart.bucket[i].products.price %>
                         </p>
                       </td>
                       <td>
@@ -61,7 +61,7 @@
                         </div>
                       </td>
                       <td>
-                        <p id="sub-total-per-item<%= i %>">$ <%= cart.bucket[i].subtotal %>
+                        <p id="sub-total-per-item<%= i %>">₹ <%= cart.bucket[i].subtotal %>
                         </p>
                       </td>
                     </tr>
@@ -159,7 +159,7 @@
                           <% } %>
 
                             <% } else if (type==="amount" ) { %>
-                              <%= `$ ${discount}` %>
+                              <%= `₹ ${discount}` %>
                                 <% } %>
                                   <% } else { %>
                                     <p>
@@ -174,7 +174,7 @@
                 Total
               </div>
               <div class="float-right" id="cart-total-price">
-                $ <%= total %>
+                ₹ <%= total %>
               </div>
             </div>
           </div>

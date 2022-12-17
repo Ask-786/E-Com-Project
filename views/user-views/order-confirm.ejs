@@ -17,9 +17,9 @@
             <thead class="thead-light">
               <tr>
                 <th scope="col">Item</th>
-                <th scope="col">Price</th>
+                <th scope="col">₹Price</th>
                 <th scope="col">Quantity</th>
-                <th scope="col">Total</th>
+                <th scope="col">₹Total</th>
               </tr>
             </thead>
             <tbody>
@@ -49,7 +49,7 @@
                       <td>
                       </td>
                       <td>
-                        <%= order.cart.grandtotal %>
+                        ₹ <%= order.cart.grandtotal %>
                       </td>
                     </tr>
                     <tr>
@@ -75,7 +75,7 @@
                               <% } %>
                                 <% } else { %>
                                   <td>
-                                    $<%= order.cart.couponDetails.deduction %>
+                                    ₹ <%= order.cart.couponDetails.deduction %>
                                   </td>
                                   <% } %>
                     </tr>
@@ -89,7 +89,7 @@
                         <td>
                         </td>
                         <th>
-                          <%= order.finalPrice %>
+                          ₹ <%= order.finalPrice %>
                         </th>
                       </tr>
             </tbody>

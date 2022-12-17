@@ -2863,6 +2863,11 @@ i:before {
 }
 
 .l_product_item .l_p_text h4 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 90%;
+  margin: auto;
   font-size: 16px;
   font-family: "Montserrat", sans-serif;
   font-weight: 600;

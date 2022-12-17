@@ -52,8 +52,8 @@
                                                 </select>
                                             </label>
                                             <label class="block mt-4 text-sm">
-                                                <span class="text-gray-700 dark:text-gray-400">
-                                                    Deduction
+                                                <span id="deduction-span" class="text-gray-700 dark:text-gray-400">
+                                                    Deduction(%)
                                                 </span>
                                                 <input
                                                     class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
@@ -61,7 +61,7 @@
                                             </label>
                                             <label class="block mt-4 text-sm">
                                                 <span class="text-gray-700 dark:text-gray-400">
-                                                    Minimum Amount
+                                                    Minimum Amount(₹)
                                                 </span>
                                                 <input
                                                     class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
@@ -84,7 +84,7 @@
                                                     </span>
                                                     <% } else { %>
                                                         <span class="text-gray-700 dark:text-gray-400">
-                                                            Maximum Amount
+                                                            Maximum Amount(₹)
                                                         </span>
                                                         <% } %>
                                                             <input
@@ -128,8 +128,10 @@
                 $('#type-select').change(() => {
                     let selection = $('#type-select :selected').text()
                     if (selection === "percentage") {
+                        $("#deduction-span").text('Deduction(%)')
                         $("#max-amount").prop('disabled', false)
                     } else {
+                        $("#deduction-span").text('Deduction(₹)')
                         $("#max-amount").prop('disabled', true)
                     }
                 })

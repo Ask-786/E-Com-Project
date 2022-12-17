@@ -29,7 +29,7 @@
                     <% } %>
 
                       <% if (cart.coupon===true && type==='percentage' ) { %>
-                        <h4>Cart Subtotal <span id="total-amount" data-amount="<%= cart.grandtotal %>">$<%=
+                        <h4>Cart Subtotal <span id="total-amount" data-amount="<%= cart.grandtotal %>">₹<%=
                               cart.grandtotal %>.00</span></h4>
                         <h5 class="checkout-discount">
                           Discounts (<%= cart.couponDetails.couponCode %>) : <span>
@@ -42,18 +42,18 @@
                             </span>
                         </h5>
                         <% } else if (cart.coupon===true && type==='amount' ) { %>
-                          <h4>Cart Subtotal <span id="total-amount" data-amount="<%= cart.grandtotal %>">$<%=
+                          <h4>Cart Subtotal <span id="total-amount" data-amount="<%= cart.grandtotal %>">₹<%=
                                 cart.grandtotal %>.00</span></h4>
                           <h5 class="checkout-discount">
                             Discounts (<%= cart.couponDetails.couponCode %>) : <span>
-                                $ <%= discount %>
+                                ₹ <%= discount %>
                               </span>
                           </h5>
                           <% } else { %>
                             <h4 class="no-discount-cart">Cart Subtotal <span id="total-amount"
-                                data-amount="<%= cart.grandtotal %>">$<%= cart.grandtotal %>.00</span></h4>
+                                data-amount="<%= cart.grandtotal %>">₹<%= cart.grandtotal %>.00</span></h4>
                             <% } %>
-                              <h3><span class="normal_text">Order Totals</span> <span>$<%= total %></span></h3>
+                              <h3><span class="normal_text">Order Totals</span> <span>₹<%= total %></span></h3>
                 </div>
                 <div id="accordion" role="tablist" class="price_method">
                   <div class="card">
