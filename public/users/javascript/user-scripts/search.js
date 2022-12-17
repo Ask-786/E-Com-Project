@@ -42,7 +42,7 @@ async function productSearch() {
                         ${product[i].title}
                     </h4>
                     <h5>
-                        ${product[i].price}
+                    ₹ ${product[i].price}
                     </h5>
                 </div>
                 </div>
