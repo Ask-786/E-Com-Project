@@ -657,9 +657,9 @@ const postEditCategory = async (req, res, next) => {
 
 const postQueriedSalesReport = async (req, res, next) => {
   const { from, to } = req.body;
-  const now = moment().toISOString(true);
-  const formattedFrom = moment(from).toISOString(true);
-  const formattedTo = moment(to).toISOString(true);
+  const now = moment().utc().toISOString();
+  const formattedFrom = moment(from).utc().toISOString();
+  const formattedTo = moment(to).utc().toISOString();
   if (formattedTo <= now) {
     const orders = await Order.find({
       createdAt: { $gt: formattedFrom, $lt: formattedTo },
