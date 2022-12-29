@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 
-const localDb = process.env.DB_LOCAL;
-const DB = process.env.DB;
+const { DB, DB_LOCAL } = process.env;
 
 async function runConnection() {
   try {

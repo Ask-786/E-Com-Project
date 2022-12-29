@@ -1,8 +1,7 @@
+const mongoose = require("mongoose");
 const Order = require("../models/Orders");
 const Propduct = require("../models/Product");
-const Category = require("../models/Category");
 const Cart = require("../models/Cart");
-const mongoose = require("mongoose");
 
 const placeOrder = (
   user,

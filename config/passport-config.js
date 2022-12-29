@@ -16,9 +16,8 @@ function initialize(passport) {
           return done(null, false, { message: "You were blocked by admin" });
         }
         return done(null, user);
-      } else {
-        return done(null, false, { message: "Incorrect Password " });
       }
+      return done(null, false, { message: "Incorrect Password " });
     } catch (err) {
       return done(err);
     }

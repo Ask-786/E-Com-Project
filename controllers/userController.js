@@ -1,31 +1,26 @@
 const passport = require("passport");
-const User = require("../models/User");
 const mongoose = require("mongoose");
+const moment = require("moment");
+const User = require("../models/User");
 const Address = require("../models/Address");
 const Cart = require("../models/Cart");
 const Orders = require("../models/Orders");
 const Product = require("../models/Product");
 const Category = require("../models/Category");
 const Favorites = require("../models/Favorites");
-const querystring = require("querystring");
-const moment = require("moment");
 const { placeOrder } = require("../utils/place-order");
 const { createOrderRz, verifyPayment } = require("../services/razorpay");
 const initializePassport = require("../config/passport-config");
 const { validateSignup } = require("../utils/joi-validation");
-const { response } = require("express");
-const { error } = require("console");
 const Coupon = require("../models/Coupons");
 const {
-  ConnectionPolicyPage,
-} = require("twilio/lib/rest/voice/v1/connectionPolicy");
-const sendVerifyToken = require("../services/twilio").sendVerifyToken;
-const checkVerificationToken =
-  require("../services/twilio").checkVerificationToken;
+  sendVerifyToken,
+  checkVerificationToken,
+} = require("../services/twilio");
 
 initializePassport(passport);
 
-const getHome = async (req, res) => {
+const getHome = async (req, res, next) => {
   try {
     const category = await Category.find({});
     const product = await Product.find({})
@@ -54,7 +49,7 @@ const getLogin = (req, res) => {
 
 const getUserProfile = async (req, res, next) => {
   try {
-    let Addresses = await Address.findOne({ user: req.user._id });
+    const Addresses = await Address.findOne({ user: req.user._id });
     res.render("user-views/profile", {
       search: false,
       user: req.user,
@@ -127,7 +122,7 @@ const getShop = async (req, res, next) => {
   try {
     if (req.query.searchData) {
       const products = {};
-      const searchData = req.query.searchData;
+      const { searchData } = req.query;
       const regEx = new RegExp(searchData, "i");
       products.results = await Product.find({
         $or: [{ title: { $regex: regEx } }, { description: { $regex: regEx } }],
@@ -185,7 +180,7 @@ const getProduct = async (req, res, next) => {
 
 const getCart = async (req, res, next) => {
   try {
-    let cart = await Cart.findOne({
+    const cart = await Cart.findOne({
       user: req.user._id,
       isexpired: false,
     })
@@ -204,7 +199,7 @@ const getCart = async (req, res, next) => {
       ) {
         const discount = (cart.grandtotal / 100) * cart.couponDetails.deduction;
         if (discount <= cart.couponDetails.maxLimit) {
-          let total = cart.grandtotal - discount;
+          const total = cart.grandtotal - discount;
           res.render("user-views/cart", {
             search: false,
             title: "Persuit: Cart",
@@ -218,7 +213,7 @@ const getCart = async (req, res, next) => {
             type: "percentage",
           });
         } else {
-          let total = cart.grandtotal - cart.couponDetails.maxLimit;
+          const total = cart.grandtotal - cart.couponDetails.maxLimit;
           res.render("user-views/cart", {
             search: false,
             title: "Persuit: Cart",
@@ -237,7 +232,7 @@ const getCart = async (req, res, next) => {
         cart.couponDetails.deductionType === "amount"
       ) {
         const discount = cart.couponDetails.deduction;
-        let total = cart.grandtotal - discount;
+        const total = cart.grandtotal - discount;
         res.render("user-views/cart", {
           search: false,
           title: "Persuit: Cart",
@@ -250,7 +245,7 @@ const getCart = async (req, res, next) => {
           type: "amount",
         });
       } else {
-        let total = cart.grandtotal;
+        const total = cart.grandtotal;
         res.render("user-views/cart", {
           search: false,
           title: "Persuit: Cart",
@@ -273,7 +268,7 @@ const getCart = async (req, res, next) => {
 
 const getAddToCart = async (req, res, next) => {
   try {
-    let cartExists = await Cart.findOne({
+    const cartExists = await Cart.findOne({
       user: req.user._id,
       isexpired: false,
     });
@@ -287,13 +282,12 @@ const getAddToCart = async (req, res, next) => {
         });
         res.json({ alert: true });
       } else {
-        let itemExists = await Cart.exists({
+        const itemExists = await Cart.exists({
           user: req.user._id,
           isexpired: false,
           "bucket.products": req.query.id,
         });
         if (itemExists === null) {
-          let product = await Product.findById(req.query.id);
           await Cart.updateOne(
             { user: req.user._id, isexpired: false },
             {
@@ -323,8 +317,8 @@ const getAddToCart = async (req, res, next) => {
 
 const getCartItemIncrement = async (req, res, next) => {
   try {
-    let id = mongoose.Types.ObjectId(req.query.id);
-    let product = await Product.aggregate([
+    const id = mongoose.Types.ObjectId(req.query.id);
+    const product = await Product.aggregate([
       { $match: { _id: id } },
       {
         $lookup: {
@@ -343,9 +337,9 @@ const getCartItemIncrement = async (req, res, next) => {
       },
     ]);
 
-    let userCartItem = product[0].userCart[0].bucket.find((elm) => {
-      return elm.products.toString() === req.query.id;
-    });
+    const userCartItem = product[0].userCart[0].bucket.find(
+      (elm) => elm.products.toString() === req.query.id
+    );
 
     if (product[0].stock > userCartItem.quantity) {
       await Cart.updateOne(
@@ -363,14 +357,14 @@ const getCartItemIncrement = async (req, res, next) => {
         }
       );
 
-      let cart = await Cart.findOne({
+      const cart = await Cart.findOne({
         user: req.user._id,
         isexpired: false,
         "bucket.products": req.query.id,
       }).populate("couponDetails");
-      let cartItem = cart.bucket.find((elm) => {
-        return elm.products.toString() === req.query.id;
-      });
+      const cartItem = cart.bucket.find(
+        (elm) => elm.products.toString() === req.query.id
+      );
 
       if (
         cart.coupon === true &&
@@ -378,7 +372,7 @@ const getCartItemIncrement = async (req, res, next) => {
       ) {
         const discount = (cart.grandtotal / 100) * cart.couponDetails.deduction;
         if (discount <= cart.couponDetails.maxLimit) {
-          let total = cart.grandtotal - discount;
+          const total = cart.grandtotal - discount;
           res.json({
             max: false,
             count: cartItem.quantity,
@@ -390,7 +384,7 @@ const getCartItemIncrement = async (req, res, next) => {
             type: "percentage",
           });
         } else {
-          let total = cart.grandtotal - cart.couponDetails.maxLimit;
+          const total = cart.grandtotal - cart.couponDetails.maxLimit;
           res.json({
             max: true,
             count: cartItem.quantity,
@@ -407,7 +401,7 @@ const getCartItemIncrement = async (req, res, next) => {
         cart.couponDetails.deductionType === "amount"
       ) {
         const discount = cart.couponDetails.deduction;
-        let total = cart.grandtotal - discount;
+        const total = cart.grandtotal - discount;
         res.json({
           count: cartItem.quantity,
           subtotal: cartItem.subtotal,
@@ -434,7 +428,7 @@ const getCartItemIncrement = async (req, res, next) => {
 
 const getCartItemDecrement = async (req, res) => {
   try {
-    let product = await Product.findById(req.query.id);
+    const product = await Product.findById(req.query.id);
     const preCart = await Cart.findOne({
       user: req.user._id,
       isexpired: false,
@@ -467,9 +461,9 @@ const getCartItemDecrement = async (req, res) => {
       { new: true }
     ).populate("couponDetails");
 
-    const cartItem = cart.bucket.find((elm) => {
-      return elm.products.toString() === req.query.id;
-    });
+    const cartItem = cart.bucket.find(
+      (elm) => elm.products.toString() === req.query.id
+    );
 
     if (
       cart.coupon === true &&
@@ -477,7 +471,7 @@ const getCartItemDecrement = async (req, res) => {
     ) {
       const discount = (cart.grandtotal / 100) * cart.couponDetails.deduction;
       if (discount <= cart.couponDetails.maxLimit) {
-        let total = cart.grandtotal - discount;
+        const total = cart.grandtotal - discount;
         res.json({
           max: false,
           status: true,
@@ -490,7 +484,7 @@ const getCartItemDecrement = async (req, res) => {
           type: "percentage",
         });
       } else {
-        let total = cart.grandtotal - cart.couponDetails.maxLimit;
+        const total = cart.grandtotal - cart.couponDetails.maxLimit;
         res.json({
           max: true,
           status: true,
@@ -508,7 +502,7 @@ const getCartItemDecrement = async (req, res) => {
       cart.couponDetails.deductionType === "amount"
     ) {
       const discount = cart.couponDetails.deduction;
-      let total = cart.grandtotal - discount;
+      const total = cart.grandtotal - discount;
       res.json({
         status: true,
         count: cartItem.quantity,
@@ -538,9 +532,9 @@ const getCartItemDelete = async (req, res, next) => {
       isexpired: false,
     }).populate("couponDetails");
 
-    let cartItem = cart.bucket.find((elm) => {
-      return elm.products.toString() === req.query.id;
-    });
+    const cartItem = cart.bucket.find(
+      (elm) => elm.products.toString() === req.query.id
+    );
 
     if (
       cart.coupon === true &&
@@ -568,7 +562,7 @@ const getCartItemDelete = async (req, res, next) => {
       }
     );
 
-    let cartAfter = await Cart.findOne({
+    const cartAfter = await Cart.findOne({
       user: req.user._id,
       isexpired: false,
     });
@@ -585,9 +579,9 @@ const getCartItemDelete = async (req, res, next) => {
   }
 };
 
-const getFavorites = async (req, res) => {
+const getFavorites = async (req, res, next) => {
   try {
-    let favorites = await Favorites.findOne({ user: req.user._id }).populate(
+    const favorites = await Favorites.findOne({ user: req.user._id }).populate(
       "products"
     );
     if (favorites !== null && favorites.products.length > 0) {
@@ -603,13 +597,13 @@ const getFavorites = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 
-const getAddToFavorites = async (req, res) => {
+const getAddToFavorites = async (req, res, next) => {
   try {
-    let favoritesExists = await Favorites.exists({ user: req.user._id });
+    const favoritesExists = await Favorites.exists({ user: req.user._id });
 
     if (favoritesExists === null) {
       await Favorites.create({
@@ -618,7 +612,7 @@ const getAddToFavorites = async (req, res) => {
       });
       res.json({ status: true });
     } else {
-      let itemExists = await Favorites.exists({
+      const itemExists = await Favorites.exists({
         user: req.user._id,
         products: req.query.id,
       });
@@ -633,16 +627,16 @@ const getAddToFavorites = async (req, res) => {
       }
     }
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 
 const getFavoriteItemDelete = async (req, res, next) => {
   try {
-    let favorites = await Favorites.findOne({ user: req.user._id });
-    let favoriteItem = favorites.products.find((elm) => {
-      return elm.toString() === req.query.id;
-    });
+    const favorites = await Favorites.findOne({ user: req.user._id });
+    const favoriteItem = favorites.products.find(
+      (elm) => elm.toString() === req.query.id
+    );
     await Favorites.updateOne(
       { user: req.user._id },
       {
@@ -657,7 +651,7 @@ const getFavoriteItemDelete = async (req, res, next) => {
 
 const getCheckout = async (req, res, next) => {
   try {
-    let userCart = await Cart.findOne({
+    const userCart = await Cart.findOne({
       user: req.user._id,
       isexpired: false,
     })
@@ -675,7 +669,7 @@ const getCheckout = async (req, res, next) => {
         }
       });
 
-      let userAddress = await Address.findOne({ user: req.user._id });
+      const userAddress = await Address.findOne({ user: req.user._id });
 
       if (
         userCart.coupon === true &&
@@ -684,7 +678,7 @@ const getCheckout = async (req, res, next) => {
         const discount =
           (userCart.grandtotal / 100) * userCart.couponDetails.deduction;
         if (discount <= userCart.couponDetails.maxLimit) {
-          let total = userCart.grandtotal - discount;
+          const total = userCart.grandtotal - discount;
           res.render("user-views/checkout", {
             search: false,
             title: "Persuit: Checkout",
@@ -698,7 +692,7 @@ const getCheckout = async (req, res, next) => {
             address: userAddress,
           });
         } else {
-          let total = userCart.grandtotal - userCart.couponDetails.maxLimit;
+          const total = userCart.grandtotal - userCart.couponDetails.maxLimit;
           res.render("user-views/checkout", {
             search: false,
             title: "Persuit: Checkout",
@@ -717,7 +711,7 @@ const getCheckout = async (req, res, next) => {
         userCart.couponDetails.deductionType === "amount"
       ) {
         const discount = userCart.couponDetails.deduction;
-        let total = userCart.grandtotal - discount;
+        const total = userCart.grandtotal - discount;
         res.render("user-views/checkout", {
           search: false,
           title: "Persuit: Checkout",
@@ -730,7 +724,7 @@ const getCheckout = async (req, res, next) => {
           address: userAddress,
         });
       } else {
-        let total = userCart.grandtotal;
+        const total = userCart.grandtotal;
         res.render("user-views/checkout", {
           search: false,
           title: "Persuit: Checkout",
@@ -837,7 +831,7 @@ const getEditUserDetails = async (req, res, next) => {
 };
 
 const getSearchResult = async (req, res, next) => {
-  const searchData = req.query.searchData;
+  const { searchData } = req.query;
   const regEx = new RegExp(searchData, "i");
   const products = await Product.find({
     $or: [{ title: { $regex: regEx } }, { description: { $regex: regEx } }],
@@ -848,9 +842,7 @@ const getSearchResult = async (req, res, next) => {
 const getEditAddress = async (req, res, next) => {
   try {
     const allAddress = await Address.findOne({ user: req.user._id });
-    const address = allAddress.Addressess.find((el) => {
-      return el._id == req.query.id;
-    });
+    const address = allAddress.Addressess.find((el) => el._id == req.query.id);
     res.render("user-views/edit-address", {
       search: false,
       title: "Persuit: Edit Address",
@@ -885,9 +877,9 @@ const postCheckout = async (req, res, next) => {
     ) {
       if (req.body.payType === "Cash on Delivery") {
         const Addressess = await Address.findOne({ user: req.user._id });
-        const address = Addressess.Addressess.find((elm) => {
-          return elm._id.toString() === req.body.address;
-        });
+        const address = Addressess.Addressess.find(
+          (elm) => elm._id.toString() === req.body.address
+        );
         const discount = (cart.grandtotal / 100) * cart.couponDetails.deduction;
         if (discount <= cart.couponDetails.maxLimit) {
           placeOrder(
@@ -914,7 +906,7 @@ const postCheckout = async (req, res, next) => {
             res.json({ order, codStatus: true });
           });
         }
-      } else if (req.body.payType === "Razor Pay") {
+      } else {
         const discount = (cart.grandtotal / 100) * cart.couponDetails.deduction;
         if (discount <= cart.couponDetails.maxLimit) {
           const amount =
@@ -964,9 +956,9 @@ const postCheckout = async (req, res, next) => {
     ) {
       if (req.body.payType === "Cash on Delivery") {
         const Addressess = await Address.findOne({ user: req.user._id });
-        const address = Addressess.Addressess.find((elm) => {
-          return elm._id.toString() === req.body.address;
-        });
+        const address = Addressess.Addressess.find(
+          (elm) => elm._id.toString() === req.body.address
+        );
         placeOrder(
           req.user._id,
           req.body.cartId,
@@ -978,7 +970,7 @@ const postCheckout = async (req, res, next) => {
         ).then((order) => {
           res.json({ order, codStatus: true });
         });
-      } else if (req.body.payType === "Razor Pay") {
+      } else {
         const amount = cart.grandtotal - cart.couponDetails.deduction;
         createOrderRz(amount, req.body.cartId)
           .then((val) => {
@@ -1001,9 +993,9 @@ const postCheckout = async (req, res, next) => {
     } else {
       if (req.body.payType === "Cash on Delivery") {
         const Addressess = await Address.findOne({ user: req.user._id });
-        const address = Addressess.Addressess.find((elm) => {
-          return elm._id.toString() === req.body.address;
-        });
+        const address = Addressess.Addressess.find(
+          (elm) => elm._id.toString() === req.body.address
+        );
         placeOrder(
           req.user._id,
           req.body.cartId,
@@ -1015,7 +1007,7 @@ const postCheckout = async (req, res, next) => {
         ).then((order) => {
           res.json({ order, codStatus: true });
         });
-      } else if (req.body.payType === "Razor Pay") {
+      } else {
         createOrderRz(cart.grandtotal, req.body.cartId)
           .then((val) => {
             res.json({
@@ -1042,7 +1034,7 @@ const postCheckout = async (req, res, next) => {
 
 const postAddAddress = async (req, res, next) => {
   try {
-    let addressExists = await Address.exists({ user: req.user._id });
+    const addressExists = await Address.exists({ user: req.user._id });
     if (addressExists === null) {
       await Address.create({
         user: req.user._id,
@@ -1072,7 +1064,7 @@ const postAddAddress = async (req, res, next) => {
 };
 
 const postSignUp = async (req, res) => {
-  const { error, value } = validateSignup(req.body);
+  const { error } = validateSignup(req.body);
   if (error) {
     req.flash("message", error.message);
     res.redirect("/signup");
@@ -1127,18 +1119,18 @@ const postLogin = passport.authenticate("local", {
   failureFlash: true,
 });
 
-const postOtpVerify = (req, res) => {
+const postOtpVerify = (req, res, next) => {
   try {
     checkVerificationToken(req.session.temp.phone, req.body.otp).then(
       (status) => {
         if (status === "approved") {
           User.create(req.session.temp).then(() => {
-            req.logOut((err) => {
+            req.logOut(() => {
               res.redirect("/login");
             });
           });
         } else {
-          req.logOut((err) => {
+          req.logOut(() => {
             req.flash("message", "Wrong OTP");
             res.redirect("/signup");
           });
@@ -1146,7 +1138,7 @@ const postOtpVerify = (req, res) => {
       }
     );
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 
@@ -1157,7 +1149,7 @@ const postOtpverifyResetPass = (req, res, next) => {
         if (status === "approved") {
           res.redirect("/reset-pass");
         } else {
-          req.logOut((err) => {
+          req.logOut(() => {
             req.flash("message", "Wrong OTP");
             res.redirect("/forgot-password");
           });
@@ -1165,12 +1157,11 @@ const postOtpverifyResetPass = (req, res, next) => {
       }
     );
   } catch (err) {
-    console.log(err.message);
+    next(err);
   }
 };
 
 const patchResetPass = async (req, res, next) => {
-  console.log(req.session.temp._id);
   const user = await User.findById(req.session.temp._id);
   user.password = req.body.password;
   try {
@@ -1190,9 +1181,9 @@ const postVerifyPayment = async (req, res, next) => {
         const cartId = req.body.order.receipt;
         const cart = await Cart.findById(cartId).populate("couponDetails");
         const Addressess = await Address.findOne({ user: req.user._id });
-        const address = Addressess.Addressess.find((elm) => {
-          return elm._id.toString() === req.body.addressId;
-        });
+        const address = Addressess.Addressess.find(
+          (elm) => elm._id.toString() === req.body.addressId
+        );
         if (
           cart.coupon === true &&
           cart.couponDetails.deductionType === "percentage"
@@ -1264,7 +1255,7 @@ const postVerifyPayment = async (req, res, next) => {
 const postVerifyCoupon = async (req, res, next) => {
   try {
     const cart = await Cart.findOne({ user: req.user._id, isexpired: false });
-    let coupon = await Coupon.findOne({ couponCode: req.body.couponCode });
+    const coupon = await Coupon.findOne({ couponCode: req.body.couponCode });
     if (coupon !== null) {
       const userCheck = coupon.users.includes(req.user._id);
       const expr = moment(coupon.expiryDate).format();
@@ -1295,7 +1286,7 @@ const postVerifyCoupon = async (req, res, next) => {
           message: `This coupon was available only for limited number of persons`,
         });
       } else {
-        const cart = await Cart.findOneAndUpdate(
+        const updatedCart = await Cart.findOneAndUpdate(
           {
             user: req.user._id,
             isexpired: false,
@@ -1304,12 +1295,11 @@ const postVerifyCoupon = async (req, res, next) => {
           { new: true }
         ).populate("couponDetails");
         coupon.users.push(req.user._id);
-        const something = await coupon.save();
-        console.log(something);
+        await coupon.save();
         if (coupon.deductionType === "percentage") {
-          const discount = (cart.grandtotal / 100) * coupon.deduction;
+          const discount = (updatedCart.grandtotal / 100) * coupon.deduction;
           if (discount <= coupon.maxLimit) {
-            const total = cart.grandtotal - discount;
+            const total = updatedCart.grandtotal - discount;
             res.json({
               max: false,
               status: true,
@@ -1319,7 +1309,7 @@ const postVerifyCoupon = async (req, res, next) => {
               deduction: coupon.deduction,
             });
           } else {
-            const total = cart.grandtotal - coupon.maxLimit;
+            const total = updatedCart.grandtotal - coupon.maxLimit;
             res.json({
               max: true,
               status: true,
@@ -1331,7 +1321,7 @@ const postVerifyCoupon = async (req, res, next) => {
           }
         } else {
           const discount = coupon.deduction;
-          const total = cart.grandtotal - discount;
+          const total = updatedCart.grandtotal - discount;
           res.json({
             status: true,
             total,
@@ -1345,7 +1335,7 @@ const postVerifyCoupon = async (req, res, next) => {
       res.json({ status: false, message: "There is no such coupon!!" });
     }
   } catch (err) {
-    console.log(err.message);
+    res.json({ status: false, message: "Something went wrong!!!" });
   }
 };
 
@@ -1442,8 +1432,7 @@ const patchEditAddress = async (req, res, next) => {
 };
 
 const deleteLogout = (req, res) => {
-  req.logOut((err) => {
-    console.log("logged out");
+  req.logOut(() => {
     res.redirect("/");
   });
 };

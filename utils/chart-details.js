@@ -1,25 +1,5 @@
-const Order = require("../models/Orders");
-const Category = require("../models/Category");
-const Product = require("../models/Product");
 const moment = require("moment");
-
-async function barChartDetails() {
-  const fifthMonData = await getFifthMonthOrders();
-  const fourthMonData = await getFourthMonthOrders();
-  const thirdMonData = await getThirdMonthOrders();
-  const secondMonData = await getSecondMonthOrders();
-  const firstMonData = await getFirstMonthOrders();
-  const currentMonData = await getCurrentMonthOrders();
-  const allData = [
-    fifthMonData,
-    fourthMonData,
-    thirdMonData,
-    secondMonData,
-    firstMonData,
-    currentMonData,
-  ];
-  return allData;
-}
+const Order = require("../models/Orders");
 
 async function getFifthMonthOrders() {
   const startDate = moment().subtract(5, "months").startOf("month");
@@ -32,12 +12,13 @@ async function getFifthMonthOrders() {
       ],
     });
 
-    const totalSale = orders.reduce((total, orders) => {
-      return (total += orders.finalPrice);
+    const totalSale = orders.reduce((total, order) => {
+      total += order.finalPrice;
+      return total;
     }, 0);
 
     return totalSale;
-  } catch {
+  } catch (err) {
     return null;
   }
 }
@@ -54,8 +35,9 @@ async function getFourthMonthOrders() {
       ],
     });
 
-    const totalSale = orders.reduce((total, orders) => {
-      return (total += orders.finalPrice);
+    const totalSale = orders.reduce((total, order) => {
+      total += order.finalPrice;
+      return total;
     }, 0);
 
     return totalSale;
@@ -75,8 +57,9 @@ async function getThirdMonthOrders() {
       ],
     });
 
-    const totalSale = orders.reduce((total, orders) => {
-      return (total += orders.finalPrice);
+    const totalSale = orders.reduce((total, order) => {
+      total += order.finalPrice;
+      return total;
     }, 0);
 
     return totalSale;
@@ -96,8 +79,9 @@ async function getSecondMonthOrders() {
       ],
     });
 
-    const totalSale = orders.reduce((total, orders) => {
-      return (total += orders.finalPrice);
+    const totalSale = orders.reduce((total, order) => {
+      total += order.finalPrice;
+      return total;
     }, 0);
 
     return totalSale;
@@ -117,8 +101,9 @@ async function getFirstMonthOrders() {
       ],
     });
 
-    const totalSale = orders.reduce((total, orders) => {
-      return (total += orders.finalPrice);
+    const totalSale = orders.reduce((total, order) => {
+      total += order.finalPrice;
+      return total;
     }, 0);
 
     return totalSale;
@@ -138,14 +123,33 @@ async function getCurrentMonthOrders() {
       ],
     });
 
-    const totalSale = orders.reduce((total, orders) => {
-      return (total += orders.finalPrice);
+    const totalSale = orders.reduce((total, order) => {
+      total += order.finalPrice;
+      return total;
     }, 0);
 
     return totalSale;
   } catch (err) {
     return null;
   }
+}
+
+async function barChartDetails() {
+  const fifthMonData = await getFifthMonthOrders();
+  const fourthMonData = await getFourthMonthOrders();
+  const thirdMonData = await getThirdMonthOrders();
+  const secondMonData = await getSecondMonthOrders();
+  const firstMonData = await getFirstMonthOrders();
+  const currentMonData = await getCurrentMonthOrders();
+  const allData = [
+    fifthMonData,
+    fourthMonData,
+    thirdMonData,
+    secondMonData,
+    firstMonData,
+    currentMonData,
+  ];
+  return allData;
 }
 
 module.exports = { barChartDetails };

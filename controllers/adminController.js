@@ -1,12 +1,12 @@
 const passport = require("passport");
+const mongoose = require("mongoose");
+const moment = require("moment");
 const Product = require("../models/Product");
 const Orders = require("../models/Orders");
 const User = require("../models/User");
 const Cart = require("../models/Cart");
-const mongoose = require("mongoose");
 const Category = require("../models/Category");
 const initializePassport = require("../config/passport-config");
-const moment = require("moment");
 const Products = require("../models/Product");
 const {
   deleteCategoryImage,
@@ -15,7 +15,7 @@ const {
 const Order = require("../models/Orders");
 const Coupon = require("../models/Coupons");
 const { barChartDetails } = require("../utils/chart-details");
-const { array } = require("joi");
+
 initializePassport(passport);
 
 const getLogin = (req, res) => {
@@ -33,7 +33,8 @@ const getDashboard = async (req, res, next) => {
 
     const lastMonthSales = await Order.find({ createdAt: { $gt: date } });
     const lastMonthRevenue = lastMonthSales.reduce((total, order) => {
-      return (total += order.finalPrice);
+      total += order.finalPrice;
+      return total;
     }, 0);
 
     const pendingOrders = await Order.find({
@@ -92,9 +93,9 @@ const getPieChartDetails = async (req, res, next) => {
 
     const groupedOrderData = filteredOrderData.reduce((result, el) => {
       for (let [key, value] of Object.entries(el)) {
-        let data = {};
-        if (result.some((e) => e.name == key)) {
-          objIndex = result.findIndex((obj) => obj.name == key);
+        const data = {};
+        if (result.some((e) => e.name === key)) {
+          const objIndex = result.findIndex((obj) => obj.name === key);
           result[objIndex].quantity += value;
         } else {
           data.quantity = value;
@@ -145,7 +146,7 @@ const getBarChartDetails = async (req, res, next) => {
 
 const getProductAdd = async (req, res, next) => {
   try {
-    let category = await Category.find();
+    const category = await Category.find();
     res.render("admin-views/add-product", {
       layout: "./layouts/admin-layout",
       category,
@@ -158,7 +159,7 @@ const getProductAdd = async (req, res, next) => {
 
 const getProducts = async (req, res, next) => {
   try {
-    let products = res.paginatedResults;
+    const products = res.paginatedResults;
     res.render("admin-views/products", {
       layout: "./layouts/admin-layout",
       products,
@@ -185,8 +186,8 @@ const getProductDetails = async (req, res, next) => {
 
 const getEditProduct = async (req, res, next) => {
   try {
-    let product = await Product.findById(req.query.id);
-    let category = await Category.find();
+    const product = await Product.findById(req.query.id);
+    const category = await Category.find();
     res.render("admin-views/edit-product", {
       layout: "./layouts/admin-layout",
       product,
@@ -202,7 +203,7 @@ const getEditProduct = async (req, res, next) => {
 
 const getDeleteProduct = async (req, res, next) => {
   try {
-    let preProduct = await Product.findOne({ _id: req.query.id });
+    const preProduct = await Product.findOne({ _id: req.query.id });
     await Product.deleteOne({ _id: req.query.id });
     await deleteProductImages(preProduct.images)
       .then((val) => {
@@ -218,7 +219,7 @@ const getDeleteProduct = async (req, res, next) => {
 
 const getCategories = async (req, res, next) => {
   try {
-    let categories = await Category.find().sort({ updatedAt: -1 });
+    const categories = await Category.find().sort({ updatedAt: -1 });
     res.render("admin-views/categories", {
       layout: "./layouts/admin-layout",
       categories,
@@ -240,7 +241,7 @@ const getAddCategory = (req, res) => {
 
 const getDeleteCategory = async (req, res, next) => {
   try {
-    let check = await Products.exists({ category: req.query.id });
+    const check = await Products.exists({ category: req.query.id });
     if (check === null) {
       const preCategory = await Category.findOne({ _id: req.query.id });
       await Category.deleteOne({ _id: req.query.id });
@@ -335,8 +336,7 @@ const getUserDetails = async (req, res, next) => {
 
 const getBlockUser = async (req, res, next) => {
   try {
-    let page = req.query.page;
-    let limit = req.query.limit;
+    const { page, limit } = req.query;
     await User.updateOne({ _id: req.query.id }, { access: false });
     req.flash("message", "User Blocked successfully");
     res.redirect(`/admin/dash/users?page=${page}&limit=${limit}`);
@@ -347,8 +347,7 @@ const getBlockUser = async (req, res, next) => {
 
 const getUnblockUser = async (req, res, next) => {
   try {
-    let page = req.query.page;
-    let limit = req.query.limit;
+    const { page, limit } = req.query;
     await User.updateOne({ _id: req.query.id }, { access: true });
     req.flash("message", "User Unblocked successfully");
     res.redirect(`/admin/dash/users?page=${page}&limit=${limit}`);
@@ -445,9 +444,9 @@ const getSalesReport = async (req, res, next) => {
       return newEl;
     });
 
-    const total = preOrders.results.reduce((total, order) => {
-      total += order.finalPrice;
-      return total;
+    const total = preOrders.results.reduce((Total, order) => {
+      Total += order.finalPrice;
+      return Total;
     }, 0);
 
     preOrders.results = orders;
@@ -538,7 +537,6 @@ const postProductAdd = async (req, res, next) => {
     req.flash("message", "Product Added Successfully");
     res.redirect("/admin/dash/add-product");
   } catch (err) {
-    console.log(err.message);
     req.flash("message", err.message);
     res.redirect("/admin/dash/add-product");
   }
@@ -547,11 +545,10 @@ const postProductAdd = async (req, res, next) => {
 const postEditProduct = async (req, res, next) => {
   try {
     const { image0, image1, image2, image3 } = req.files;
-    const page = req.query.page;
-    const limit = req.query.limit;
+    const { page, limit } = req.query;
     if ((image0, image1, image2, image3)) {
-      let preProduct = await Product.findOne({ _id: req.query.id });
-      let data = req.body;
+      const preProduct = await Product.findOne({ _id: req.query.id });
+      const data = req.body;
       await Product.updateOne(
         { _id: req.query.id },
         {
@@ -584,7 +581,7 @@ const postEditProduct = async (req, res, next) => {
           res.redirect(`/admin/dash/products?page=${page}&limit=${limit}`);
         });
     } else {
-      let data = req.body;
+      const data = req.body;
       await Product.updateOne(
         { _id: req.query.id },
         {
@@ -614,16 +611,15 @@ const postLogin = passport.authenticate("local", {
 
 const postAddCategory = async (req, res, next) => {
   try {
-    let name = req.body.name;
-    let description = req.body.description;
+    const { name, description } = req.body;
+    const capitalize = (elm) =>
+      elm[0].toUpperCase() + elm.slice(1).toLowerCase();
 
-    let capitalize = (elm) => elm[0].toUpperCase() + elm.slice(1).toLowerCase();
+    const nameWords = name.split(" ").map(capitalize);
+    const descriptionWords = description.split(" ").map(capitalize);
 
-    let nameWords = name.split(" ").map(capitalize);
-    let descriptionWords = description.split(" ").map(capitalize);
-
-    let validatedName = nameWords.join(" ");
-    let validatedDescription = descriptionWords.join(" ");
+    const validatedName = nameWords.join(" ");
+    const validatedDescription = descriptionWords.join(" ");
 
     await Category.create({
       name: validatedName,
@@ -739,8 +735,8 @@ const postQueriedSalesReport = async (req, res, next) => {
       newEl.createdAt = moment(newEl.createdAt).format("LL");
       return newEl;
     });
-    const totalPrice = formattedOrders.reduce((total, orders) => {
-      total += orders.finalPrice;
+    const totalPrice = formattedOrders.reduce((total, order) => {
+      total += order.finalPrice;
       return total;
     }, 0);
     res.json({ status: true, orders: formattedOrders, totalPrice });
@@ -774,12 +770,12 @@ const patchOrderDetails = async (req, res, next) => {
 const patchEditCoupon = async (req, res, next) => {
   const now = moment(Date.now()).format();
   const expr = moment(req.body.expiryDate).format();
-  const id = req.body.id;
+  const { id } = req.body;
   try {
     if (expr > now) {
       const coupon = await Coupon.findById(id);
       if (coupon.deductionType === "percentage") {
-        const { expiryDate, deduction, minAmount, maxLimit, maxUsers, id } =
+        const { expiryDate, deduction, minAmount, maxLimit, maxUsers } =
           req.body;
         coupon.expiryDate = expiryDate;
         coupon.deduction = deduction;
@@ -790,7 +786,7 @@ const patchEditCoupon = async (req, res, next) => {
         req.flash("successMessage", "Coupon Added Successfully");
         res.redirect(`/admin/dash/coupons/coupon-details?id=${id}`);
       } else {
-        const { expiryDate, deduction, minAmount, maxUsers, id } = req.body;
+        const { expiryDate, deduction, minAmount, maxUsers } = req.body;
         coupon.expiryDate = expiryDate;
         coupon.deduction = deduction;
         coupon.minAmount = minAmount;
@@ -810,7 +806,7 @@ const patchEditCoupon = async (req, res, next) => {
 };
 
 const deleteLogout = (req, res) => {
-  req.logOut((err) => {
+  req.logOut(() => {
     res.redirect("/admin");
   });
 };

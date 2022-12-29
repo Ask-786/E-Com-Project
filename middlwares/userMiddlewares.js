@@ -13,7 +13,7 @@ const checkNotAuthenticated = (req, res, next) => {
     if (!req.user.isadmin) {
       res.redirect("/");
     } else {
-      req.logOut((err) => {
+      req.logOut(() => {
         res.status(404).json({ message: "Login Again" });
       });
     }
@@ -30,7 +30,7 @@ const checkAuthenticatedAxios = (req, res, next) => {
 
 const checkIsBlocked = (req, res, next) => {
   if (!req.user.access) {
-    req.logOut((err) => {
+    req.logOut(() => {
       res.render("user-views/blocked-message", {
         layout: "./layouts/no-hea-foo-user-layout",
       });

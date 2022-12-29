@@ -4,3 +4,4 @@ request-admin.rest
 request-user.rest
 public/category-images/
 public/products-images/
+.eslintrc.json

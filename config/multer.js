@@ -13,7 +13,6 @@ const productImageStorage = multer.diskStorage({
 
 const categoryImageStorage = multer.diskStorage({
   destination: (req, file, callback) => {
-    console.log(file);
     callback(null, "./public/category-images");
   },
   filename: (req, file, callback) => {

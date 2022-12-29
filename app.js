@@ -1,5 +1,5 @@
-const { urlencoded } = require("express");
 const express = require("express");
+
 const app = express();
 const path = require("path");
 const logger = require("morgan");
@@ -43,7 +43,6 @@ app.use(express.static(path.join(__dirname, "./public")));
 
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
-const { error } = require("console");
 
 app.use("/admin", adminRouter);
 app.use("/", userRouter);
