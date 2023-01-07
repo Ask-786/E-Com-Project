@@ -67,11 +67,15 @@ const getDashboard = async (req, res, next) => {
 
 const getPieChartDetails = async (req, res, next) => {
   try {
-    const date = moment().subtract(7, "days").toISOString();
+    const date = moment().subtract(6, "days").toISOString();
 
     const orders = await Order.find({ createdAt: { $gt: date } }).populate(
       "cart"
     );
+
+    if (orders.length === 0) {
+      return res.json({ status: true, noData: true });
+    }
 
     await Product.populate(orders, {
       path: "cart.bucket.products",
