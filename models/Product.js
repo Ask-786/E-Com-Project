@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
-const {
-  SchemaVersionContext,
-} = require("twilio/lib/rest/events/v1/schema/version");
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const productSchema = new Schema(
   {
