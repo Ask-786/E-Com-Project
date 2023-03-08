@@ -4,15 +4,17 @@ require("dotenv").config();
 const { DB, DB_LOCAL } = process.env;
 
 async function runConnection() {
-  try {
-    await mongoose.connect(DB, {
+  mongoose
+    .connect(DB_LOCAL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+    })
+    .then(() => {
+      console.log("DBConnection successful");
+    })
+    .catch((e) => {
+      console.log(e.message);
     });
-    console.log("DBConnection successful");
-  } catch (e) {
-    console.log(e.message);
-  }
 }
 
 module.exports = runConnection;

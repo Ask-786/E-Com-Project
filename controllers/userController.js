@@ -1064,6 +1064,8 @@ const postAddAddress = async (req, res, next) => {
 };
 
 const postSignUp = async (req, res) => {
+  console.log(req.body);
+
   const { error } = validateSignup(req.body);
   if (error) {
     req.flash("message", error.message);

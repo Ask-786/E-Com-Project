@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 app.use(methodOverride("_method"));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(logger("dev"));
 app.use(expressLayouts);
 app.use(express.json());
