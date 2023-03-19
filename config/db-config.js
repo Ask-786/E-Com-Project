@@ -5,7 +5,7 @@ const { DB, DB_LOCAL } = process.env;
 
 async function runConnection() {
   mongoose
-    .connect(DB_LOCAL, {
+    .connect(DB, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     })
